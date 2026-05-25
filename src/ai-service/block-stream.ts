@@ -7,7 +7,7 @@ import {
   type ToolSet,
 } from 'ai';
 import type {
-  AIGeneratedDangerousCustomRenderBlock,
+  AIGeneratedHtmlBlock,
   AIGenerationEvent,
   AIGenerationField,
   AIPluginOptions,
@@ -21,7 +21,7 @@ import {
   buildPartialGenerationPayload,
   buildRepairPrompt,
   createRunSummary,
-  generatedDangerousCustomRenderSchema,
+  generatedAiHtmlSchema,
   validateGeneratedBlock,
 } from '../block-generation';
 import { createContextTools } from '../tools/contextTools';
@@ -116,7 +116,7 @@ export const createBlockStreamGenerator = ({
       repairAttemptsUsed,
     }: {
       errorMessage: string;
-      partialGenerated: Partial<AIGeneratedDangerousCustomRenderBlock>;
+      partialGenerated: Partial<AIGeneratedHtmlBlock>;
       repairAttemptsUsed: number;
     }) => {
       const partialPayload = buildPartialGenerationPayload({
@@ -175,8 +175,8 @@ export const createBlockStreamGenerator = ({
       const previousSnapshots = new Map<string, string>();
       let hasEmittedGeneratingStatus = false;
       let latestText = '';
-      let generated: AIGeneratedDangerousCustomRenderBlock | null = null;
-      let partialGenerated: Partial<AIGeneratedDangerousCustomRenderBlock> = {};
+      let generated: AIGeneratedHtmlBlock | null = null;
+      let partialGenerated: Partial<AIGeneratedHtmlBlock> = {};
       const modelMessages: ModelMessage[] | undefined =
         attempt === 0 && Array.isArray(initialMessages) && initialMessages.length > 0
           ? initialMessages
@@ -204,9 +204,9 @@ export const createBlockStreamGenerator = ({
             ...(modelMessages ? { messages: modelMessages } : { prompt: attemptPrompt }),
             model: resolveProviderModel(primaryProvider, modelId),
             output: Output.object({
-              description: 'Structured dangerous-custom-render block output',
-              name: 'dangerousCustomRenderBlock',
-              schema: generatedDangerousCustomRenderSchema,
+              description: 'Structured ai-html-block output',
+              name: 'aiHtmlBlock',
+              schema: generatedAiHtmlSchema,
             }),
             stopWhen: enableTools ? stepCountIs(toolNames.length + 2) : undefined,
             system: systemPrompt,
@@ -217,7 +217,7 @@ export const createBlockStreamGenerator = ({
         ? Promise.resolve()
         : (async () => {
             for await (const partialOutput of result.partialOutputStream) {
-              partialGenerated = partialOutput as Partial<AIGeneratedDangerousCustomRenderBlock>;
+              partialGenerated = partialOutput as Partial<AIGeneratedHtmlBlock>;
               emitSnapshots(buildPartialFieldSnapshots(partialGenerated), previousSnapshots);
             }
           })();
@@ -276,7 +276,7 @@ export const createBlockStreamGenerator = ({
                 const { value } = await parsePartialJson(jsonCandidate);
 
                 if (value && typeof value === 'object' && !Array.isArray(value)) {
-                  partialGenerated = value as Partial<AIGeneratedDangerousCustomRenderBlock>;
+                  partialGenerated = value as Partial<AIGeneratedHtmlBlock>;
                   emitSnapshots(buildPartialFieldSnapshots(partialGenerated), previousSnapshots);
                 }
               }
@@ -332,9 +332,9 @@ export const createBlockStreamGenerator = ({
           throw new Error(await summarizeEmptyResult(result, latestText));
         }
         const jsonCandidate = extractJSONObjectCandidate(latestText);
-        generated = generatedDangerousCustomRenderSchema.parse(JSON.parse(jsonCandidate));
+        generated = generatedAiHtmlSchema.parse(JSON.parse(jsonCandidate));
       } else {
-        generated = (await result.output) as AIGeneratedDangerousCustomRenderBlock;
+        generated = (await result.output) as AIGeneratedHtmlBlock;
       }
 
       return {

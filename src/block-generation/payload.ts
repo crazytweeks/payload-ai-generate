@@ -1,5 +1,5 @@
 import type {
-  AIGeneratedDangerousCustomRenderBlock,
+  AIGeneratedHtmlBlock,
   AIGenerationField,
   AIGenerationFinalPayload,
   AIGenerationOutcome,
@@ -7,7 +7,7 @@ import type {
   AIProviderName,
 } from '../ai-types';
 import { normalizeVariables, validateGeneratedBlock } from './normalize';
-import type { PartialGeneratedDangerousCustomRenderBlock } from './types';
+import type { PartialAiHtmlBlock } from './types';
 
 const stringifyPretty = (value: unknown) => JSON.stringify(value, null, 2);
 
@@ -42,13 +42,13 @@ export const buildGenerationPayload = ({
   generated,
   run,
 }: {
-  generated: AIGeneratedDangerousCustomRenderBlock;
+  generated: AIGeneratedHtmlBlock;
   run: AIGenerationRunSummary;
 }): AIGenerationFinalPayload => {
   const normalized = validateGeneratedBlock(generated).normalized;
 
   const blockPayload = {
-    blockType: 'dangerous-custom-render' as const,
+    blockType: 'ai-html-block' as const,
     css: normalized.css ?? '',
     data: normalized.data ?? {},
     html: normalized.html,
@@ -81,7 +81,7 @@ export const buildGenerationPayload = ({
  * ```
  */
 export const buildPartialFieldSnapshots = (
-  partial: PartialGeneratedDangerousCustomRenderBlock
+  partial: PartialAiHtmlBlock
 ): Partial<Record<AIGenerationField, string>> => {
   const snapshots: Partial<Record<AIGenerationField, string>> = {};
 
@@ -107,7 +107,7 @@ export const buildPartialFieldSnapshots = (
 
   if (typeof partial.html === 'string' && partial.html.trim().length > 0) {
     snapshots.blockPayloadJSON = stringifyPretty({
-      blockType: 'dangerous-custom-render',
+      blockType: 'ai-html-block',
       css: typeof partial.css === 'string' ? partial.css : '',
       data: partial.data ?? {},
       html: partial.html,
@@ -151,7 +151,7 @@ export const buildPartialGenerationPayload = ({
   provider,
   repairAttemptsUsed,
 }: {
-  generated: PartialGeneratedDangerousCustomRenderBlock;
+  generated: PartialAiHtmlBlock;
   lastError: string;
   maxRepairAttempts: number;
   modelId: string;

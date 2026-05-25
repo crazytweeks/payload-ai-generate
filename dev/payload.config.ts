@@ -1,11 +1,11 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
-import { aiGenerate } from '@flash-lightning/ai-generate';
 import path from 'path';
 import { buildConfig } from 'payload';
+import { aiGenerate } from 'payload-ai-generate';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
-import { DangerousCustomRenderBlock } from '../src/blocks/dangerous-custom-render/config';
+import { AiHtmlBlock } from '../src/blocks/ai-html-block/config';
 import { testEmailAdapter } from './helpers/testEmailAdapter';
 
 const filename = fileURLToPath(import.meta.url);
@@ -28,7 +28,7 @@ const buildConfigWithMemoryDB = buildConfig({
         {
           type: 'blocks',
           name: 'content',
-          blocks: [DangerousCustomRenderBlock],
+          blocks: [AiHtmlBlock],
         },
       ],
     },
@@ -39,7 +39,6 @@ const buildConfigWithMemoryDB = buildConfig({
         staticDir: path.resolve(dirname, 'media'),
       },
     },
-    // buildAIPromptCollection(),
   ],
 
   db: mongooseAdapter({
@@ -47,14 +46,11 @@ const buildConfigWithMemoryDB = buildConfig({
     url: process.env.DATABASE_URL || '',
     connectOptions: {
       dbName: process.env.DATABASE_NAME || 'ai-plugin-dev',
-      appName: process.env.DATABASE_APP_NAME || 'ai-plugin-flash-lightning',
+      appName: process.env.DATABASE_APP_NAME || 'ai-plugin-dev',
     },
   }),
   editor: lexicalEditor(),
   email: testEmailAdapter,
-  // onInit: async (payload) => {
-  //   await seed(payload);
-  // },
   plugins: [
     aiGenerate({
       previewPagePath: '/preview/ai-prompts',

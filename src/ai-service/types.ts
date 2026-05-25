@@ -1,7 +1,7 @@
 import type { streamText } from 'ai';
 import type { Payload } from 'payload';
 import type {
-  AIGeneratedDangerousCustomRenderBlock,
+  AIGeneratedHtmlBlock,
   AIProviderName,
   PayloadAIService,
 } from '../ai-types';
@@ -44,9 +44,9 @@ export type PayloadWithAIInternals = Payload & {
  * ```
  */
 export type SingleAttemptResult = {
-  generated: AIGeneratedDangerousCustomRenderBlock | null;
+  generated: AIGeneratedHtmlBlock | null;
   lastGeneratedJSON: string;
-  partialGenerated: Partial<AIGeneratedDangerousCustomRenderBlock>;
+  partialGenerated: Partial<AIGeneratedHtmlBlock>;
 };
 
 /**

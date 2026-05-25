@@ -1,6 +1,6 @@
 {
   "name": "payload-ai-generate",
-  "version": "1.1.4",
+  "version": "0.1.0-beta.1",
   "description": "AI generation plugin for Payload CMS",
   "homepage": "https://github.com/crazytweeks/payload-ai-generate",
   "repository": {

@@ -12,7 +12,7 @@ const generatedVariableSchema = z
   .strict();
 
 /**
- * Structured output contract for `dangerous-custom-render` generation.
+ * Structured output contract for `ai-html-block` generation.
  *
  * This schema is intentionally permissive for `variables` so providers can
  * return common alternate shapes such as `{ name, defaultValue }`, which are
@@ -20,13 +20,13 @@ const generatedVariableSchema = z
  *
  * @example
  * ```ts
- * const parsed = generatedDangerousCustomRenderSchema.parse({
+ * const parsed = generatedAiHtmlSchema.parse({
  *   html: '<section>Hello</section>',
  *   variables: [{ name: 'heading', defaultValue: 'Hello' }],
  * });
  * ```
  */
-export const generatedDangerousCustomRenderSchema = z
+export const generatedAiHtmlSchema = z
   .object({
     html: z.string(),
     css: z.string().optional(),

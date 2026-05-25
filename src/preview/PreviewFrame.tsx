@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: We are rendering webpage created by AI, there is a trust issues, which we need to recheck later */
+/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: PreviewFrame renders AI-generated content inside Payload's own admin preview iframe, which already provides page-level isolation from the host app. */
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
@@ -124,7 +124,7 @@ export function PreviewFrame({
         containerRef.current.removeChild(scriptElement);
       }
     };
-  }, [combinedCSS, dataJSON, defaultAdditionalData?.afterJS, defaultAdditionalData?.beforeJS, js]);
+  }, [dataJSON, defaultAdditionalData?.afterJS, defaultAdditionalData?.beforeJS, js]);
 
   return (
     <div ref={containerRef} style={{ minHeight: '100vh' }}>

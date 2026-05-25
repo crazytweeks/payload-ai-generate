@@ -13,13 +13,13 @@ export {
   createRunSummary,
 } from './block-generation/payload';
 export {
+  buildAiHtmlPrompt,
   buildBlockGenerationSystemPrompt,
-  buildDangerousCustomRenderPrompt,
   buildRepairPrompt,
 } from './block-generation/prompt';
-export { generatedDangerousCustomRenderSchema } from './block-generation/schema';
+export { generatedAiHtmlSchema } from './block-generation/schema';
 export type {
-  NormalizedGeneratedDangerousCustomRenderBlock,
-  PartialGeneratedDangerousCustomRenderBlock,
+  NormalizedAiHtmlBlock,
+  PartialAiHtmlBlock,
   ValidationResult,
 } from './block-generation/types';

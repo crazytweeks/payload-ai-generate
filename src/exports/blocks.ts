@@ -1,12 +1,12 @@
-export type { DangerousCustomRenderBlockOptions } from '../blocks/dangerous-custom-render/config';
+export type { AiHtmlBlockOptions } from '../blocks/ai-html-block/config';
 export {
-  buildDangerousCustomRenderBlock,
-  buildDangerousCustomRenderBlockFields,
-  DangerousCustomRenderBlock,
-  dangerousCustomRenderBlockFields,
-} from '../blocks/dangerous-custom-render/config';
+  AiHtmlBlock,
+  aiHtmlBlockFields,
+  buildAiHtmlBlock,
+  buildAiHtmlBlockFields,
+} from '../blocks/ai-html-block/config';
 export type {
-  DangerousCustomRenderBlockProps,
-  DangerousCustomRenderPromptDoc,
-  DangerousCustomRenderVariable,
-} from '../blocks/dangerous-custom-render/types';
+  AiHtmlBlockProps,
+  AiHtmlPromptDoc,
+  AiHtmlVariable,
+} from '../blocks/ai-html-block/types';

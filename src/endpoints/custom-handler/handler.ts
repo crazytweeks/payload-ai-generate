@@ -1,6 +1,6 @@
 import type { PayloadHandler } from 'payload';
 import { resolvePayloadAI } from '../../aiService';
-import { buildDangerousCustomRenderPrompt } from '../../block-generation';
+import { buildAiHtmlPrompt } from '../../block-generation';
 import {
   buildInputMessages,
   buildReferenceEvent,
@@ -12,7 +12,7 @@ import { collectFinalPayload, prependEvents, streamEventsResponse } from './stre
 import type { GenerateRequestBody, ResolvedAttachment } from './types';
 
 /**
- * Payload endpoint that streams `dangerous-custom-render` block generation
+ * Payload endpoint that streams `ai-html-block` generation
  * events to the admin UI.
  *
  * @param req - Payload request containing the prompt body, active user context, and Payload instance.
@@ -46,7 +46,7 @@ export const customEndpointHandler: PayloadHandler = async (req) => {
       referenceMediaCollectionSlug?: string;
     };
     const origin = getRequestOrigin(req);
-    const prompt = buildDangerousCustomRenderPrompt({
+    const prompt = buildAiHtmlPrompt({
       currentArtifact: body.currentArtifact,
       existingMessages: body.messages ?? [],
       followup: body.followup,

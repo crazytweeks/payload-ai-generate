@@ -1,11 +1,11 @@
 import type { BasePayload } from 'payload';
 
-export type DangerousCustomRenderVariable = {
+export type AiHtmlVariable = {
   key?: string | null;
   value?: string | null;
 };
 
-export type DangerousCustomRenderPromptDoc = {
+export type AiHtmlPromptDoc = {
   css?: string | null;
   dataJSON?: string | null;
   html?: string | null;
@@ -14,8 +14,8 @@ export type DangerousCustomRenderPromptDoc = {
   variablesJSON?: string | null;
 };
 
-export type DangerousCustomRenderBlockProps = {
+export type AiHtmlBlockProps = {
   id?: number | string | null;
-  code?: DangerousCustomRenderPromptDoc | number | string | null;
+  code?: AiHtmlPromptDoc | number | string | null;
   payload?: BasePayload;
 };

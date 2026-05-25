@@ -38,7 +38,7 @@ const buildArtifactContext = (artifact?: AIGenerationArtifact) => {
 export const buildBlockGenerationSystemPrompt = (baseSystemPrompt?: string) => {
   const systemLines = [
     'You are an expert frontend engineer working inside a Payload CMS plugin.',
-    'Your task is to generate or edit content for the `dangerous-custom-render` block used by the host application.',
+    'Your task is to generate or edit content for the `ai-html-block` used by the host application.',
     'Before generating, inspect available project context when useful using the provided tools. Prefer project-consistent structure, naming, spacing, and styling over generic UI output.',
     'Requirements:',
     '- Return content that matches the exact block schema requested by the system.',
@@ -68,14 +68,14 @@ export const buildBlockGenerationSystemPrompt = (baseSystemPrompt?: string) => {
  *
  * @example
  * ```ts
- * const prompt = buildDangerousCustomRenderPrompt({
+ * const prompt = buildAiHtmlPrompt({
  *   instructions: 'Build a three-column pricing section.',
  *   mode: 'generate',
  *   title: 'Pricing block',
  * });
  * ```
  */
-export const buildDangerousCustomRenderPrompt = ({
+export const buildAiHtmlPrompt = ({
   currentArtifact,
   existingMessages = [],
   followup,
@@ -103,7 +103,7 @@ export const buildDangerousCustomRenderPrompt = ({
   }
 
   return [
-    'Generate a Payload block for slug `dangerous-custom-render`.',
+    'Generate a Payload block for slug `ai-html-block`.',
     'The response must match the structured block schema exactly.',
     trimmedTitle ? `Document title: ${trimmedTitle}` : 'Document title: Untitled',
     trimmedInstructions ? `Primary instructions:\n${trimmedInstructions}` : '',
@@ -152,7 +152,7 @@ export const buildRepairPrompt = ({
   title?: string;
 }) =>
   [
-    'Repair the previously generated `dangerous-custom-render` block.',
+    'Repair the previously generated `ai-html-block`.',
     'Do not rewrite unrelated parts.',
     'Return the full corrected block object using the exact required schema.',
     title?.trim() ? `Document title: ${title.trim()}` : 'Document title: Untitled',

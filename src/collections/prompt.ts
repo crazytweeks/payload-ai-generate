@@ -47,7 +47,7 @@ const aiComposerField = (pluginOptions: AIPluginOptions = {}): UIField => ({
   admin: {
     components: {
       Field: {
-        path: '@flash-lightning/ai-generate/client#AIGenerateComposerField',
+        path: 'payload-ai-generate/client#AIGenerateComposerField',
         clientProps: {
           attachmentsFieldPath: pluginOptions.referenceMediaCollectionSlug
             ? 'referenceFiles'
@@ -135,7 +135,7 @@ export const buildAIPromptCollection = ({
           {
             name: 'referenceFiles',
             type: 'upload',
-            relationTo: pluginOptions.referenceMediaCollectionSlug as any as CollectionSlug,
+            relationTo: pluginOptions.referenceMediaCollectionSlug as CollectionSlug,
             hasMany: true,
             admin: {
               description:
@@ -170,7 +170,7 @@ export const buildAIPromptCollection = ({
       required: true,
       admin: {
         language: 'html',
-        description: 'Generated HTML for dangerous-custom-render block.',
+        description: 'Generated HTML for the ai-html-block.',
       },
     },
     {
@@ -178,7 +178,7 @@ export const buildAIPromptCollection = ({
       type: 'code',
       admin: {
         language: 'css',
-        description: 'Optional generated CSS for dangerous-custom-render block.',
+        description: 'Optional generated CSS for the ai-html-block.',
       },
     },
     {
@@ -186,7 +186,7 @@ export const buildAIPromptCollection = ({
       type: 'code',
       admin: {
         language: 'javascript',
-        description: 'Optional generated JavaScript for dangerous-custom-render block.',
+        description: 'Optional generated JavaScript for the ai-html-block.',
       },
     },
     {
@@ -213,7 +213,7 @@ export const buildAIPromptCollection = ({
         language: 'json',
         readOnly: true,
         description:
-          'Ready-to-paste Payload blocks item for slug "dangerous-custom-render". React renderer support is pending (TODO).',
+          'Ready-to-paste Payload blocks item for slug "ai-html-block".',
       },
     },
   ],

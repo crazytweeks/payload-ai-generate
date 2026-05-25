@@ -1,1 +1,1 @@
-export { DangerousCustomRenderBlockComponent } from '../blocks/dangerous-custom-render/Component';
+export { AiHtmlBlockComponent } from '../blocks/ai-html-block/Component';

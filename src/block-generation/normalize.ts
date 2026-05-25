@@ -1,6 +1,6 @@
-import type { AIGeneratedDangerousCustomRenderBlock, AIGeneratedVariable } from '../ai-types';
-import { generatedDangerousCustomRenderSchema } from './schema';
-import type { NormalizedGeneratedDangerousCustomRenderBlock, ValidationResult } from './types';
+import type { AIGeneratedHtmlBlock, AIGeneratedVariable } from '../ai-types';
+import { generatedAiHtmlSchema } from './schema';
+import type { NormalizedAiHtmlBlock, ValidationResult } from './types';
 
 const normalizeVariable = (item: unknown): AIGeneratedVariable | null => {
   if (!item || typeof item !== 'object') {
@@ -114,9 +114,9 @@ const validateJavaScript = (value: string) => {
  * ```
  */
 export const validateGeneratedBlock = (
-  generated: AIGeneratedDangerousCustomRenderBlock
+  generated: AIGeneratedHtmlBlock
 ): ValidationResult => {
-  const parsed = generatedDangerousCustomRenderSchema.parse(generated);
+  const parsed = generatedAiHtmlSchema.parse(generated);
   const html = parsed.html.trim();
 
   if (!html) {
@@ -144,7 +144,7 @@ export const validateGeneratedBlock = (
       js,
       variables: normalizedVariables.variables,
       data: parsed.data,
-    } satisfies NormalizedGeneratedDangerousCustomRenderBlock,
+    } satisfies NormalizedAiHtmlBlock,
     normalizationApplied: normalizedVariables.normalizationApplied,
   };
 };

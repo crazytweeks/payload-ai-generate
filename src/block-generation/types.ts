@@ -1,17 +1,17 @@
-import type { AIGeneratedDangerousCustomRenderBlock, AIGeneratedVariable } from '../ai-types';
+import type { AIGeneratedHtmlBlock, AIGeneratedVariable } from '../ai-types';
 
 /**
  * Partial block shape used while the model is still streaming.
  *
  * @example
  * ```ts
- * const partial: PartialGeneratedDangerousCustomRenderBlock = {
+ * const partial: PartialAiHtmlBlock = {
  *   html: '<section>Loading…</section>',
  * };
  * ```
  */
-export type PartialGeneratedDangerousCustomRenderBlock = Partial<
-  Omit<AIGeneratedDangerousCustomRenderBlock, 'variables'> & {
+export type PartialAiHtmlBlock = Partial<
+  Omit<AIGeneratedHtmlBlock, 'variables'> & {
     variables: unknown;
   }
 >;
@@ -21,7 +21,7 @@ export type PartialGeneratedDangerousCustomRenderBlock = Partial<
  *
  * @example
  * ```ts
- * const normalized: NormalizedGeneratedDangerousCustomRenderBlock = {
+ * const normalized: NormalizedAiHtmlBlock = {
  *   html: '<section>Hello</section>',
  *   css: '',
  *   js: '',
@@ -30,8 +30,8 @@ export type PartialGeneratedDangerousCustomRenderBlock = Partial<
  * };
  * ```
  */
-export type NormalizedGeneratedDangerousCustomRenderBlock = Omit<
-  AIGeneratedDangerousCustomRenderBlock,
+export type NormalizedAiHtmlBlock = Omit<
+  AIGeneratedHtmlBlock,
   'css' | 'js' | 'variables'
 > & {
   css: string;
@@ -53,6 +53,6 @@ export type NormalizedGeneratedDangerousCustomRenderBlock = Omit<
  */
 export type ValidationResult = {
   lastError?: string | null;
-  normalized: NormalizedGeneratedDangerousCustomRenderBlock;
+  normalized: NormalizedAiHtmlBlock;
   normalizationApplied: boolean;
 };

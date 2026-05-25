@@ -28,7 +28,7 @@ export type AIGeneratedVariable = {
   value: string;
 };
 
-export type AIGeneratedDangerousCustomRenderBlock = {
+export type AIGeneratedHtmlBlock = {
   html: string;
   css?: string;
   js?: string;
@@ -69,7 +69,7 @@ export type AIConversationMessage = {
 
 export type AIGenerationFinalPayload = {
   blockPayload: {
-    blockType: 'dangerous-custom-render';
+    blockType: 'ai-html-block';
     css: string;
     data: unknown;
     html: string;
