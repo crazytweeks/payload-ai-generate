@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Add reference data fetch tools to block generation — 🤖 agent-codex-ref-data (2026-05-25T18:53Z)
 
 ---
 
