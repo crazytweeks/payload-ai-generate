@@ -131,22 +131,22 @@ export interface UserAuthOperations {
  */
 export interface Post {
   id: string;
-  content?: DangerousCustomRenderBlockType[] | null;
+  content?: AiHtmlBlockType[] | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "DangerousCustomRenderBlockType".
+ * via the `definition` "AiHtmlBlockType".
  */
-export interface DangerousCustomRenderBlockType {
+export interface AiHtmlBlockType {
   /**
    * Select an AI prompt document whose generated HTML, CSS, JS, and variables should be rendered by this block.
    */
   code: string | AiPrompt;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'dangerous-custom-render';
+  blockType: 'ai-html-block';
 }
 /**
  * Generate HTML block code that can be pasted into Payload blocks fields.
@@ -194,15 +194,15 @@ export interface AiPrompt {
     | boolean
     | null;
   /**
-   * Generated HTML for dangerous-custom-render block.
+   * Generated HTML for the ai-html-block.
    */
   html: string;
   /**
-   * Optional generated CSS for dangerous-custom-render block.
+   * Optional generated CSS for the ai-html-block.
    */
   css?: string | null;
   /**
-   * Optional generated JavaScript for dangerous-custom-render block.
+   * Optional generated JavaScript for the ai-html-block.
    */
   js?: string | null;
   /**
@@ -214,7 +214,7 @@ export interface AiPrompt {
    */
   dataJSON?: string | null;
   /**
-   * Ready-to-paste Payload blocks item for slug "dangerous-custom-render". React renderer support is pending (TODO).
+   * Ready-to-paste Payload blocks item for slug "ai-html-block".
    */
   blockPayloadJSON?: string | null;
   updatedAt: string;
@@ -415,16 +415,16 @@ export interface PostsSelect<T extends boolean = true> {
   content?:
     | T
     | {
-        'dangerous-custom-render'?: T | DangerousCustomRenderBlockTypeSelect<T>;
+        'ai-html-block'?: T | AiHtmlBlockTypeSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "DangerousCustomRenderBlockType_select".
+ * via the `definition` "AiHtmlBlockType_select".
  */
-export interface DangerousCustomRenderBlockTypeSelect<T extends boolean = true> {
+export interface AiHtmlBlockTypeSelect<T extends boolean = true> {
   code?: T;
   id?: T;
   blockName?: T;
