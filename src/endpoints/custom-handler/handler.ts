@@ -53,7 +53,12 @@ export const customEndpointHandler: PayloadHandler = async (req) => {
       instructions: body.instructions,
       mode,
       title: body.title,
+      references: body.references ?? [],
     });
+
+    if (process.env.PAYLOAD_AI_GENERATE_TEST_COLLECTIONS === 'true') {
+      req.payload.logger.info(`Generated prompt:\n${prompt}`);
+    }
 
     const attachments: ResolvedAttachment[] =
       pluginOptions.referenceMediaCollectionSlug && Array.isArray(body.attachments)

@@ -1,4 +1,8 @@
-import type { AIConversationMessage, AIGenerationArtifact } from '../ai-types';
+import type {
+  AIConversationMessage,
+  AIGenerationArtifact,
+  AIReferenceDataSource,
+} from '../ai-types';
 
 const buildMessagesContext = (messages: AIConversationMessage[]) => {
   if (messages.length === 0) {
@@ -22,6 +26,35 @@ const buildArtifactContext = (artifact?: AIGenerationArtifact) => {
   ]
     .filter(Boolean)
     .join('\n\n');
+};
+
+const buildReferenceContext = (references: AIReferenceDataSource[]) => {
+  const serverReferences = references.filter(
+    (reference) =>
+      reference.isBeingUsed === true &&
+      reference.dataLoading !== 'client' &&
+      typeof reference.collection === 'string' &&
+      reference.collection.length > 0
+  );
+
+  if (serverReferences.length === 0) {
+    return '';
+  }
+
+  return [
+    'Reference data sources are available for this task.',
+    'Before generating HTML, call the `fetch_reference_docs` tool for each active server-side reference source and use the returned documents to shape the component content.',
+    'Active reference sources:',
+    JSON.stringify(
+      serverReferences.map((reference) => ({
+        collection: reference.collection,
+        filtersJSON: reference.filtersJSON ?? null,
+        limit: reference.limit ?? 10,
+      })),
+      null,
+      2
+    ),
+  ].join('\n');
 };
 
 /**
@@ -82,6 +115,7 @@ export const buildAiHtmlPrompt = ({
   instructions,
   mode = 'generate',
   title,
+  references = [],
 }: {
   currentArtifact?: AIGenerationArtifact;
   existingMessages?: AIConversationMessage[];
@@ -89,6 +123,7 @@ export const buildAiHtmlPrompt = ({
   instructions?: string;
   mode?: 'followup' | 'generate' | 'retry-fix';
   title?: string;
+  references?: AIReferenceDataSource[];
 }) => {
   const trimmedInstructions = instructions?.trim();
   const trimmedFollowup = followup?.trim();
@@ -111,6 +146,7 @@ export const buildAiHtmlPrompt = ({
       ? `Conversation history:\n${buildMessagesContext(existingMessages)}`
       : '',
     buildArtifactContext(currentArtifact),
+    buildReferenceContext(references),
     mode === 'generate'
       ? `Current task:\n${trimmedInstructions}`
       : `Follow-up change request:\n${trimmedFollowup}`,

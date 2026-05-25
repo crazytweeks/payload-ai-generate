@@ -1,4 +1,5 @@
 import type { ModelMessage, streamText } from 'ai';
+import type { ToolSet } from 'ai';
 import type { CollectionSlug } from 'payload';
 import { type GoogleModelId, models, type OpenAIModelId } from './models';
 
@@ -204,12 +205,22 @@ export type AIGenerationArtifact = {
   variablesJSON?: string;
 };
 
+export type AIReferenceDataSource = {
+  collection?: string | null;
+  dataLoading?: 'client' | 'server' | null;
+  filtersJSON?: string | null;
+  id?: number | string | null;
+  isBeingUsed?: boolean | null;
+  limit?: number | null;
+};
+
 export type AIStreamBlockGenerationParams = AIStreamTextParams & {
   abortSignal?: AbortSignal;
   currentArtifact?: AIGenerationArtifact;
   existingMessages?: AIConversationMessage[];
   messages?: ModelMessage[];
   mode?: 'followup' | 'generate' | 'retry-fix';
+  requestTools?: ToolSet;
 };
 
 /**

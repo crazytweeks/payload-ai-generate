@@ -54,6 +54,15 @@ export type GenerateRequestBody = {
    * Optional document title forwarded into prompt construction.
    */
   title?: string;
+
+  /**
+   * Optional array of reference collection descriptors that the prompt can use to pull in dynamic data during generation.
+   */
+  references?: Array<{
+    collection: string;
+    id: number | string;
+    [key: string]: unknown;
+  }>;
 };
 
 /**
