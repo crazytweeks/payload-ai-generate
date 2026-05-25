@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Add usage checkbox to AI prompt reference rows — 🤖 agent-codex-ref-data (2026-05-25T17:15Z)
 
 ---
 
