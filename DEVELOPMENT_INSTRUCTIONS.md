@@ -3,6 +3,10 @@
 Rules and conventions for agents and developers working on this plugin.
 **Read this file before touching anything.** Update it when you discover something worth recording.
 
+# Stack i use
+
+***Bun*** - just bun, no npx, npm, pnpm. Just bun, or bunx.
+
 ---
 
 ## 1. Dev Server — Do Not Disturb
@@ -45,7 +49,7 @@ This plugin (`packages/ai-generate`) is a **git submodule** inside the `flash-li
 
 ## 4. Package Name & Imports
 
-The npm package name is **`payload-ai-generate`** (not `@flash-lightning/ai-generate` — that is the old name, do not use it).
+The npm package name is **`payload-ai-generate`**
 
 - All imports inside the plugin use relative paths.
 - Host app imports use `payload-ai-generate`, `payload-ai-generate/client`, `payload-ai-generate/blocks`, etc.

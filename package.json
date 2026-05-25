@@ -7,7 +7,14 @@
     "type": "git",
     "url": "https://github.com/crazytweeks/payload-ai-generate.git"
   },
-  "keywords": ["payload", "payload-cms", "plugin", "ai", "generate", "llm"],
+  "keywords": [
+    "payload",
+    "payload-cms",
+    "plugin",
+    "ai",
+    "generate",
+    "llm"
+  ],
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -60,7 +67,7 @@
     "build:types": "rm -f tsconfig.tsbuildinfo && tsc --outDir dist --rootDir ./src",
     "clean": "rimraf {dist,*.tsbuildinfo}",
     "copyfiles": "find src -type f \\( -name '*.json' -o -name '*.css' -o -name '*.scss' -o -name '*.html' -o -name '*.svg' -o -name '*.png' \\) | while IFS= read -r f; do d=\"dist/${f#src/}\"; mkdir -p \"$(dirname \"$d\")\"; cp \"$f\" \"$d\"; done",
-    "dev": "next dev dev --turbo --no-server-fast-refresh",
+    "dev": "next dev dev --turbo -p 4000",
     "dev:generate-importmap": "bun run dev:payload generate:importmap",
     "dev:generate-types": "bun run dev:payload generate:types",
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",

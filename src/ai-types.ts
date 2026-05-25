@@ -152,6 +152,8 @@ export interface AIPluginToolingOptions {
   enabled?: boolean;
 }
 
+export type AIReferenceCollectionsConfig = Record<string, boolean>;
+
 export interface AIPreviewAdditionalData {
   beforeCSS?: string;
   afterCSS?: string;
@@ -169,6 +171,8 @@ export interface AIPluginOptions {
   defaultProvider?: AIProviderName;
   disabled?: boolean;
   referenceMediaCollectionSlug?: string;
+  referenceCollections?: AIReferenceCollectionsConfig;
+  devTestCollections?: boolean;
   previewPagePath?: string;
   defaultAdditionalData?: AIPreviewAdditionalData;
   tooling?: AIPluginToolingOptions;
