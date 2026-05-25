@@ -12,6 +12,11 @@ import {
 } from './collections';
 import { customEndpointHandler } from './endpoints/customEndpointHandler';
 import { previewEndpointHandler } from './endpoints/previewHandler';
+import {
+  buildTestMessagesCollection,
+  testMessagesCollectionSlug,
+} from './dev-test/testMessages';
+import { seedTestMessagesCollection } from './dev-test/seed/testMessages';
 
 const upsertCollection = (
   collections: CollectionConfig[] | undefined,
@@ -51,7 +56,14 @@ export const aiGenerate =
   (pluginOptions: AIPluginOptions = {}): Plugin =>
   (incomingConfig: Config): Config => {
     const config = { ...incomingConfig };
-    const aiService = aiServiceCreate(pluginOptions);
+    const effectivePluginOptions: AIPluginOptions = {
+      ...pluginOptions,
+      referenceCollections: {
+        ...(pluginOptions.devTestCollections ? { [testMessagesCollectionSlug]: true } : {}),
+        ...(pluginOptions.referenceCollections ?? {}),
+      },
+    };
+    const aiService = aiServiceCreate(effectivePluginOptions);
     const incomingOnInit = config.onInit;
 
     config.collections = upsertCollection(config.collections, buildAIModelsCollection());
@@ -59,16 +71,20 @@ export const aiGenerate =
       config.collections,
       buildAIPromptCollection({
         apiRoute: config.routes?.api ?? '/api',
-        previewPagePath: pluginOptions.previewPagePath,
-        pluginOptions,
+        previewPagePath: effectivePluginOptions.previewPagePath,
+        pluginOptions: effectivePluginOptions,
       })
     );
     config.collections = upsertCollection(config.collections, buildAIPresetCollection());
 
+    if (pluginOptions.devTestCollections) {
+      config.collections = upsertCollection(config.collections, buildTestMessagesCollection());
+    }
+
     config.custom = {
       ...config.custom,
       ai: aiService,
-      aiPluginOptions: pluginOptions,
+      aiPluginOptions: effectivePluginOptions,
     };
 
     config.endpoints = [
@@ -102,6 +118,16 @@ export const aiGenerate =
           msg: 'Failed to sync AI models collection during init',
           err: error,
         });
+      }
+      if (pluginOptions.devTestCollections) {
+        try {
+          await seedTestMessagesCollection(payload);
+        } catch (error) {
+          payload.logger.error({
+            msg: 'Failed to seed AI dev test collections during init',
+            err: error,
+          });
+        }
       }
       payload.logger.info('Payload AI plugin initialized');
     };

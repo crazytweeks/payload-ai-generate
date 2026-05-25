@@ -15,6 +15,8 @@ if (!process.env.ROOT_DIR) {
   process.env.ROOT_DIR = dirname;
 }
 
+const enableDevTestCollections = process.env.PAYLOAD_AI_GENERATE_TEST_COLLECTIONS === 'true';
+
 const buildConfigWithMemoryDB = buildConfig({
   admin: {
     importMap: {
@@ -55,6 +57,12 @@ const buildConfigWithMemoryDB = buildConfig({
     aiGenerate({
       previewPagePath: '/preview/ai-prompts',
       referenceMediaCollectionSlug: 'media',
+      devTestCollections: enableDevTestCollections,
+      referenceCollections: enableDevTestCollections
+        ? {
+            'test-messages': true,
+          }
+        : undefined,
       tooling: {
         enabled: true,
       },

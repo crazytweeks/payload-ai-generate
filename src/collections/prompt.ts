@@ -2,6 +2,14 @@ import type { CollectionConfig, CollectionSlug, UIField } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
 import { aiPresetCollectionSlug, aiPromptCollectionSlug } from './constants';
 
+const getReferenceCollectionOptions = (pluginOptions: AIPluginOptions) =>
+  Object.entries(pluginOptions.referenceCollections ?? {})
+    .filter(([, enabled]) => enabled)
+    .map(([slug]) => ({
+      label: slug,
+      value: slug,
+    }));
+
 /**
  * Builds the live preview URL for an AI prompt document.
  */
@@ -81,148 +89,171 @@ export const buildAIPromptCollection = ({
   apiRoute?: string;
   previewPagePath?: string;
   pluginOptions?: AIPluginOptions;
-} = {}): CollectionConfig => ({
-  slug: aiPromptCollectionSlug,
-  labels: {
-    singular: 'AI Prompt',
-    plural: 'AI Prompts',
-  },
-  admin: {
-    defaultColumns: ['title', 'updatedAt'],
-    useAsTitle: 'title',
-    group: 'AI',
-    description: 'Generate HTML block code that can be pasted into Payload blocks fields.',
-    livePreview: {
-      url: ({ data }) =>
+} = {}): CollectionConfig => {
+  const referenceCollectionOptions = getReferenceCollectionOptions(pluginOptions);
+
+  return {
+    slug: aiPromptCollectionSlug,
+    labels: {
+      singular: 'AI Prompt',
+      plural: 'AI Prompts',
+    },
+    admin: {
+      defaultColumns: ['title', 'updatedAt'],
+      useAsTitle: 'title',
+      group: 'AI',
+      description: 'Generate HTML block code that can be pasted into Payload blocks fields.',
+      livePreview: {
+        url: ({ data }) =>
+          generatePreviewPath(
+            typeof data?.id === 'string' || typeof data?.id === 'number' ? data.id : null,
+            apiRoute,
+            previewPagePath
+          ),
+      },
+      preview: (data) =>
         generatePreviewPath(
           typeof data?.id === 'string' || typeof data?.id === 'number' ? data.id : null,
           apiRoute,
           previewPagePath
         ),
     },
-    preview: (data) =>
-      generatePreviewPath(
-        typeof data?.id === 'string' || typeof data?.id === 'number' ? data.id : null,
-        apiRoute,
-        previewPagePath
-      ),
-  },
-  fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'preset',
-      type: 'relationship',
-      admin: {
-        description: 'Optional preset that defines system prompt, provider, and model.',
+    fields: [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
       },
-      relationTo: aiPresetCollectionSlug as never,
-    },
-    {
-      name: 'instructions',
-      type: 'textarea',
-      required: true,
-      admin: {
-        description: 'Describe the block you want to generate.',
-        rows: 8,
+      {
+        name: 'preset',
+        type: 'relationship',
+        admin: {
+          description: 'Optional preset that defines system prompt, provider, and model.',
+        },
+        relationTo: aiPresetCollectionSlug as never,
+      },
+      {
+        name: 'instructions',
+        type: 'textarea',
+        required: true,
+        admin: {
+          description: 'Describe the block you want to generate.',
+          rows: 8,
+        },
+      },
+      ...(pluginOptions.referenceMediaCollectionSlug
+        ? [
+            {
+              name: 'referenceFiles',
+              type: 'upload',
+              relationTo: pluginOptions.referenceMediaCollectionSlug as CollectionSlug,
+              hasMany: true,
+              admin: {
+                description:
+                  'Optional images or files to pass to the AI as reference material for this prompt or follow-up.',
+              },
+            } as const,
+          ]
+        : []),
+      ...(referenceCollectionOptions.length
+        ? [
+            {
+              name: 'referenceCollection',
+              type: 'select',
+              options: referenceCollectionOptions,
+              admin: {
+                description: 'Optional collection to query for runtime data during preview/rendering.',
+              },
+            } as const,
+            {
+              name: 'referenceFiltersJSON',
+              type: 'code',
+              admin: {
+                language: 'json',
+                description: 'Optional Payload where filter JSON for the selected reference collection.',
+              },
+            } as const,
+          ]
+        : []),
+      aiComposerField(pluginOptions),
+      {
+        name: 'messages',
+        type: 'json',
+        admin: {
+          description: 'Persisted conversation history used for follow-up AI edits.',
+          hidden: true,
+          readOnly: true,
+        },
+        defaultValue: [],
+      },
+      {
+        name: 'lastRun',
+        type: 'json',
+        admin: {
+          description: 'Persisted summary of the last AI generation run.',
+          hidden: true,
+          readOnly: true,
+        },
+      },
+      {
+        name: 'html',
+        type: 'code',
+        required: true,
+        admin: {
+          language: 'html',
+          description: 'Generated HTML for the ai-html-block.',
+        },
+      },
+      {
+        name: 'css',
+        type: 'code',
+        admin: {
+          language: 'css',
+          description: 'Optional generated CSS for the ai-html-block.',
+        },
+      },
+      {
+        name: 'js',
+        type: 'code',
+        admin: {
+          language: 'javascript',
+          description: 'Optional generated JavaScript for the ai-html-block.',
+        },
+      },
+      {
+        name: 'variablesJSON',
+        type: 'code',
+        admin: {
+          language: 'json',
+          description:
+            'JSON array for the block variables field. Example: [{"key":"heading","value":"Hello"}]',
+        },
+      },
+      {
+        name: 'dataJSON',
+        type: 'code',
+        admin: {
+          language: 'json',
+          description: 'Optional JSON payload for the block data field.',
+        },
+      },
+      {
+        name: 'blockPayloadJSON',
+        type: 'code',
+        admin: {
+          language: 'json',
+          readOnly: true,
+          description: 'Ready-to-paste Payload blocks item for slug "ai-html-block".',
+        },
+      },
+    ],
+    versions: {
+      drafts: {
+        autosave: {
+          interval: 100,
+        },
       },
     },
-    ...(pluginOptions.referenceMediaCollectionSlug
-      ? [
-          {
-            name: 'referenceFiles',
-            type: 'upload',
-            relationTo: pluginOptions.referenceMediaCollectionSlug as CollectionSlug,
-            hasMany: true,
-            admin: {
-              description:
-                'Optional images or files to pass to the AI as reference material for this prompt or follow-up.',
-            },
-          } as const,
-        ]
-      : []),
-    aiComposerField(pluginOptions),
-    {
-      name: 'messages',
-      type: 'json',
-      admin: {
-        description: 'Persisted conversation history used for follow-up AI edits.',
-        hidden: true,
-        readOnly: true,
-      },
-      defaultValue: [],
-    },
-    {
-      name: 'lastRun',
-      type: 'json',
-      admin: {
-        description: 'Persisted summary of the last AI generation run.',
-        hidden: true,
-        readOnly: true,
-      },
-    },
-    {
-      name: 'html',
-      type: 'code',
-      required: true,
-      admin: {
-        language: 'html',
-        description: 'Generated HTML for the ai-html-block.',
-      },
-    },
-    {
-      name: 'css',
-      type: 'code',
-      admin: {
-        language: 'css',
-        description: 'Optional generated CSS for the ai-html-block.',
-      },
-    },
-    {
-      name: 'js',
-      type: 'code',
-      admin: {
-        language: 'javascript',
-        description: 'Optional generated JavaScript for the ai-html-block.',
-      },
-    },
-    {
-      name: 'variablesJSON',
-      type: 'code',
-      admin: {
-        language: 'json',
-        description:
-          'JSON array for the block variables field. Example: [{"key":"heading","value":"Hello"}]',
-      },
-    },
-    {
-      name: 'dataJSON',
-      type: 'code',
-      admin: {
-        language: 'json',
-        description: 'Optional JSON payload for the block data field.',
-      },
-    },
-    {
-      name: 'blockPayloadJSON',
-      type: 'code',
-      admin: {
-        language: 'json',
-        readOnly: true,
-        description:
-          'Ready-to-paste Payload blocks item for slug "ai-html-block".',
-      },
-    },
-  ],
-  versions: {
-    drafts: {
-      autosave: {
-        interval: 100,
-      },
-    },
-  },
-  timestamps: true,
-});
+    timestamps: true,
+  };
+};

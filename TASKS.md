@@ -16,7 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Dev-only reference test collections and seed data for reference collection config — 🤖 agent-codex-ref-data (2026-05-25T16:14Z)
+_(move items here when you start them)_
 
 ---
 
@@ -120,6 +120,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Dev-only reference test collections and seed data for reference collection config
 - [x] Extracted plugin from flash-lightning monorepo to standalone repo (`crazytweeks/payload-ai-generate`)
 - [x] Added as git submodule at `packages/ai-generate` in flash-lightning
 - [x] Renamed `dangerous-custom-render` block → `ai-html-block` everywhere
