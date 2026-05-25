@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Fix reference collection select validation with duplicate filtering — 🤖 agent-codex-ref-data (2026-05-25T17:09Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Fix reference collection select validation with duplicate filtering
 - [x] Show server-resolved AI prompt reference data JSON on dev render page
 - [x] Server-side reference data fetching with third dev test collection
 - [x] Multiple reference collection configs and second dev test collection

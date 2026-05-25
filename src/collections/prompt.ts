@@ -1,4 +1,9 @@
-import type { CollectionConfig, CollectionSlug, Field, UIField } from 'payload';
+import type {
+  CollectionConfig,
+  CollectionSlug,
+  Field,
+  UIField,
+} from 'payload';
 import type { AIPluginOptions } from '../ai-types';
 import { aiPresetCollectionSlug, aiPromptCollectionSlug } from './constants';
 
@@ -9,6 +14,18 @@ const getReferenceCollectionOptions = (pluginOptions: AIPluginOptions) =>
       label: slug,
       value: slug,
     }));
+
+const validateDataLoadingSelect = (data: unknown): true | string => {
+  if (typeof data !== 'string') {
+    return 'Invalid selection';
+  }
+
+  if (data !== 'server') {
+    return 'Client-side loading is not currently supported.';
+  }
+
+  return true;
+};
 
 const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[] => {
   const referenceCollectionOptions = getReferenceCollectionOptions(pluginOptions);
@@ -30,6 +47,23 @@ const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[]
           type: 'select',
           options: referenceCollectionOptions,
           required: true,
+          filterOptions(args) {
+            const currentSelection =
+              typeof args.siblingData?.collection === 'string'
+                ? args.siblingData.collection
+                : null;
+            const siblingsSelected =
+              args.data?.referenceCollections
+                ?.map((item: { collection: string }) => item.collection)
+                .filter(Boolean) ?? [];
+
+            const availableOptions = referenceCollectionOptions.filter(
+              (option) =>
+                option.value === currentSelection || !siblingsSelected.includes(option.value)
+            );
+
+            return availableOptions;
+          },
           admin: {
             description: 'Collection to query for this reference data source.',
           },
@@ -60,8 +94,10 @@ const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[]
           ],
           required: true,
           admin: {
-            description: 'Load now on the server or defer for a future client-side Payload API path.',
+            description:
+              'Load now on the server or defer for a future client-side Payload API path.',
           },
+          validate: validateDataLoadingSelect,
         },
         {
           name: 'filtersJSON',
