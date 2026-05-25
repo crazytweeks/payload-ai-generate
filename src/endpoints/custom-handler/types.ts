@@ -1,5 +1,9 @@
 import type { PayloadHandler } from 'payload';
-import type { AIConversationMessage, AIGenerationArtifact } from '../../ai-types';
+import type {
+  AIConversationMessage,
+  AIGenerationArtifact,
+  AIReferenceDataSource,
+} from '../../ai-types';
 
 /**
  * Request body accepted by the AI block-generation endpoint.
@@ -58,11 +62,7 @@ export type GenerateRequestBody = {
   /**
    * Optional array of reference collection descriptors that the prompt can use to pull in dynamic data during generation.
    */
-  references?: Array<{
-    collection: string;
-    id: number | string;
-    [key: string]: unknown;
-  }>;
+  references?: AIReferenceDataSource[];
 };
 
 /**

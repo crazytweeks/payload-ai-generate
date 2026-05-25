@@ -20,6 +20,7 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
     lastRunFieldPath,
     messagesFieldPath,
     presetFieldPath,
+    referencesFieldPath,
     titleFieldPath,
     variablesJsonFieldPath,
   } = props as ComposerFieldProps;
@@ -56,6 +57,9 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
   const presetValue = useFormFields(
     ([fields]) => fields[presetFieldPath]?.value as RelationshipValue
   );
+  const referencesValue = useFormFields(([fields]) =>
+    referencesFieldPath ? fields[referencesFieldPath]?.value : undefined
+  );
   const selectedAttachments = Array.isArray(attachmentsValue) ? attachmentsValue : [];
 
   const endpointURL = `${config.routes.api}/ai-generate/stream`;
@@ -73,6 +77,7 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
     messagesValue,
     path: props.path,
     presetValue,
+    referencesValue,
     selectedAttachments,
     setBlockPayloadValue,
     setCssValue,

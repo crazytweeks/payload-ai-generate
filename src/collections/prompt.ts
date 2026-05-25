@@ -180,6 +180,7 @@ const aiComposerField = (pluginOptions: AIPluginOptions = {}): UIField => ({
           jsFieldPath: 'js',
           variablesJsonFieldPath: 'variablesJSON',
           dataJsonFieldPath: 'dataJSON',
+          referencesFieldPath: 'referenceCollections',
           blockPayloadFieldPath: 'blockPayloadJSON',
         },
       },

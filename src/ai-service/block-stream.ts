@@ -72,13 +72,17 @@ export const createBlockStreamGenerator = ({
     model,
     prompt,
     provider,
+    requestTools,
     system,
   }: AIStreamBlockGenerationParams): AsyncIterable<AIGenerationEvent> => {
     const primaryProvider = getPrimaryProvider(provider);
     const modelId = model ?? getDefaultModelId(primaryProvider);
-    const tools = createContextTools(resolvedOptions);
+    const tools = {
+      ...createContextTools(resolvedOptions),
+      ...(requestTools ?? {}),
+    };
     const toolNames = Object.keys(tools);
-    const enableTools = primaryProvider !== 'openai' && toolNames.length > 0;
+    const enableTools = toolNames.length > 0;
     const queue = createEventQueue<AIGenerationEvent>();
     const systemPrompt = buildBlockGenerationSystemPrompt(system);
     const maxRepairAttempts = resolvedOptions.generationMaxRepairAttempts ?? 3;

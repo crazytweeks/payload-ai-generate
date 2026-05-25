@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Add reference data fetch tools to block generation — 🤖 agent-codex-ref-data (2026-05-25T18:53Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Add reference data fetch tools to block generation
 - [x] Add usage checkbox to AI prompt reference rows
 - [x] Fix reference collection select validation with duplicate filtering
 - [x] Show server-resolved AI prompt reference data JSON on dev render page

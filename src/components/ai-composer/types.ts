@@ -19,6 +19,7 @@ export type ComposerProps = {
   lastRunFieldPath: string;
   messagesFieldPath: string;
   presetFieldPath: string;
+  referencesFieldPath?: string | null;
   titleFieldPath: string;
   variablesJsonFieldPath: string;
 };

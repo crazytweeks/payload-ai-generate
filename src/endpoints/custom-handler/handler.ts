@@ -1,6 +1,8 @@
 import type { PayloadHandler } from 'payload';
+import type { AIPluginOptions } from '../../ai-types';
 import { resolvePayloadAI } from '../../aiService';
 import { buildAiHtmlPrompt } from '../../block-generation';
+import { createReferenceTools } from '../../tools/referenceTools';
 import {
   buildInputMessages,
   buildReferenceEvent,
@@ -42,10 +44,9 @@ export const customEndpointHandler: PayloadHandler = async (req) => {
 
     const body = (await req.json()) as GenerateRequestBody;
     const mode = body.mode ?? 'generate';
-    const pluginOptions = (req.payload.config.custom?.aiPluginOptions ?? {}) as {
-      referenceMediaCollectionSlug?: string;
-    };
+    const pluginOptions = (req.payload.config.custom?.aiPluginOptions ?? {}) as AIPluginOptions;
     const origin = getRequestOrigin(req);
+    const references = body.references ?? [];
     const prompt = buildAiHtmlPrompt({
       currentArtifact: body.currentArtifact,
       existingMessages: body.messages ?? [],
@@ -53,12 +54,18 @@ export const customEndpointHandler: PayloadHandler = async (req) => {
       instructions: body.instructions,
       mode,
       title: body.title,
-      references: body.references ?? [],
+      references,
     });
 
     if (process.env.PAYLOAD_AI_GENERATE_TEST_COLLECTIONS === 'true') {
       req.payload.logger.info(`Generated prompt:\n${prompt}`);
     }
+
+    const requestTools = createReferenceTools({
+      payload: req.payload,
+      pluginOptions,
+      references,
+    });
 
     const attachments: ResolvedAttachment[] =
       pluginOptions.referenceMediaCollectionSlug && Array.isArray(body.attachments)
@@ -101,6 +108,7 @@ export const customEndpointHandler: PayloadHandler = async (req) => {
       model,
       prompt,
       provider,
+      requestTools,
       system,
     });
 

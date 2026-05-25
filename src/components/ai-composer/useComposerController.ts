@@ -6,6 +6,7 @@ import type {
   AIConversationMessage,
   AIGenerationEvent,
   AIGenerationOutcome,
+  AIReferenceDataSource,
   AIGenerationRunSummary,
 } from '../../ai-types';
 import type { ActivityItem, ComposerViewModel, RelationshipValue } from './types';
@@ -27,6 +28,7 @@ type ComposerControllerParams = {
   messagesValue: AIConversationMessage[] | undefined;
   path: string;
   presetValue: RelationshipValue;
+  referencesValue: unknown;
   selectedAttachments: unknown[];
   setBlockPayloadValue: (value: string) => void;
   setCssValue: (value: string) => void;
@@ -82,6 +84,7 @@ export const useComposerController = ({
   messagesValue,
   path,
   presetValue,
+  referencesValue,
   selectedAttachments,
   setBlockPayloadValue,
   setCssValue,
@@ -135,6 +138,14 @@ export const useComposerController = ({
     js: jsValue ?? '',
     variablesJSON: variablesJSONValue ?? '[]',
   });
+
+  const buildReferenceSources = (): AIReferenceDataSource[] =>
+    Array.isArray(referencesValue)
+      ? referencesValue.filter(
+          (reference): reference is AIReferenceDataSource =>
+            Boolean(reference) && typeof reference === 'object'
+        )
+      : [];
 
   const persistConversationResult = ({
     assistantContent,
@@ -352,6 +363,7 @@ export const useComposerController = ({
           messages,
           mode,
           presetId: getRelationshipID(presetValue),
+          references: buildReferenceSources(),
           stream: true,
           title,
         }),
