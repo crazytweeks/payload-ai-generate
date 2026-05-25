@@ -13,9 +13,14 @@ import {
 import { customEndpointHandler } from './endpoints/customEndpointHandler';
 import { previewEndpointHandler } from './endpoints/previewHandler';
 import {
+  buildTestProductsCollection,
+  testProductsCollectionSlug,
+} from './dev-test/testProducts';
+import {
   buildTestMessagesCollection,
   testMessagesCollectionSlug,
 } from './dev-test/testMessages';
+import { seedTestProductsCollection } from './dev-test/seed/testProducts';
 import { seedTestMessagesCollection } from './dev-test/seed/testMessages';
 
 const upsertCollection = (
@@ -59,7 +64,12 @@ export const aiGenerate =
     const effectivePluginOptions: AIPluginOptions = {
       ...pluginOptions,
       referenceCollections: {
-        ...(pluginOptions.devTestCollections ? { [testMessagesCollectionSlug]: true } : {}),
+        ...(pluginOptions.devTestCollections
+          ? {
+              [testMessagesCollectionSlug]: true,
+              [testProductsCollectionSlug]: true,
+            }
+          : {}),
         ...(pluginOptions.referenceCollections ?? {}),
       },
     };
@@ -79,6 +89,7 @@ export const aiGenerate =
 
     if (pluginOptions.devTestCollections) {
       config.collections = upsertCollection(config.collections, buildTestMessagesCollection());
+      config.collections = upsertCollection(config.collections, buildTestProductsCollection());
     }
 
     config.custom = {
@@ -122,6 +133,7 @@ export const aiGenerate =
       if (pluginOptions.devTestCollections) {
         try {
           await seedTestMessagesCollection(payload);
+          await seedTestProductsCollection(payload);
         } catch (error) {
           payload.logger.error({
             msg: 'Failed to seed AI dev test collections during init',

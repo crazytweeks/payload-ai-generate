@@ -1,4 +1,4 @@
-import type { CollectionConfig, CollectionSlug, UIField } from 'payload';
+import type { CollectionConfig, CollectionSlug, Field, UIField } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
 import { aiPresetCollectionSlug, aiPromptCollectionSlug } from './constants';
 
@@ -9,6 +9,53 @@ const getReferenceCollectionOptions = (pluginOptions: AIPluginOptions) =>
       label: slug,
       value: slug,
     }));
+
+const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[] => {
+  const referenceCollectionOptions = getReferenceCollectionOptions(pluginOptions);
+
+  if (!referenceCollectionOptions.length) {
+    return [];
+  }
+
+  return [
+    {
+      name: 'referenceCollections',
+      type: 'array',
+      admin: {
+        description: 'Optional reference collection queries for preview/rendering data.',
+      },
+      fields: [
+        {
+          name: 'collection',
+          type: 'select',
+          options: referenceCollectionOptions,
+          required: true,
+          admin: {
+            description: 'Collection to query for this reference data source.',
+          },
+        },
+        {
+          name: 'limit',
+          type: 'number',
+          defaultValue: 10,
+          min: 1,
+          required: true,
+          admin: {
+            description: 'Maximum number of documents to load from this collection.',
+          },
+        },
+        {
+          name: 'filtersJSON',
+          type: 'code',
+          admin: {
+            language: 'json',
+            description: 'Optional Payload where filter JSON for this collection.',
+          },
+        },
+      ],
+    },
+  ];
+};
 
 /**
  * Builds the live preview URL for an AI prompt document.
@@ -90,7 +137,7 @@ export const buildAIPromptCollection = ({
   previewPagePath?: string;
   pluginOptions?: AIPluginOptions;
 } = {}): CollectionConfig => {
-  const referenceCollectionOptions = getReferenceCollectionOptions(pluginOptions);
+  const referenceCollectionFields = buildReferenceCollectionFields(pluginOptions);
 
   return {
     slug: aiPromptCollectionSlug,
@@ -155,26 +202,7 @@ export const buildAIPromptCollection = ({
             } as const,
           ]
         : []),
-      ...(referenceCollectionOptions.length
-        ? [
-            {
-              name: 'referenceCollection',
-              type: 'select',
-              options: referenceCollectionOptions,
-              admin: {
-                description: 'Optional collection to query for runtime data during preview/rendering.',
-              },
-            } as const,
-            {
-              name: 'referenceFiltersJSON',
-              type: 'code',
-              admin: {
-                language: 'json',
-                description: 'Optional Payload where filter JSON for the selected reference collection.',
-              },
-            } as const,
-          ]
-        : []),
+      ...referenceCollectionFields,
       aiComposerField(pluginOptions),
       {
         name: 'messages',
