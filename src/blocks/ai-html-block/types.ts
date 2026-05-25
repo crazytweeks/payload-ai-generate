@@ -7,6 +7,7 @@ export type AiHtmlReferenceCollection = {
   dataLoading?: AiHtmlReferenceLoadingMode | null;
   filtersJSON?: string | null;
   id?: number | string | null;
+  isBeingUsed?: boolean | null;
   limit?: number | null;
 };
 

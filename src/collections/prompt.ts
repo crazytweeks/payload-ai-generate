@@ -79,6 +79,14 @@ const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[]
           },
         },
         {
+          name: 'isBeingUsed',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'Marks whether this reference collection is currently used by the prompt.',
+          },
+        },
+        {
           name: 'dataLoading',
           type: 'select',
           defaultValue: 'server',

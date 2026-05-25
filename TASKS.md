@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Add usage checkbox to AI prompt reference rows — 🤖 agent-codex-ref-data (2026-05-25T17:15Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Add usage checkbox to AI prompt reference rows
 - [x] Fix reference collection select validation with duplicate filtering
 - [x] Show server-resolved AI prompt reference data JSON on dev render page
 - [x] Server-side reference data fetching with third dev test collection
