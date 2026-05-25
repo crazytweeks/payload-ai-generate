@@ -45,6 +45,25 @@ const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[]
           },
         },
         {
+          name: 'dataLoading',
+          type: 'select',
+          defaultValue: 'server',
+          options: [
+            {
+              label: 'Server',
+              value: 'server',
+            },
+            {
+              label: 'Client',
+              value: 'client',
+            },
+          ],
+          required: true,
+          admin: {
+            description: 'Load now on the server or defer for a future client-side Payload API path.',
+          },
+        },
+        {
           name: 'filtersJSON',
           type: 'code',
           admin: {

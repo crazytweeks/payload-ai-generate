@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Server-side reference data fetching with third dev test collection — 🤖 agent-codex-ref-data (2026-05-25T16:45Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Server-side reference data fetching with third dev test collection
 - [x] Multiple reference collection configs and second dev test collection
 - [x] Add posts frontend pages to dev app — list page, detail page with AiHtmlBlock rendering, preview & live preview wired up
 - [x] Dev-only reference test collections and seed data for reference collection config

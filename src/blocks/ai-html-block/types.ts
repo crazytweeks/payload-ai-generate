@@ -1,5 +1,15 @@
 import type { BasePayload } from 'payload';
 
+export type AiHtmlReferenceLoadingMode = 'client' | 'server';
+
+export type AiHtmlReferenceCollection = {
+  collection?: string | null;
+  dataLoading?: AiHtmlReferenceLoadingMode | null;
+  filtersJSON?: string | null;
+  id?: number | string | null;
+  limit?: number | null;
+};
+
 export type AiHtmlVariable = {
   key?: string | null;
   value?: string | null;
@@ -11,6 +21,7 @@ export type AiHtmlPromptDoc = {
   html?: string | null;
   id?: number | string | null;
   js?: string | null;
+  referenceCollections?: AiHtmlReferenceCollection[] | null;
   variablesJSON?: string | null;
 };
 

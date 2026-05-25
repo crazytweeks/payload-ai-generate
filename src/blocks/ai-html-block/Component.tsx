@@ -1,6 +1,7 @@
 import type { BasePayload } from 'payload';
 import { aiPromptCollectionSlug } from '../../collections/constants';
 import { AiHtmlBlockComponentClient } from './ClientComponent';
+import { withServerReferenceData } from './referenceData';
 import type { AiHtmlBlockProps, AiHtmlPromptDoc } from './types';
 
 const fetchPromptDoc = async (
@@ -35,7 +36,9 @@ export const AiHtmlBlockComponent = async ({ code, payload }: AiHtmlBlockProps) 
   }
 
   const promptDoc = typeof code === 'object' ? code : await fetchPromptDoc(code, payload);
-  return <AiHtmlBlockComponentClient code={promptDoc} />;
+  const promptDocWithReferences = await withServerReferenceData(promptDoc, payload);
+
+  return <AiHtmlBlockComponentClient code={promptDocWithReferences} />;
 };
 
 export default AiHtmlBlockComponent;
