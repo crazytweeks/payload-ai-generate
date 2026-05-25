@@ -131,9 +131,12 @@ export interface UserAuthOperations {
  */
 export interface Post {
   id: string;
+  title: string;
+  slug: string;
   content?: AiHtmlBlockType[] | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -412,6 +415,8 @@ export interface PayloadMigration {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
   content?:
     | T
     | {
@@ -419,6 +424,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -26,13 +26,52 @@ const buildConfigWithMemoryDB = buildConfig({
   collections: [
     {
       slug: 'posts',
+      admin: {
+        useAsTitle: 'title',
+        livePreview: {
+          url: ({ data, req }) => {
+            const host = req.headers.get('host') || 'localhost:4000';
+            const proto = req.headers.get('x-forwarded-proto') || 'http';
+            return `${proto}://${host}/posts/${data?.slug}`;
+          },
+        },
+        preview: (data) => {
+          const params = new URLSearchParams({
+            path: `/posts/${data?.slug}`,
+            previewSecret: process.env.PREVIEW_SECRET || '',
+          });
+          return `/next/preview?${params.toString()}`;
+        },
+      },
       fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'slug',
+          type: 'text',
+          required: true,
+          unique: true,
+          admin: {
+            position: 'sidebar',
+          },
+        },
         {
           type: 'blocks',
           name: 'content',
           blocks: [AiHtmlBlock],
         },
       ],
+      versions: {
+        drafts: {
+          autosave: {
+            interval: 100,
+          },
+        },
+        maxPerDoc: 50,
+      },
     },
     {
       slug: 'media',

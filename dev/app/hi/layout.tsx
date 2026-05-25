@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 type Args = {
   children: React.ReactNode;
 };
@@ -10,7 +12,9 @@ const Layout = ({ children }: Args) => (
       <link rel="icon" href="/favicon.ico" />
     </head>
 
-    <body>{children}</body>
+    <body>
+      <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+    </body>
   </html>
 );
 

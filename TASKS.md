@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Add posts frontend pages to dev app (list + detail with AiHtmlBlock rendering, preview & live preview) — 🤖 agent-claude-sonnet-4-6 (2026-05-25T00:00Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Add posts frontend pages to dev app — list page, detail page with AiHtmlBlock rendering, preview & live preview wired up
 - [x] Dev-only reference test collections and seed data for reference collection config
 - [x] Extracted plugin from flash-lightning monorepo to standalone repo (`crazytweeks/payload-ai-generate`)
 - [x] Added as git submodule at `packages/ai-generate` in flash-lightning
