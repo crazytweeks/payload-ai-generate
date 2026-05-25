@@ -16,7 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-_(move items here when you start them)_
+- [~] Dev-only reference test collections and seed data for reference collection config — 🤖 agent-codex-ref-data (2026-05-25T16:14Z)
 
 ---
 
