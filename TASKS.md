@@ -16,7 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-_(move items here when you start them)_
+- [~] Add posts frontend pages to dev app (list + detail with AiHtmlBlock rendering, preview & live preview) — 🤖 agent-claude-sonnet-4-6 (2026-05-25T00:00Z)
 
 ---
 
