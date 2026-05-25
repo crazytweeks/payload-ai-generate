@@ -72,6 +72,9 @@ export interface Config {
     aiModelsOptions: AiModelsOption;
     'ai-prompts': AiPrompt;
     'ai-presets': AiPreset;
+    'test-messages': TestMessage;
+    'test-products': TestProduct;
+    'test-announcements': TestAnnouncement;
     'payload-kv': PayloadKv;
     users: User;
     'payload-locked-documents': PayloadLockedDocument;
@@ -85,6 +88,9 @@ export interface Config {
     aiModelsOptions: AiModelsOptionsSelect<false> | AiModelsOptionsSelect<true>;
     'ai-prompts': AiPromptsSelect<false> | AiPromptsSelect<true>;
     'ai-presets': AiPresetsSelect<false> | AiPresetsSelect<true>;
+    'test-messages': TestMessagesSelect<false> | TestMessagesSelect<true>;
+    'test-products': TestProductsSelect<false> | TestProductsSelect<true>;
+    'test-announcements': TestAnnouncementsSelect<false> | TestAnnouncementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -172,6 +178,30 @@ export interface AiPrompt {
    * Optional images or files to pass to the AI as reference material for this prompt or follow-up.
    */
   referenceFiles?: (string | Media)[] | null;
+  /**
+   * Optional reference collection queries for preview/rendering data.
+   */
+  referenceCollections?:
+    | {
+        /**
+         * Collection to query for this reference data source.
+         */
+        collection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
+        /**
+         * Maximum number of documents to load from this collection.
+         */
+        limit: number;
+        /**
+         * Load now on the server or defer for a future client-side Payload API path.
+         */
+        dataLoading: 'server' | 'client';
+        /**
+         * Optional Payload where filter JSON for this collection.
+         */
+        filtersJSON?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Persisted conversation history used for follow-up AI edits.
    */
@@ -297,6 +327,52 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "test-messages".
+ */
+export interface TestMessage {
+  id: string;
+  key: string;
+  title: string;
+  body: string;
+  category: 'general' | 'product' | 'support';
+  author: string;
+  priority: number;
+  isPublished?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "test-products".
+ */
+export interface TestProduct {
+  id: string;
+  sku: string;
+  name: string;
+  summary: string;
+  category: 'software' | 'service' | 'template';
+  price: number;
+  isPublished?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "test-announcements".
+ */
+export interface TestAnnouncement {
+  id: string;
+  key: string;
+  headline: string;
+  summary: string;
+  audience: 'all' | 'customers' | 'internal';
+  startsAt: string;
+  isPublished?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -363,6 +439,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-presets';
         value: string | AiPreset;
+      } | null)
+    | ({
+        relationTo: 'test-messages';
+        value: string | TestMessage;
+      } | null)
+    | ({
+        relationTo: 'test-products';
+        value: string | TestProduct;
+      } | null)
+    | ({
+        relationTo: 'test-announcements';
+        value: string | TestAnnouncement;
       } | null)
     | ({
         relationTo: 'users';
@@ -477,6 +565,15 @@ export interface AiPromptsSelect<T extends boolean = true> {
   preset?: T;
   instructions?: T;
   referenceFiles?: T;
+  referenceCollections?:
+    | T
+    | {
+        collection?: T;
+        limit?: T;
+        dataLoading?: T;
+        filtersJSON?: T;
+        id?: T;
+      };
   messages?: T;
   lastRun?: T;
   html?: T;
@@ -499,6 +596,49 @@ export interface AiPresetsSelect<T extends boolean = true> {
   systemPrompt?: T;
   provider?: T;
   model?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "test-messages_select".
+ */
+export interface TestMessagesSelect<T extends boolean = true> {
+  key?: T;
+  title?: T;
+  body?: T;
+  category?: T;
+  author?: T;
+  priority?: T;
+  isPublished?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "test-products_select".
+ */
+export interface TestProductsSelect<T extends boolean = true> {
+  sku?: T;
+  name?: T;
+  summary?: T;
+  category?: T;
+  price?: T;
+  isPublished?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "test-announcements_select".
+ */
+export interface TestAnnouncementsSelect<T extends boolean = true> {
+  key?: T;
+  headline?: T;
+  summary?: T;
+  audience?: T;
+  startsAt?: T;
+  isPublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }

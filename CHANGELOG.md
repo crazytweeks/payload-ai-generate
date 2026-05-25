@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.1.1-beta.1 — 2026-05-25
+
+- Added configurable reference collections for AI prompts, including repeatable collection, limit, loading mode, and filter JSON controls.
+- Added server-side reference data fetching for `ai-html-block` rendering and exposed resolved prompt data in the dev post page.
+- Added dev-only `test-messages`, `test-products`, and `test-announcements` collections with seed data.
+- Updated dev generation scripts and Payload types to include dev reference collections.
+- Fixed reference collection select validation when duplicate filtering is enabled.
+
+---
+
 ## 0.1.0-beta.1 — 2026-05-25
 
 First public beta release of `payload-ai-generate`.

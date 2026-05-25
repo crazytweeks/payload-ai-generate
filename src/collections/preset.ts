@@ -14,9 +14,6 @@ export const buildAIPresetCollection = (): CollectionConfig => ({
     description:
       'Reusable AI presets that can be linked to from AI prompts. Define the system prompt, provider, and model to use.',
   },
-  // access: {
-  //   read: () => true,
-  // },
   labels: {
     singular: 'AI Preset',
     plural: 'AI Presets',

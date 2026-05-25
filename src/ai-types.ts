@@ -1,4 +1,5 @@
 import type { ModelMessage, streamText } from 'ai';
+import type { CollectionSlug } from 'payload';
 import { type GoogleModelId, models, type OpenAIModelId } from './models';
 
 const aiProviders = Object.keys(models) as Array<keyof typeof models>;
@@ -152,7 +153,7 @@ export interface AIPluginToolingOptions {
   enabled?: boolean;
 }
 
-export type AIReferenceCollectionsConfig = Record<string, boolean>;
+export type AIReferenceCollectionsConfig = Record<CollectionSlug | string, boolean>;
 
 export interface AIPreviewAdditionalData {
   beforeCSS?: string;
@@ -170,7 +171,7 @@ export interface AIPluginOptions {
   openaiApiKey?: string;
   defaultProvider?: AIProviderName;
   disabled?: boolean;
-  referenceMediaCollectionSlug?: string;
+  referenceMediaCollectionSlug?: CollectionSlug | string;
   referenceCollections?: AIReferenceCollectionsConfig;
   devTestCollections?: boolean;
   previewPagePath?: string;

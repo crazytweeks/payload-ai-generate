@@ -23,7 +23,9 @@ export default async function PostPage({ params: paramsPromise }: Args) {
   if (!post) {
     return (
       <div>
-        <p>Post not found: <code>{slug}</code></p>
+        <p>
+          Post not found: <code>{slug}</code>
+        </p>
         <Link href="/posts">← Back to posts</Link>
       </div>
     );
@@ -35,7 +37,9 @@ export default async function PostPage({ params: paramsPromise }: Args) {
     <article>
       {draft && <LivePreviewListener />}
 
-      <Link href="/posts" style={{ color: '#666', fontSize: '0.9rem' }}>← All posts</Link>
+      <Link href="/posts" style={{ color: '#666', fontSize: '0.9rem' }}>
+        ← All posts
+      </Link>
       <h1 style={{ marginTop: '0.5rem' }}>{post.title}</h1>
       <p style={{ color: '#888', fontSize: '0.85rem' }}>
         {post.slug} · updated {new Date(post.updatedAt).toLocaleDateString()}

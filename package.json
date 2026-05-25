@@ -1,6 +1,6 @@
 {
   "name": "payload-ai-generate",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.1-beta.1",
   "description": "AI generation plugin for Payload CMS",
   "homepage": "https://github.com/crazytweeks/payload-ai-generate",
   "repository": {
@@ -72,8 +72,8 @@
     "dev:generate-types": "bun run dev:payload generate:types",
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
     "build:watch": "bun run build:swc --watch",
-    "generate:importmap": "bun run dev:generate-importmap",
-    "generate:types": "bun run dev:generate-types",
+    "generate:importmap": "PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true bun run dev:generate-importmap",
+    "generate:types": "PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true bun run dev:generate-types",
     "gen": "bun run generate:importmap && bun run generate:types",
     "models:extract": "bun run src/models-extract.ts",
     "lint": "bun biome lint .",

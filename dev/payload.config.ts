@@ -99,8 +99,10 @@ const buildConfigWithMemoryDB = buildConfig({
       devTestCollections: enableDevTestCollections,
       referenceCollections: enableDevTestCollections
         ? {
-            'test-messages': true,
+            users: true,
+            posts: true,
             'test-announcements': true,
+            'test-messages': true,
             'test-products': true,
           }
         : undefined,
