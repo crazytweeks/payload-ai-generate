@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Server-side reference data fetching with third dev test collection — 🤖 agent-codex-ref-data (2026-05-25T16:45Z)
 
 ---
 
