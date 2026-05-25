@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Show server-resolved AI prompt reference data JSON on dev render page — 🤖 agent-codex-ref-data (2026-05-25T16:49Z)
 
 ---
 
