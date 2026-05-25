@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "composite": false,
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "importHelpers": true,
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUncheckedSideEffectImports": false,
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["src/**/*", "index.ts"],
+  "exclude": ["node_modules", "dist", "dev"]
+}

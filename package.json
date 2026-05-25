@@ -1,0 +1,107 @@
+{
+  "name": "payload-ai-generate",
+  "version": "1.1.4",
+  "description": "AI generation plugin for Payload CMS",
+  "homepage": "https://github.com/crazytweeks/payload-ai-generate",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crazytweeks/payload-ai-generate.git"
+  },
+  "keywords": ["payload", "payload-cms", "plugin", "ai", "generate", "llm"],
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./models": {
+      "import": "./src/models.json",
+      "types": "./src/models.json",
+      "default": "./src/models.json"
+    },
+    "./models-types": {
+      "import": "./src/models.ts",
+      "types": "./src/models.ts",
+      "default": "./src/models.ts"
+    },
+    "./client": {
+      "import": "./src/exports/client.ts",
+      "types": "./src/exports/client.ts",
+      "default": "./src/exports/client.ts"
+    },
+    "./rsc": {
+      "import": "./src/exports/rsc.ts",
+      "types": "./src/exports/rsc.ts",
+      "default": "./src/exports/rsc.ts"
+    },
+    "./preview": {
+      "import": "./src/exports/rsc.ts",
+      "types": "./src/exports/rsc.ts",
+      "default": "./src/exports/rsc.ts"
+    },
+    "./blocks": {
+      "import": "./src/exports/blocks.ts",
+      "types": "./src/exports/blocks.ts",
+      "default": "./src/exports/blocks.ts"
+    },
+    "./blocks/client": {
+      "import": "./src/exports/blocks-client.ts",
+      "types": "./src/exports/blocks-client.ts",
+      "default": "./src/exports/blocks-client.ts"
+    }
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "prebuild": "bun run models:extract",
+    "build": "bun run copyfiles && bun run build:types",
+    "build:types": "rm -f tsconfig.tsbuildinfo && tsc --outDir dist --rootDir ./src",
+    "clean": "rimraf {dist,*.tsbuildinfo}",
+    "copyfiles": "find src -type f \\( -name '*.json' -o -name '*.css' -o -name '*.scss' -o -name '*.html' -o -name '*.svg' -o -name '*.png' \\) | while IFS= read -r f; do d=\"dist/${f#src/}\"; mkdir -p \"$(dirname \"$d\")\"; cp \"$f\" \"$d\"; done",
+    "dev": "next dev dev --turbo --no-server-fast-refresh",
+    "dev:generate-importmap": "bun run dev:payload generate:importmap",
+    "dev:generate-types": "bun run dev:payload generate:types",
+    "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
+    "build:watch": "bun run build:swc --watch",
+    "generate:importmap": "bun run dev:generate-importmap",
+    "generate:types": "bun run dev:generate-types",
+    "gen": "bun run generate:importmap && bun run generate:types",
+    "models:extract": "bun run src/models-extract.ts",
+    "lint": "bun biome lint .",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.75",
+    "@ai-sdk/openai": "^3.0.64",
+    "@payloadcms/live-preview-react": "^3.84.1",
+    "ai": "^6.0.191",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@payloadcms/db-mongodb": "3.84.1",
+    "@payloadcms/db-postgres": "3.84.1",
+    "@payloadcms/db-sqlite": "3.84.1",
+    "@payloadcms/next": "3.84.1",
+    "@payloadcms/richtext-lexical": "3.84.1",
+    "@payloadcms/ui": "3.84.1",
+    "@types/node": "25.9.1",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "next": "16.2.6",
+    "payload": "3.84.1",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "typescript": "6.0.3",
+    "vitest": "4.1.7"
+  },
+  "peerDependencies": {
+    "payload": "^3.84.1"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "private": false
+}

@@ -1,0 +1,28 @@
+{
+  "extends": "../tsconfig.json",
+  "exclude": [],
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.mjs",
+    "**/*.cjs",
+    "**/*.ts",
+    "**/*.tsx",
+    "../src/**/*.ts",
+    "../src/**/*.tsx",
+    "next.config.mjs",
+    ".next/types/**/*.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@payload-config": ["./payload.config.ts"],
+      "ai-generate": ["../src/index.ts"],
+      "@flash-lightning/ai-generate/client": ["../src/exports/client.ts"],
+      "@flash-lightning/ai-generate/rsc": ["../src/exports/rsc.ts"]
+    },
+    "noEmit": true,
+    "emitDeclarationOnly": false
+  }
+}
