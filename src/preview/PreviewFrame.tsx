@@ -104,13 +104,17 @@ export function PreviewFrame({
       return;
     }
 
+    const escapeScript = (s: string) => s.replace(/<\/script/gi, '<\\/script');
+    const safeData = escapeScript(dataJSON?.trim() ? dataJSON : 'null');
+    const safeJS = escapeScript(combinedJS);
+
     const scriptElement = document.createElement('script');
     scriptElement.type = 'text/javascript';
     scriptElement.innerHTML = `
       (function () {
         try {
-          const CMS_DATA = ${dataJSON?.trim() ? dataJSON : 'null'};
-          ${combinedJS}
+          const CMS_DATA = ${safeData};
+          ${safeJS}
         } catch (error) {
           console.error('AI prompt preview script failed', error);
         }
