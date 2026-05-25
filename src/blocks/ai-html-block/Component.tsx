@@ -30,13 +30,24 @@ const fetchPromptDoc = async (
   }
 };
 
+export const resolveAiHtmlPromptDoc = async ({
+  code,
+  payload,
+}: Pick<AiHtmlBlockProps, 'code' | 'payload'>) => {
+  if (!code) {
+    return null;
+  }
+
+  const promptDoc = typeof code === 'object' ? code : await fetchPromptDoc(code, payload);
+  return withServerReferenceData(promptDoc, payload);
+};
+
 export const AiHtmlBlockComponent = async ({ code, payload }: AiHtmlBlockProps) => {
   if (!code) {
     return <div>No AI prompt selected</div>;
   }
 
-  const promptDoc = typeof code === 'object' ? code : await fetchPromptDoc(code, payload);
-  const promptDocWithReferences = await withServerReferenceData(promptDoc, payload);
+  const promptDocWithReferences = await resolveAiHtmlPromptDoc({ code, payload });
 
   return <AiHtmlBlockComponentClient code={promptDocWithReferences} />;
 };

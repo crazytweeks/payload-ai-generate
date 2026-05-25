@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Show server-resolved AI prompt reference data JSON on dev render page — 🤖 agent-codex-ref-data (2026-05-25T16:49Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Show server-resolved AI prompt reference data JSON on dev render page
 - [x] Server-side reference data fetching with third dev test collection
 - [x] Multiple reference collection configs and second dev test collection
 - [x] Add posts frontend pages to dev app — list page, detail page with AiHtmlBlock rendering, preview & live preview wired up

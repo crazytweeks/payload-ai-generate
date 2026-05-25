@@ -3,8 +3,12 @@ import { draftMode } from 'next/headers';
 import Link from 'next/link';
 import { getPayload } from 'payload';
 import { cache } from 'react';
+import {
+  resolveAiHtmlPromptDoc,
+} from '../../../../../src/blocks/ai-html-block/Component';
+import { AiHtmlBlockComponentClient } from '../../../../../src/blocks/ai-html-block/ClientComponent';
+import type { AiHtmlBlockProps } from '../../../../../src/blocks/ai-html-block/types';
 import { LivePreviewListener } from '../../../../components/LivePreviewListener';
-import { AiHtmlBlockComponent } from '../../../../src/blocks/ai-html-block/Component';
 
 type Args = {
   params: Promise<{ slug: string }>;
@@ -43,7 +47,7 @@ export default async function PostPage({ params: paramsPromise }: Args) {
           post.content.map((block) => {
             if (block.blockType === 'ai-html-block') {
               return (
-                <AiHtmlBlockComponent
+                <AiHtmlBlockWithDebugData
                   key={block.id ?? block.blockType}
                   code={block.code}
                   payload={payload}
@@ -59,6 +63,32 @@ export default async function PostPage({ params: paramsPromise }: Args) {
     </article>
   );
 }
+
+const AiHtmlBlockWithDebugData = async ({ code, payload }: AiHtmlBlockProps) => {
+  const promptDoc = await resolveAiHtmlPromptDoc({ code, payload });
+
+  return (
+    <section style={{ display: 'grid', gap: '1rem' }}>
+      <AiHtmlBlockComponentClient code={promptDoc} />
+      <details open>
+        <summary>AI prompt data</summary>
+        <pre
+          style={{
+            background: '#111827',
+            color: '#e5e7eb',
+            fontSize: '0.8rem',
+            lineHeight: 1.5,
+            overflowX: 'auto',
+            padding: '1rem',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          {JSON.stringify(promptDoc, null, 2)}
+        </pre>
+      </details>
+    </section>
+  );
+};
 
 const queryPost = cache(async ({ slug, draft }: { slug: string; draft: boolean }) => {
   const payload = await getPayload({ config: configPromise });
