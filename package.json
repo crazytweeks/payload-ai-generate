@@ -88,6 +88,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "lucide-react": "^0.511.0",
+    "shiki": "^3.7.0",
     "@payloadcms/db-mongodb": "3.84.1",
     "@payloadcms/db-postgres": "3.84.1",
     "@payloadcms/db-sqlite": "3.84.1",

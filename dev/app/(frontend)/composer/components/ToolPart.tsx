@@ -15,7 +15,7 @@ export function ToolPart({
 }) {
   const [open, setOpen] = useState(false);
   const dot =
-    state === 'output-available'
+    state === 'result'
       ? 'bg-emerald-500'
       : state.includes('error')
         ? 'bg-red-500'
@@ -31,7 +31,7 @@ export function ToolPart({
         <span className={`inline-block h-2 w-2 shrink-0 rounded-full ${dot}`} />
         <span className="font-mono text-xs text-violet-400">{toolName}</span>
         <span className="ml-auto text-[10px] text-zinc-600">
-          {state === 'output-available' ? 'done' : state}
+          {state === 'result' ? 'done' : state}
         </span>
         <span className="text-[10px] text-zinc-700">{open ? '▼' : '▶'}</span>
       </button>

@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import type { GeneratedFile } from '../types';
+import { CodeBlock } from './CodeBlock';
+import { FileTree } from './FileTree';
 
 const LANG_DOT: Record<string, string> = {
-  html: 'bg-orange-500',
   css: 'bg-blue-500',
+  html: 'bg-orange-500',
   javascript: 'bg-yellow-400',
   json: 'bg-emerald-500',
-  typescript: 'bg-sky-500',
   tsx: 'bg-sky-400',
+  typescript: 'bg-sky-500',
 };
 
 function EmptyState({ isGenerating }: { isGenerating: boolean }) {
@@ -44,56 +46,58 @@ export function CodeEditorView({
   files: GeneratedFile[];
   isGenerating: boolean;
 }) {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const active = files[Math.min(activeIdx, files.length - 1)];
+  const [activeFile, setActiveFile] = useState<string | undefined>(undefined);
+
+  const active =
+    files.find((f) => f.path === activeFile) ??
+    files.find((f) => f.isEntryPoint) ??
+    files[0];
 
   if (files.length === 0) return <EmptyState isGenerating={isGenerating} />;
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      {/* Tab bar */}
-      <div className="flex items-center gap-0 overflow-x-auto border-b border-zinc-800 bg-zinc-950 px-1 pt-1">
-        {files.map((f, i) => (
-          <button
-            key={f.path}
-            type="button"
-            onClick={() => setActiveIdx(i)}
-            className={[
-              'flex shrink-0 items-center gap-1.5 rounded-t-md border border-b-0 px-3 py-1.5 text-[11px] font-mono transition-colors',
-              i === activeIdx
-                ? 'border-zinc-700 bg-zinc-900 text-zinc-200'
-                : 'border-transparent text-zinc-600 hover:text-zinc-400',
-            ].join(' ')}
-          >
-            <span
-              className={`inline-block h-1.5 w-1.5 rounded-full ${LANG_DOT[f.language] ?? 'bg-zinc-600'}`}
-            />
-            {f.path}
-            {f.isEntryPoint && (
-              <span className="rounded bg-violet-950 px-1 text-[9px] text-violet-400">entry</span>
-            )}
-          </button>
-        ))}
-        {isGenerating && (
-          <span className="ml-2 animate-pulse text-[11px] text-violet-500">writing…</span>
-        )}
+    <div className="flex h-full overflow-hidden">
+      {/* File tree sidebar */}
+      <div className="flex w-44 shrink-0 flex-col overflow-hidden border-r border-zinc-800 bg-zinc-950">
+        <div className="border-b border-zinc-800 px-3 py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+            Files
+          </span>
+          {isGenerating && (
+            <span className="ml-2 animate-pulse text-[10px] text-violet-500">writing…</span>
+          )}
+        </div>
+        <FileTree
+          activeFile={active?.path}
+          files={files.map((f) => f.path)}
+          onSelect={setActiveFile}
+        />
       </div>
 
       {/* Code pane */}
-      {active && (
-        <div className="relative flex-1 overflow-auto bg-[#0d0d12]">
-          <pre className="p-4 font-mono text-[12px] leading-relaxed text-zinc-300 whitespace-pre">
-            <code>{active.content}</code>
-          </pre>
-          <button
-            type="button"
-            onClick={() => navigator.clipboard.writeText(active.content)}
-            className="absolute right-3 top-3 rounded bg-zinc-800 px-2 py-1 text-[10px] text-zinc-500 hover:text-zinc-300"
-          >
-            copy
-          </button>
-        </div>
-      )}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Active file tab */}
+        {active && (
+          <div className="flex items-center gap-2 border-b border-zinc-800 bg-zinc-950 px-3 py-1.5">
+            <span
+              className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${LANG_DOT[active.language] ?? 'bg-zinc-600'}`}
+            />
+            <span className="font-mono text-[11px] text-zinc-400">{active.path}</span>
+            {active.isEntryPoint && (
+              <span className="rounded bg-violet-950 px-1 text-[9px] text-violet-400">entry</span>
+            )}
+          </div>
+        )}
+
+        {/* Highlighted code */}
+        {active ? (
+          <div className="flex-1 overflow-hidden">
+            <CodeBlock code={active.content} language={active.language} />
+          </div>
+        ) : (
+          <EmptyState isGenerating={isGenerating} />
+        )}
+      </div>
     </div>
   );
 }

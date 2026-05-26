@@ -41,13 +41,14 @@ export const useGenChat = ({ onFilesChange, onGenerationDone, planRef, refsRef }
       if (msg.role !== 'assistant') continue;
       for (const part of msg.parts) {
         if (part.type !== 'tool-invocation') continue;
-        const ti = (
-          part as {
-            toolInvocation: { args?: GeneratedFile; state: string; toolName: string };
-            type: 'tool-invocation';
-          }
-        ).toolInvocation;
-        if (ti.toolName === 'write_file' && ti.state === 'output-available' && ti.args) {
+        const ti = part as unknown as {
+          args?: GeneratedFile;
+          result?: unknown;
+          state: string;
+          toolName: string;
+          type: 'tool-invocation';
+        };
+        if (ti.toolName === 'write_file' && ti.state === 'result' && ti.args) {
           files.push(ti.args);
         }
       }

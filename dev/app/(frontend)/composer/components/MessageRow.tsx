@@ -46,12 +46,13 @@ export function MessageRow({ msg }: { msg: UIMessage }) {
             }
 
             if (part.type === 'tool-invocation') {
-              const ti = (
-                part as {
-                  toolInvocation: { args?: unknown; result?: unknown; state: string; toolName: string };
-                  type: 'tool-invocation';
-                }
-              ).toolInvocation;
+              const ti = part as unknown as {
+                args?: unknown;
+                result?: unknown;
+                state: string;
+                toolName: string;
+                type: 'tool-invocation';
+              };
               return (
                 <ToolPart
                   key={key}
