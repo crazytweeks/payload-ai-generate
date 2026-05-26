@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Fix composer reference collection form value extraction — 🤖 agent-codex-ref-data (2026-05-26T03:35Z)
 
 ---
 
