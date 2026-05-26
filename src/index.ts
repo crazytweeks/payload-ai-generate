@@ -6,6 +6,7 @@ import {
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
   buildAIComposerCollection,
+  buildAIComposerUICollection,
   buildAIModelsCollection,
   buildAIPresetCollection,
   buildAIPromptCollection,
@@ -48,6 +49,8 @@ export type { AIGenerateTextParams, AIPluginOptions, PayloadAIService } from './
 /**
  * Collection slug for the generated AI model registry.
  */
+export { aiComposerUICollectionSlug } from './collections/constants';
+
 export {
   aiModelsOptionsCollectionSlug,
   aiPresetCollectionSlug,
@@ -92,6 +95,7 @@ export const aiGenerate =
       config.collections,
       buildAIComposerCollection(effectivePluginOptions)
     );
+    config.collections = upsertCollection(config.collections, buildAIComposerUICollection());
 
     if (pluginOptions.devTestCollections) {
       config.collections = upsertCollection(config.collections, buildTestMessagesCollection());

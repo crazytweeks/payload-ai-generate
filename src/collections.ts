@@ -1,6 +1,8 @@
 export { buildAIComposerCollection } from './collections/composer';
+export { buildAIComposerUICollection } from './collections/composer-ui';
 export {
   aiComposerCollectionSlug,
+  aiComposerUICollectionSlug,
   aiModelsOptionsCollectionSlug,
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
