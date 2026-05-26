@@ -39,6 +39,12 @@ const Layout = ({ children }: Args) => (
         <a href="/composer" style={{ color: '#a1a1aa', textDecoration: 'none', fontWeight: 600 }}>
           Composer
         </a>
+        <a
+          href="/composer-v2"
+          style={{ color: '#67e8f9', textDecoration: 'none', fontWeight: 700 }}
+        >
+          Composer v2
+        </a>
       </nav>
       <Suspense fallback={<div style={{ padding: '2rem', color: '#52525b' }}>Loading…</div>}>
         {children}

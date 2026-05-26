@@ -4,17 +4,22 @@ import { z } from 'zod';
 export type GeneratedFile = {
   content: string;
   isEntryPoint: boolean;
-  language: string;
+  language: 'css' | 'html' | 'javascript' | 'json' | 'tsx' | 'typescript';
   path: string;
 };
 
-export type WriteFileCallback = (file: GeneratedFile) => void;
+export type WriteFileCallbackResult =
+  | Record<string, unknown>
+  | undefined
+  | Promise<Record<string, unknown> | undefined>;
 
 /**
  * Creates the write_file tool used during UI generation.
  * Each call streams one file to the client via the callback.
  */
-export const createUIGenerationTools = (onFile: WriteFileCallback): ToolSet => ({
+export const createUIGenerationTools = (
+  onFile: (file: GeneratedFile) => WriteFileCallbackResult
+): ToolSet => ({
   write_file: tool({
     description: [
       'Write a single source file for the UI being generated.',
@@ -24,9 +29,7 @@ export const createUIGenerationTools = (onFile: WriteFileCallback): ToolSet => (
     inputSchema: z.object({
       path: z
         .string()
-        .describe(
-          'Relative file path, e.g. "index.html", "styles.css", "script.js", "data.json".'
-        ),
+        .describe('Relative file path, e.g. "index.html", "styles.css", "script.js", "data.json".'),
       language: z
         .enum(['html', 'css', 'javascript', 'json', 'typescript', 'tsx'])
         .describe('Language / file type.'),
@@ -37,8 +40,8 @@ export const createUIGenerationTools = (onFile: WriteFileCallback): ToolSet => (
         .describe('Set true for the main HTML entry point (index.html).'),
     }),
     execute: async ({ path, language, content, isEntryPoint }) => {
-      onFile({ path, language, content, isEntryPoint });
-      return { ok: true, path };
+      const callbackResult = await onFile({ path, language, content, isEntryPoint });
+      return { ok: true, path, ...(callbackResult ?? {}) };
     },
   }),
 });

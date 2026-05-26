@@ -73,6 +73,7 @@ export interface Config {
     'ai-prompts': AiPrompt;
     'ai-presets': AiPreset;
     'ai-composer': AiComposer;
+    'ai-composer-ui': AiComposerUi;
     'test-messages': TestMessage;
     'test-products': TestProduct;
     'test-announcements': TestAnnouncement;
@@ -90,12 +91,15 @@ export interface Config {
     'ai-prompts': AiPromptsSelect<false> | AiPromptsSelect<true>;
     'ai-presets': AiPresetsSelect<false> | AiPresetsSelect<true>;
     'ai-composer': AiComposerSelect<false> | AiComposerSelect<true>;
+    'ai-composer-ui': AiComposerUiSelect<false> | AiComposerUiSelect<true>;
     'test-messages': TestMessagesSelect<false> | TestMessagesSelect<true>;
     'test-products': TestProductsSelect<false> | TestProductsSelect<true>;
     'test-announcements': TestAnnouncementsSelect<false> | TestAnnouncementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
@@ -353,7 +357,12 @@ export interface AiComposer {
    */
   referenceCollections?:
     | {
-        collection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
+        referenceCollection:
+          | 'test-messages'
+          | 'test-products'
+          | 'test-announcements'
+          | 'users'
+          | 'posts';
         isBeingUsed?: boolean | null;
         limit?: number | null;
         dataLoading: 'server' | 'client';
@@ -379,6 +388,57 @@ export interface AiComposer {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * AI-generated multi-file UI outputs linked to a Composer planning session.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-composer-ui".
+ */
+export interface AiComposerUi {
+  id: string;
+  title: string;
+  status?: ('draft' | 'generating' | 'complete' | 'error') | null;
+  /**
+   * The planning session this UI was generated from.
+   */
+  composerSession?: (string | null) | AiComposer;
+  /**
+   * The generation plan used to produce this UI.
+   */
+  plan?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Generated source files. index.html is the entry point.
+   */
+  files?:
+    | {
+        /**
+         * Relative path e.g. index.html, styles.css, script.js
+         */
+        path: string;
+        language: 'html' | 'css' | 'javascript' | 'json' | 'typescript' | 'tsx';
+        content: string;
+        /**
+         * Mark as the main entry point (index.html)
+         */
+        isEntryPoint?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * AI generation trace — steps, tool calls, token counts.
+   */
+  generationLog?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -500,6 +560,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-composer';
         value: string | AiComposer;
+      } | null)
+    | ({
+        relationTo: 'ai-composer-ui';
+        value: string | AiComposerUi;
       } | null)
     | ({
         relationTo: 'test-messages';
@@ -672,7 +736,7 @@ export interface AiComposerSelect<T extends boolean = true> {
   referenceCollections?:
     | T
     | {
-        collection?: T;
+        referenceCollection?: T;
         isBeingUsed?: T;
         limit?: T;
         dataLoading?: T;
@@ -681,6 +745,28 @@ export interface AiComposerSelect<T extends boolean = true> {
       };
   messages?: T;
   plan?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-composer-ui_select".
+ */
+export interface AiComposerUiSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  composerSession?: T;
+  plan?: T;
+  files?:
+    | T
+    | {
+        path?: T;
+        language?: T;
+        content?: T;
+        isEntryPoint?: T;
+        id?: T;
+      };
+  generationLog?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -806,7 +892,6 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

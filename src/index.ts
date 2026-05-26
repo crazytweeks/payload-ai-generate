@@ -57,6 +57,8 @@ export {
   aiPromptCollectionSlug,
   aiServiceCreate,
 };
+export { ComposerUIPreviewFrame, buildComposerUISrcDoc } from './composer-ui';
+export type { ComposerUIFile } from './composer-ui';
 
 /**
  * Extends a Payload config with the AI prompt tools, preset support, and model registry sync.
