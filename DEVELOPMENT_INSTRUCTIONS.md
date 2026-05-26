@@ -84,7 +84,39 @@ The npm package name is **`payload-ai-generate`**
 
 ---
 
-## 8. Versioning & Publishing
+## 8. AI Composer — Architecture Notes
+
+The composer lives at `dev/app/(frontend)/composer/` and is a dev-only feature (not part of the published plugin build).
+
+### Key files
+| File | Purpose |
+|------|---------|
+| `ComposerClient.tsx` | Thin orchestrator — wires hooks, manages `mode` state machine |
+| `usePlanChat.ts` | `useChat` transport → `/api/ai-generate/composer`, extracts `ComposerPlan` on completion |
+| `useGenChat.ts` | `useChat` transport → `/api/ai-generate/ui-generate`, collects `write_file` results into `generatedFiles` |
+| `planExtract.ts` | Parses plan JSON from text or reasoning parts (Gemini puts it in reasoning) |
+| `components/ToolPart.tsx` | Renders tool call steps — pulsing amber dot while running, green when `state === 'result'` |
+| `components/CodeBlock.tsx` | Async shiki highlighting (vesper theme) — loads grammar lazily in browser |
+| `components/FileTree.tsx` | Tree from flat path list — dirs before files, collapsible |
+
+### AI SDK v6 gotchas
+- Tool invocation parts are **flat**: `part.toolName`, `part.state`, `part.args`, `part.result` — there is **no** `part.toolInvocation` nesting (that was v3/v4).
+- Completed tool state is `'result'`, **not** `'output-available'` (v3/v4 name). Always use `'result'`.
+- `useChat` from `@ai-sdk/react` with `DefaultChatTransport` for custom endpoints.
+- Server route must return `result.toUIMessageStreamResponse()` — not raw NDJSON.
+
+### Mode state machine
+`idle → planning → plan-ready → (refining →) plan-ready → generating → generated`
+
+### Adding new tools
+- Planning tools: add to `src/tools/` and include in `composer/route.ts` tool set.
+- Generation tools: add to `src/tools/` and include in `ui-generate/route.ts` tool set.
+- `collectionTools.ts` — `query_collection`, `update_document`, `create_document` (guarded by `pluginOptions.referenceCollections` allowlist).
+- `uiGenerationTools.ts` — `write_file` (calls `onFile` callback per file, returns `{ ok: true, path }`).
+
+---
+
+## 9. Versioning & Publishing
 
 - Current version: `0.1.0-beta.1` — this is a **beta**. Do not publish a stable `1.0.0` until all items in the "Before First Stable Release" section of TASKS.md are done.
 - Bump version in `package.json`, add a CHANGELOG entry, then tag: `git tag v0.x.x-beta.y`.
