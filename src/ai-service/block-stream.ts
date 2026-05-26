@@ -22,6 +22,7 @@ import {
   buildRepairPrompt,
   createRunSummary,
   generatedAiHtmlSchema,
+  parseGeneratedBlockCandidate,
   validateGeneratedBlock,
 } from '../block-generation';
 import { createContextTools } from '../tools/contextTools';
@@ -336,7 +337,7 @@ export const createBlockStreamGenerator = ({
           throw new Error(await summarizeEmptyResult(result, latestText));
         }
         const jsonCandidate = extractJSONObjectCandidate(latestText);
-        generated = generatedAiHtmlSchema.parse(JSON.parse(jsonCandidate));
+        generated = parseGeneratedBlockCandidate(JSON.parse(jsonCandidate));
       } else {
         generated = (await result.output) as AIGeneratedHtmlBlock;
       }

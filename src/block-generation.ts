@@ -5,7 +5,11 @@
  * normalization, and payload assembly stay focused and documented.
  */
 
-export { normalizeVariables, validateGeneratedBlock } from './block-generation/normalize';
+export {
+  normalizeVariables,
+  parseGeneratedBlockCandidate,
+  validateGeneratedBlock,
+} from './block-generation/normalize';
 export {
   buildGenerationPayload,
   buildPartialFieldSnapshots,

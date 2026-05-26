@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Tolerate root `blockType` in generated block output — agent-codex-blocktype-validation (2026-05-26T03:44Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Tolerate root `blockType` in generated block output
 - [x] Fix composer reference collection form value extraction
 - [x] Standalone dev composer page at /composer — dark UI, NDJSON streaming, reference collection picker, live preview iframe, code tabs
 - [x] Add reference data fetch tools to block generation

@@ -100,6 +100,24 @@ const validateJavaScript = (value: string) => {
 };
 
 /**
+ * Parses raw model output into the generated block shape.
+ *
+ * Some providers include Payload's final block wrapper (`blockType`) even
+ * though generation works with the inner artifact. Drop that wrapper key before
+ * applying the strict schema so a useful response can still be normalized.
+ */
+export const parseGeneratedBlockCandidate = (generated: unknown): AIGeneratedHtmlBlock => {
+  if (!generated || typeof generated !== 'object' || Array.isArray(generated)) {
+    return generatedAiHtmlSchema.parse(generated);
+  }
+
+  const candidate = { ...(generated as Record<string, unknown>) };
+  delete candidate.blockType;
+
+  return generatedAiHtmlSchema.parse(candidate);
+};
+
+/**
  * Validates and normalizes a generated block into the package's final runtime shape.
  *
  * @param generated - Raw model output candidate.
@@ -116,7 +134,7 @@ const validateJavaScript = (value: string) => {
 export const validateGeneratedBlock = (
   generated: AIGeneratedHtmlBlock
 ): ValidationResult => {
-  const parsed = generatedAiHtmlSchema.parse(generated);
+  const parsed = parseGeneratedBlockCandidate(generated);
   const html = parsed.html.trim();
 
   if (!html) {

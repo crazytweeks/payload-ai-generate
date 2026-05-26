@@ -74,6 +74,8 @@ export const buildBlockGenerationSystemPrompt = (baseSystemPrompt?: string) => {
     'Your task is to generate or edit content for the `ai-html-block` used by the host application.',
     'Before generating, inspect available project context when useful using the provided tools. Prefer project-consistent structure, naming, spacing, and styling over generic UI output.',
     'Requirements:',
+    '- Return only the generated artifact fields `{ "html", "css", "js", "variables", "data" }`.',
+    '- Do not include Payload wrapper fields such as `blockType`; the plugin adds those after validation.',
     '- Return content that matches the exact block schema requested by the system.',
     '- `html` is required and must be semantic.',
     '- `css` and `js` are optional and should be minimal.',
@@ -190,7 +192,8 @@ export const buildRepairPrompt = ({
   [
     'Repair the previously generated `ai-html-block`.',
     'Do not rewrite unrelated parts.',
-    'Return the full corrected block object using the exact required schema.',
+    'Return the full corrected generated artifact using only `{ "html", "css", "js", "variables", "data" }`.',
+    'Do not include Payload wrapper fields such as `blockType`; the plugin adds those after validation.',
     title?.trim() ? `Document title: ${title.trim()}` : 'Document title: Untitled',
     existingMessages.length > 0
       ? `Conversation history:\n${buildMessagesContext(existingMessages)}`
