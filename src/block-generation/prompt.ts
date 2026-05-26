@@ -33,8 +33,8 @@ const buildReferenceContext = (references: AIReferenceDataSource[]) => {
     (reference) =>
       reference.isBeingUsed === true &&
       reference.dataLoading !== 'client' &&
-      typeof reference.collection === 'string' &&
-      reference.collection.length > 0
+      typeof reference.referenceCollection === 'string' &&
+      reference.referenceCollection.length > 0
   );
 
   if (serverReferences.length === 0) {
@@ -47,7 +47,7 @@ const buildReferenceContext = (references: AIReferenceDataSource[]) => {
     'Active reference sources:',
     JSON.stringify(
       serverReferences.map((reference) => ({
-        collection: reference.collection,
+        collection: reference.referenceCollection,
         filtersJSON: reference.filtersJSON ?? null,
         limit: reference.limit ?? 10,
       })),

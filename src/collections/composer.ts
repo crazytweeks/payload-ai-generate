@@ -4,6 +4,11 @@ import { aiComposerCollectionSlug, aiPresetCollectionSlug } from './constants';
 
 export const buildAIComposerCollection = (pluginOptions: AIPluginOptions): CollectionConfig => ({
   slug: aiComposerCollectionSlug,
+  timestamps: true,
+  labels: {
+    plural: 'Ai Composers',
+    singular: 'Ai Composer',
+  },
   admin: {
     group: 'AI',
     useAsTitle: 'title',
@@ -43,7 +48,7 @@ export const buildAIComposerCollection = (pluginOptions: AIPluginOptions): Colle
       },
       fields: [
         {
-          name: 'collection',
+          name: 'referenceCollection',
           type: 'select',
           required: true,
           options: Object.entries(pluginOptions.referenceCollections ?? {})

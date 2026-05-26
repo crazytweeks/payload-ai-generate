@@ -3,7 +3,7 @@ import type { BasePayload } from 'payload';
 export type AiHtmlReferenceLoadingMode = 'client' | 'server';
 
 export type AiHtmlReferenceCollection = {
-  collection?: string | null;
+  referenceCollection?: string | null;
   dataLoading?: AiHtmlReferenceLoadingMode | null;
   filtersJSON?: string | null;
   id?: number | string | null;

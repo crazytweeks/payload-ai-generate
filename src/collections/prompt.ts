@@ -43,18 +43,18 @@ const buildReferenceCollectionFields = (pluginOptions: AIPluginOptions): Field[]
       },
       fields: [
         {
-          name: 'collection',
+          name: 'referenceCollection',
           type: 'select',
           options: referenceCollectionOptions,
           required: true,
           filterOptions(args) {
             const currentSelection =
-              typeof args.siblingData?.collection === 'string'
-                ? args.siblingData.collection
+              typeof args.siblingData?.referenceCollection === 'string'
+                ? args.siblingData.referenceCollection
                 : null;
             const siblingsSelected =
               args.data?.referenceCollections
-                ?.map((item: { collection: string }) => item.collection)
+                ?.map((item: { referenceCollection: string }) => item.referenceCollection)
                 .filter(Boolean) ?? [];
 
             const availableOptions = referenceCollectionOptions.filter(

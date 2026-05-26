@@ -38,12 +38,12 @@ const getActiveServerReferences = ({
   references: AIReferenceDataSource[];
 }) =>
   references.filter(
-    (reference): reference is AIReferenceDataSource & { collection: string } =>
+    (reference): reference is AIReferenceDataSource & { referenceCollection: string } =>
       reference.isBeingUsed === true &&
       reference.dataLoading !== 'client' &&
-      typeof reference.collection === 'string' &&
-      reference.collection.length > 0 &&
-      pluginOptions.referenceCollections?.[reference.collection] === true
+      typeof reference.referenceCollection === 'string' &&
+      reference.referenceCollection.length > 0 &&
+      pluginOptions.referenceCollections?.[reference.referenceCollection] === true
   );
 
 export const createReferenceTools = ({
@@ -62,7 +62,7 @@ export const createReferenceTools = ({
   }
 
   const referenceByCollection = new Map(
-    activeReferences.map((reference) => [reference.collection, reference])
+    activeReferences.map((reference) => [reference.referenceCollection, reference])
   );
 
   return {

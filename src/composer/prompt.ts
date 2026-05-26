@@ -53,7 +53,7 @@ export const buildComposerUserPrompt = ({
   );
 
   const activeRefs = references.filter(
-    (r) => r.isBeingUsed && r.dataLoading !== 'client' && r.collection
+    (r) => r.isBeingUsed && r.dataLoading !== 'client' && r.referenceCollection
   );
   if (activeRefs.length > 0) {
     parts.push(

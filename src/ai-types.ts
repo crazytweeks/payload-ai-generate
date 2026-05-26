@@ -206,7 +206,7 @@ export type AIGenerationArtifact = {
 };
 
 export type AIReferenceDataSource = {
-  collection?: string | null;
+  referenceCollection?: string | null;
   dataLoading?: 'client' | 'server' | null;
   filtersJSON?: string | null;
   id?: number | string | null;

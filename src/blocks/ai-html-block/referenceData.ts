@@ -32,9 +32,9 @@ const isAllowedReferenceCollection = (payload: BasePayload, collection: string) 
 
 const getServerReferences = (references: AiHtmlReferenceCollection[] | null | undefined) =>
   (references ?? []).filter(
-    (reference): reference is AiHtmlReferenceCollection & { collection: string } =>
-      typeof reference?.collection === 'string' &&
-      reference.collection.length > 0 &&
+    (reference): reference is AiHtmlReferenceCollection & { referenceCollection: string } =>
+      typeof reference?.referenceCollection === 'string' &&
+      reference.referenceCollection.length > 0 &&
       (reference.dataLoading ?? 'server') === 'server'
   );
 
@@ -79,18 +79,18 @@ export const withServerReferenceData = async (
   const referenceData: Record<string, unknown> = {};
 
   for (const reference of references) {
-    if (!isAllowedReferenceCollection(payload, reference.collection)) {
+    if (!isAllowedReferenceCollection(payload, reference.referenceCollection)) {
       continue;
     }
 
     const result = await payload.find({
-      collection: reference.collection as CollectionSlug,
+      collection: reference.referenceCollection as CollectionSlug,
       depth: 0,
       limit: normalizeLimit(reference.limit),
       where: parseWhere(reference.filtersJSON),
     });
 
-    referenceData[reference.collection] = {
+    referenceData[reference.referenceCollection] = {
       docs: result.docs,
       limit: result.limit,
       page: result.page,
