@@ -1,6 +1,6 @@
 {
   "name": "payload-ai-generate",
-  "version": "0.1.1-beta.1",
+  "version": "0.1.2-beta.1",
   "description": "AI generation plugin for Payload CMS",
   "homepage": "https://github.com/crazytweeks/payload-ai-generate",
   "repository": {
@@ -93,6 +93,7 @@
     "@payloadcms/next": "3.84.1",
     "@payloadcms/richtext-lexical": "3.84.1",
     "@payloadcms/ui": "3.84.1",
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "25.9.1",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
@@ -100,6 +101,7 @@
     "payload": "3.84.1",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "tailwindcss": "^4.3.0",
     "typescript": "6.0.3",
     "vitest": "4.1.7"
   },

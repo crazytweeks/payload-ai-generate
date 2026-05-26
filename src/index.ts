@@ -5,28 +5,24 @@ import {
   aiModelsOptionsCollectionSlug,
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
+  buildAIComposerCollection,
   buildAIModelsCollection,
   buildAIPresetCollection,
   buildAIPromptCollection,
   syncAIModelsCollection,
 } from './collections';
-import { customEndpointHandler } from './endpoints/customEndpointHandler';
-import { previewEndpointHandler } from './endpoints/previewHandler';
+import { seedTestAnnouncementsCollection } from './dev-test/seed/testAnnouncements';
+import { seedTestMessagesCollection } from './dev-test/seed/testMessages';
+import { seedTestProductsCollection } from './dev-test/seed/testProducts';
 import {
   buildTestAnnouncementsCollection,
   testAnnouncementsCollectionSlug,
 } from './dev-test/testAnnouncements';
-import {
-  buildTestProductsCollection,
-  testProductsCollectionSlug,
-} from './dev-test/testProducts';
-import {
-  buildTestMessagesCollection,
-  testMessagesCollectionSlug,
-} from './dev-test/testMessages';
-import { seedTestAnnouncementsCollection } from './dev-test/seed/testAnnouncements';
-import { seedTestProductsCollection } from './dev-test/seed/testProducts';
-import { seedTestMessagesCollection } from './dev-test/seed/testMessages';
+import { buildTestMessagesCollection, testMessagesCollectionSlug } from './dev-test/testMessages';
+import { buildTestProductsCollection, testProductsCollectionSlug } from './dev-test/testProducts';
+import { composerEndpointHandler } from './endpoints/composerEndpointHandler';
+import { customEndpointHandler } from './endpoints/customEndpointHandler';
+import { previewEndpointHandler } from './endpoints/previewHandler';
 
 const upsertCollection = (
   collections: CollectionConfig[] | undefined,
@@ -44,11 +40,11 @@ const upsertCollection = (
   return nextCollections;
 };
 
+export type * from './ai-types';
 /**
  * Plugin options for `aiGenerate()`.
  */
 export type { AIGenerateTextParams, AIPluginOptions, PayloadAIService } from './ai-types';
-export type * from './ai-types';
 /**
  * Collection slug for the generated AI model registry.
  */
@@ -92,6 +88,10 @@ export const aiGenerate =
       })
     );
     config.collections = upsertCollection(config.collections, buildAIPresetCollection());
+    config.collections = upsertCollection(
+      config.collections,
+      buildAIComposerCollection(effectivePluginOptions)
+    );
 
     if (pluginOptions.devTestCollections) {
       config.collections = upsertCollection(config.collections, buildTestMessagesCollection());
@@ -116,6 +116,11 @@ export const aiGenerate =
         handler: previewEndpointHandler,
         method: 'get',
         path: '/ai-generate/preview',
+      },
+      {
+        handler: composerEndpointHandler,
+        method: 'post',
+        path: '/ai-generate/composer',
       },
     ];
 

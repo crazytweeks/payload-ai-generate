@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base: #0f0f11;
+  --bg-panel: #18181b;
+  --bg-input: #09090b;
+  --border: #27272a;
+  --text-primary: #e2e2e8;
+  --text-muted: #a1a1aa;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+}

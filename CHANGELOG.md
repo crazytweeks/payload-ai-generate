@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.1.2-beta.1 — 2026-05-26
+
+- Added **AI Composer** plan-mode feature: new `ai-composer` Payload collection, `src/composer/` streaming module, and `POST /api/ai-generate/composer` endpoint for plan generation.
+- Added 3-column composer UI (`ComposerClient.tsx`) with live streaming, tool-call visibility, reasoning display, and plan output panel with Proceed/Refine actions.
+- Switched default AI provider to **OpenAI `gpt-5.5`** across all composer routes; Google Gemini (`gemini-2.5-flash`) retained as fallback.
+- Installed Tailwind v4 on the dev app (`@tailwindcss/postcss`, `globals.css` with CSS-first config).
+- Upgraded all AI SDK v6 call sites: `stopWhen: stepCountIs(N)` replacing `maxSteps`, `await convertToModelMessages()`, `toUIMessageStreamResponse()`, correct `chunk.text` / `chunk.input` field names.
+- Fixed crash in `PlanView` when AI response omits the `components` array.
+
+---
+
 ## 0.1.1-beta.1 — 2026-05-25
 
 - Added configurable reference collections for AI prompts, including repeatable collection, limit, loading mode, and filter JSON controls.
