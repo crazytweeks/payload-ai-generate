@@ -1,10 +1,22 @@
+import { devToolsMiddleware } from '@ai-sdk/devtools';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
-import { stepCountIs, streamText } from 'ai';
+import { type GatewayModelId, gateway, stepCountIs, streamText, wrapLanguageModel } from 'ai';
 import { resolveOptions } from '../ai-service/options';
 import type { AIPluginOptions, AIProviderName } from '../ai-types';
 import { buildComposerSystemPrompt, buildComposerUserPrompt } from './prompt';
 import type { ComposerMessage, ComposerPlan, ComposerStreamParams } from './types';
+
+const getModel = (model: GatewayModelId) => {
+  if (process.env.PAYLOAD_AI_GENERATE_TEST_COLLECTIONS === 'true') {
+    return wrapLanguageModel({
+      model: gateway(model ?? 'google/gemini-3.5-flash'),
+      middleware: devToolsMiddleware(),
+    });
+  }
+
+  return model ?? 'openai/gpt-5.5';
+};
 
 const extractPlan = (text: string): ComposerPlan | null => {
   const match = text.match(/```json\s*([\s\S]*?)\s*```/i);
@@ -28,10 +40,10 @@ export const createComposerStreamGenerator = (pluginOptions: AIPluginOptions) =>
   const resolveModel = (provider: AIProviderName, model?: string) => {
     if (provider === 'openai') {
       if (!openai) throw new Error('OpenAI API key not configured.');
-      return openai(model ?? 'gpt-5.5');
+      return getModel(model ?? 'gpt-5.5');
     }
     if (!google) throw new Error('Google API key not configured.');
-    return google(model ?? 'gemini-2.5-flash');
+    return getModel(model ?? 'gemini-2.5-flash');
   };
 
   return async function* streamComposerGeneration({

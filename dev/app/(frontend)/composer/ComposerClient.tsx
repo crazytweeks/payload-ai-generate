@@ -10,13 +10,38 @@ import type { ComposerPlan } from '../../../../src/composer/types';
 // ─── plan extraction ──────────────────────────────────────────────────────────
 
 const extractPlan = (text: string): ComposerPlan | null => {
-  const match = text.match(/```json\s*([\s\S]*?)\s*```/i);
-  if (!match?.[1]) return null;
-  try {
-    return JSON.parse(match[1].trim()) as ComposerPlan;
-  } catch {
-    return null;
+  // Try fenced ```json block first
+  const fenced = text.match(/```json\s*([\s\S]*?)\s*```/i);
+  if (fenced?.[1]) {
+    try {
+      return JSON.parse(fenced[1].trim()) as ComposerPlan;
+    } catch {}
   }
+  // Try bare JSON object that contains the expected fields
+  const bare = text.match(/\{[\s\S]*"design"[\s\S]*"approach"[\s\S]*\}/);
+  if (bare?.[0]) {
+    try {
+      return JSON.parse(bare[0]) as ComposerPlan;
+    } catch {}
+  }
+  return null;
+};
+
+const extractPlanFromMessage = (msg: UIMessage): ComposerPlan | null => {
+  // Try text parts first
+  const textContent = msg.parts
+    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+    .map((p) => p.text)
+    .join('');
+  const fromText = extractPlan(textContent);
+  if (fromText) return fromText;
+
+  // Fall back to reasoning parts (Gemini extended thinking puts plan there)
+  const reasoningContent = msg.parts
+    .filter((p): p is { type: 'reasoning'; text: string } => p.type === 'reasoning')
+    .map((p) => p.text)
+    .join('');
+  return extractPlan(reasoningContent);
 };
 
 // ─── types ────────────────────────────────────────────────────────────────────
@@ -27,8 +52,20 @@ type ComposerMode = 'idle' | 'planning' | 'plan-ready' | 'refining';
 
 // ─── sub-components ───────────────────────────────────────────────────────────
 
+function formatReasoningText(raw: string): string {
+  // Pretty-print any JSON objects embedded in the text
+  return raw.replace(/(\{[\s\S]*?\})/g, (match) => {
+    try {
+      return JSON.stringify(JSON.parse(match), null, 2);
+    } catch {
+      return match;
+    }
+  });
+}
+
 function ReasoningPart({ text, state }: { state?: string; text: string }) {
   const [open, setOpen] = useState(false);
+  const formatted = formatReasoningText(text);
   return (
     <div className="mb-2 overflow-hidden rounded-lg border border-purple-900/40 bg-[#1a1625]">
       <button
@@ -39,10 +76,15 @@ function ReasoningPart({ text, state }: { state?: string; text: string }) {
         <span className="opacity-60">{open ? '▼' : '▶'}</span>
         <span>Thinking</span>
         {state === 'streaming' && <span className="ml-auto animate-pulse text-purple-500">●</span>}
+        {state !== 'streaming' && (
+          <span className="ml-auto text-[10px] text-purple-800">
+            {text.length > 0 ? `${Math.round(text.length / 4)} tokens` : ''}
+          </span>
+        )}
       </button>
       {open && (
-        <div className="border-t border-purple-900/30 px-3 py-2 text-xs leading-relaxed text-zinc-500 whitespace-pre-wrap">
-          {text}
+        <div className="border-t border-purple-900/30 px-3 py-2 text-xs leading-relaxed text-zinc-500 whitespace-pre-wrap font-mono">
+          {formatted}
         </div>
       )}
     </div>
@@ -150,21 +192,24 @@ function MessageRow({ msg }: { msg: UIMessage }) {
               return <ReasoningPart key={key} text={part.text} state={part.state} />;
             }
 
-            if (part.type === 'dynamic-tool') {
+            if (part.type === 'tool-invocation') {
               const dp = part as {
-                input?: unknown;
-                output?: unknown;
-                state: string;
-                toolName: string;
-                type: 'dynamic-tool';
+                toolInvocation: {
+                  args?: unknown;
+                  result?: unknown;
+                  state: string;
+                  toolName: string;
+                };
+                type: 'tool-invocation';
               };
+              const ti = dp.toolInvocation;
               return (
                 <ToolPart
                   key={key}
-                  toolName={dp.toolName}
-                  input={dp.input}
-                  output={dp.output}
-                  state={dp.state}
+                  toolName={ti.toolName}
+                  input={ti.args}
+                  output={ti.result}
+                  state={ti.state}
                 />
               );
             }
@@ -192,24 +237,80 @@ function MessageRow({ msg }: { msg: UIMessage }) {
   );
 }
 
+function renderMarkdownLine(line: string, idx: number): React.ReactNode {
+  // Bold: **text**
+  const parts = line.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <span key={idx}>
+      {parts.map((part, i) =>
+        part.startsWith('**') && part.endsWith('**') ? (
+          // biome-ignore lint/suspicious/noArrayIndexKey: static list
+          <strong key={i} className="text-zinc-200 font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        ) : (
+          // biome-ignore lint/suspicious/noArrayIndexKey: static list
+          <span key={i}>{part}</span>
+        )
+      )}
+    </span>
+  );
+}
+
+function PlanTextField({ value }: { value: string }) {
+  const lines = value.split('\n');
+  return (
+    <div className="flex flex-col gap-0.5">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+        // biome-ignore lint/suspicious/noArrayIndexKey: static text lines
+        if (!trimmed) return <div key={i} className="h-1" />;
+        // Bullet-style lines starting with - or *
+        if (/^[-*]\s/.test(trimmed)) {
+          return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: static text lines
+            <div key={i} className="flex gap-2 text-xs text-zinc-400">
+              <span className="mt-0.5 shrink-0 text-zinc-600">•</span>
+              <span>{renderMarkdownLine(trimmed.slice(2).trim(), i)}</span>
+            </div>
+          );
+        }
+        return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: static text lines
+          <p key={i} className="text-xs leading-relaxed text-zinc-400">
+            {renderMarkdownLine(trimmed, i)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 function PlanView({ plan }: { plan: ComposerPlan }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <PlanSection label="Design" value={plan.design} color="text-sky-400" />
       <PlanSection label="Approach" value={plan.approach} color="text-emerald-400" />
       <PlanSection label="Data Mapping" value={plan.dataMapping} color="text-amber-400" />
       <div>
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-violet-400">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-violet-400">
           Components
+          <span className="ml-2 rounded-full bg-violet-950 px-1.5 py-0.5 text-[10px] text-violet-400">
+            {plan.components?.length ?? 0}
+          </span>
         </p>
-        <ul className="flex flex-col gap-1.5">
-          {(plan.components ?? []).map((c, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: static list
-            <li key={i} className="flex gap-2 text-xs text-zinc-300">
-              <span className="mt-0.5 text-violet-500">▸</span>
-              <span>{c}</span>
-            </li>
-          ))}
+        <ul className="flex flex-col gap-2">
+          {(plan.components ?? []).map((c, i) => {
+            const [name, ...rest] = c.split(':');
+            const desc = rest.join(':').trim();
+            return (
+              // biome-ignore lint/suspicious/noArrayIndexKey: static list
+              <li key={i} className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2">
+                <p className="text-xs font-semibold text-violet-300">{name.trim()}</p>
+                {desc && <p className="mt-0.5 text-[11px] text-zinc-500">{desc}</p>}
+              </li>
+            );
+          })}
         </ul>
       </div>
       {plan.notes && <PlanSection label="Notes" value={plan.notes} color="text-zinc-500" />}
@@ -220,8 +321,10 @@ function PlanView({ plan }: { plan: ComposerPlan }) {
 function PlanSection({ color, label, value }: { color: string; label: string; value: string }) {
   return (
     <div>
-      <p className={`mb-1 text-[11px] font-semibold uppercase tracking-wider ${color}`}>{label}</p>
-      <p className="text-xs leading-relaxed text-zinc-400">{value}</p>
+      <p className={`mb-1.5 text-[11px] font-semibold uppercase tracking-wider ${color}`}>
+        {label}
+      </p>
+      <PlanTextField value={value} />
     </div>
   );
 }
@@ -297,13 +400,14 @@ export function ComposerClient({
     if (prevStatus.current !== 'ready' && status === 'ready' && messages.length > 0) {
       const last = messages[messages.length - 1];
       if (last.role === 'assistant') {
-        const text = last.parts
-          .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-          .map((p) => p.text)
-          .join('');
-        const extracted = extractPlan(text);
-        setPlan(extracted);
-        setMode('plan-ready');
+        const extracted = extractPlanFromMessage(last);
+        if (extracted) {
+          setPlan(extracted);
+          setMode('plan-ready');
+        } else {
+          // No plan JSON found — allow refinement but don't claim plan-ready
+          setMode('plan-ready');
+        }
       }
     }
     prevStatus.current = status;

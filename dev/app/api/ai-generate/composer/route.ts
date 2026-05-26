@@ -1,8 +1,9 @@
+import { devToolsMiddleware } from '@ai-sdk/devtools';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import configPromise from '@payload-config';
 import type { UIMessage } from 'ai';
-import { convertToModelMessages, stepCountIs, streamText } from 'ai';
+import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
 import { getPayload } from 'payload';
 import type { AIPluginOptions, AIReferenceDataSource } from '../../../../../src/ai-types';
 import { buildComposerSystemPrompt } from '../../../../../src/composer/prompt';
@@ -14,7 +15,7 @@ function resolveModel(pluginOptions: AIPluginOptions) {
   const openaiKey = pluginOptions.openaiApiKey ?? process.env.OPENAI_API_KEY;
   if (openaiKey) {
     const openai = createOpenAI({ apiKey: openaiKey });
-    return { model: openai('gpt-5.5'), provider: 'openai' as const };
+    return { model: openai('gpt-4o'), provider: 'openai' as const };
   }
   const googleKey = pluginOptions.googleApiKey ?? process.env.GOOGLE_AI_API;
   if (googleKey) {
@@ -34,7 +35,12 @@ export async function POST(req: Request) {
     references?: AIReferenceDataSource[];
   };
 
-  const { model, provider } = resolveModel(pluginOptions);
+  const { model: baseModel, provider } = resolveModel(pluginOptions);
+
+  const model = wrapLanguageModel({
+    model: baseModel,
+    middleware: devToolsMiddleware(),
+  });
 
   const requestTools = createReferenceTools({
     payload,
@@ -42,13 +48,45 @@ export async function POST(req: Request) {
     references: body.references ?? [],
   });
 
+  const hasTools = Object.keys(requestTools).length > 0;
+  const lastUserMsg = [...body.messages].reverse().find((m) => m.role === 'user');
+  const lastUserMessage =
+    lastUserMsg?.parts
+      ?.filter((p) => p.type === 'text')
+      .map((p) => (p as { type: 'text'; text: string }).text)
+      .join('') ?? '';
+
+  console.log('[composer] POST', {
+    provider,
+    messageCount: body.messages.length,
+    referenceCount: body.references?.length ?? 0,
+    references: body.references,
+    hasTools,
+    prompt: lastUserMessage.slice(0, 120),
+  });
+
   const result = streamText({
     model,
-    system: buildComposerSystemPrompt(),
+    system: buildComposerSystemPrompt(body.references ?? []),
     messages: await convertToModelMessages(body.messages),
-    tools: Object.keys(requestTools).length > 0 ? requestTools : undefined,
+    tools: hasTools ? requestTools : undefined,
     stopWhen: stepCountIs(12),
-    providerOptions: undefined,
+    onStepFinish: ({ toolCalls, toolResults, text, finishReason }) => {
+      console.log('[composer] step', {
+        finishReason,
+        textLength: text?.length ?? 0,
+        toolCalls: toolCalls?.map((tc) => tc.toolName),
+        toolResults: toolResults?.length ?? 0,
+      });
+    },
+    onFinish: ({ text, finishReason, usage }) => {
+      console.log('[composer] done', {
+        finishReason,
+        textLength: text.length,
+        inputTokens: usage?.inputTokens,
+        outputTokens: usage?.outputTokens,
+      });
+    },
   });
 
   return result.toUIMessageStreamResponse();

@@ -67,7 +67,7 @@
     "build:types": "rm -f tsconfig.tsbuildinfo && tsc --outDir dist --rootDir ./src",
     "clean": "rimraf {dist,*.tsbuildinfo}",
     "copyfiles": "find src -type f \\( -name '*.json' -o -name '*.css' -o -name '*.scss' -o -name '*.html' -o -name '*.svg' -o -name '*.png' \\) | while IFS= read -r f; do d=\"dist/${f#src/}\"; mkdir -p \"$(dirname \"$d\")\"; cp \"$f\" \"$d\"; done",
-    "dev": "next dev dev --turbo -p 4000",
+    "dev": "NODE_ENV=development PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true next dev dev --turbo -p 4000",
     "dev:generate-importmap": "bun run dev:payload generate:importmap",
     "dev:generate-types": "bun run dev:payload generate:types",
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
@@ -80,6 +80,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ai-sdk/devtools": "^0.0.18",
     "@ai-sdk/google": "^3.0.75",
     "@ai-sdk/openai": "^3.0.64",
     "@payloadcms/live-preview-react": "^3.84.1",

@@ -17,7 +17,9 @@ const parseJSON = (value: string | null | undefined): unknown => {
 
 const parseWhere = (value: string | null | undefined): Where | undefined => {
   const parsed = parseJSON(value);
-  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Where) : undefined;
+  return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+    ? (parsed as Where)
+    : undefined;
 };
 
 const normalizeLimit = (limit: number | null | undefined) => {
@@ -73,6 +75,10 @@ export const createReferenceTools = ({
           .describe('Collection slug from the active reference sources listed in the prompt.'),
       }),
       execute: async ({ collection }) => {
+        console.warn(
+          `AI Step of checking collection "${collection}" for reference data source documents. This tool is intended for use in development and testing, and should not be used in production environments.`
+        );
+
         const reference = referenceByCollection.get(collection);
 
         if (!reference) {

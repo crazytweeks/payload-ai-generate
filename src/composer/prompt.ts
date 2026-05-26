@@ -1,7 +1,7 @@
 import type { AIReferenceDataSource } from '../ai-types';
 import type { ComposerMessage } from './types';
 
-export const buildComposerSystemPrompt = (): string =>
+export const buildComposerSystemPrompt = (availableResources?: AIReferenceDataSource[]): string =>
   [
     'You are an expert UI/UX architect and frontend engineer.',
     '',
@@ -12,7 +12,13 @@ export const buildComposerSystemPrompt = (): string =>
     '3. The best design approach — layout, visual hierarchy, interaction patterns',
     '4. How to map available data to UI components',
     '5. Which Tailwind patterns, components, and structures to use and why',
+    '6. Available data u can use is passed as json data in the "fetch_reference_docs" tool. You can call this tool with a collection slug to get the relevant data for that collection. The available collections are listed in the "Available reference data sources" section of the user prompt.',
     '',
+
+    availableResources
+      ? `Available reference data sources:\n${JSON.stringify(availableResources, null, 2)}\n\n`
+      : '',
+
     'Before producing the plan, use the `fetch_reference_docs` tool for each active reference source. Reason step by step.',
     '',
     'When your analysis is complete, output a JSON block with EXACTLY this structure:',
@@ -39,6 +45,12 @@ export const buildComposerUserPrompt = ({
   references?: AIReferenceDataSource[];
 }): string => {
   const parts: string[] = [`TASK: ${firstPrompt}`];
+
+  console.warn(
+    '[composer] Building user prompt with input:',
+    firstPrompt,
+    `and ${messages.length} previous messages, ${references.length} references.`
+  );
 
   const activeRefs = references.filter(
     (r) => r.isBeingUsed && r.dataLoading !== 'client' && r.collection
