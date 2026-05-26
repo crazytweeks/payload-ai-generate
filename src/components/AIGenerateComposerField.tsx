@@ -1,7 +1,7 @@
 'use client';
 
 import { useAllFormFields, useConfig, useField, useFormFields } from '@payloadcms/ui';
-import type { Row, UIFieldClientComponent, UIFieldClientProps } from 'payload';
+import type { UIFieldClientComponent, UIFieldClientProps } from 'payload';
 import { reduceFieldsToValues } from 'payload/shared';
 import type { AIConversationMessage, AIGenerationRunSummary } from '../ai-types';
 import { ComposerView } from './ai-composer/ComposerView';
@@ -59,17 +59,12 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
   const presetValue = useFormFields(
     ([fields]) => fields[presetFieldPath]?.value as RelationshipValue
   );
-  const referencesValue = useFormFields(([fields, dispatchFields]) => {
-    const value = referencesFieldPath ? fields[referencesFieldPath].rows : undefined;
-
-    const lastRenderedPath = referencesFieldPath
-      ? fields[referencesFieldPath]?.lastRenderedPath
+  const [formFields] = useAllFormFields();
+  const formValues = reduceFieldsToValues(formFields, true);
+  const referencesValue =
+    referencesFieldPath && referencesFieldPath in formValues
+      ? formValues[referencesFieldPath]
       : undefined;
-
-    return lastRenderedPath;
-  });
-
-  const referencesField = useField(referencesValue);
   const selectedAttachments = Array.isArray(attachmentsValue) ? attachmentsValue : [];
 
   const endpointURL = `${config.routes.api}/ai-generate/stream`;

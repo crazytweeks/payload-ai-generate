@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Fix composer reference collection form value extraction — 🤖 agent-codex-ref-data (2026-05-26T03:35Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Fix composer reference collection form value extraction
 - [x] Standalone dev composer page at /composer — dark UI, NDJSON streaming, reference collection picker, live preview iframe, code tabs
 - [x] Add reference data fetch tools to block generation
 - [x] Add usage checkbox to AI prompt reference rows
