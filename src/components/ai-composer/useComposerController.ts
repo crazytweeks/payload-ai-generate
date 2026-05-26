@@ -6,8 +6,8 @@ import type {
   AIConversationMessage,
   AIGenerationEvent,
   AIGenerationOutcome,
-  AIReferenceDataSource,
   AIGenerationRunSummary,
+  AIReferenceDataSource,
 } from '../../ai-types';
 import type { ActivityItem, ComposerViewModel, RelationshipValue } from './types';
 import { getRelationshipID } from './utils';
@@ -28,7 +28,16 @@ type ComposerControllerParams = {
   messagesValue: AIConversationMessage[] | undefined;
   path: string;
   presetValue: RelationshipValue;
-  referencesValue: unknown;
+  referencesValue:
+    | {
+        id: number | string;
+        isLoading?: boolean;
+        addedByServer?: boolean;
+      }[]
+    | string[]
+    | number[]
+    | null
+    | undefined;
   selectedAttachments: unknown[];
   setBlockPayloadValue: (value: string) => void;
   setCssValue: (value: string) => void;
@@ -139,13 +148,20 @@ export const useComposerController = ({
     variablesJSON: variablesJSONValue ?? '[]',
   });
 
-  const buildReferenceSources = (): AIReferenceDataSource[] =>
-    Array.isArray(referencesValue)
-      ? referencesValue.filter(
-          (reference): reference is AIReferenceDataSource =>
-            Boolean(reference) && typeof reference === 'object'
-        )
-      : [];
+  const buildReferenceSources = (): AIReferenceDataSource[] => {
+    if (!Array.isArray(referencesValue)) {
+      return [];
+    }
+
+    // Array.isArray(referencesValue)
+    //   ? referencesValue.filter(
+    //       (reference): reference is AIReferenceDataSource =>
+    //         Boolean(reference) && typeof reference === 'object'
+    //     )
+    //   : [];
+
+    return [];
+  };
 
   const persistConversationResult = ({
     assistantContent,
@@ -354,19 +370,23 @@ export const useComposerController = ({
     abortControllerRef.current = abortController;
 
     try {
+      const body = JSON.stringify({
+        attachments: Array.isArray(attachmentsValue) ? attachmentsValue : [],
+        currentArtifact: buildRequestArtifact(),
+        followup: followupMessage,
+        instructions,
+        messages,
+        mode,
+        presetId: getRelationshipID(presetValue),
+        references: buildReferenceSources(),
+        stream: true,
+        title,
+      });
+
+      console.log('Sending generation request with body:', body);
+
       const response = await fetch(endpointURL, {
-        body: JSON.stringify({
-          attachments: Array.isArray(attachmentsValue) ? attachmentsValue : [],
-          currentArtifact: buildRequestArtifact(),
-          followup: followupMessage,
-          instructions,
-          messages,
-          mode,
-          presetId: getRelationshipID(presetValue),
-          references: buildReferenceSources(),
-          stream: true,
-          title,
-        }),
+        body,
         headers: {
           Accept: 'application/x-ndjson',
           'Content-Type': 'application/json',
