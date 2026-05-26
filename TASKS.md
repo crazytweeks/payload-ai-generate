@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Standalone dev composer page at /composer — streams from /api/ai-generate/stream, reference collection picker, live preview iframe — 🤖 agent-claude-sonnet-4-6 (2026-05-26T00:00Z)
 
 ---
 
@@ -120,6 +119,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] Standalone dev composer page at /composer — dark UI, NDJSON streaming, reference collection picker, live preview iframe, code tabs
 - [x] Add reference data fetch tools to block generation
 - [x] Add usage checkbox to AI prompt reference rows
 - [x] Fix reference collection select validation with duplicate filtering
