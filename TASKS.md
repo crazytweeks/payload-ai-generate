@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Tolerate root `blockType` in generated block output — agent-codex-blocktype-validation (2026-05-26T03:44Z)
 
 ---
 
