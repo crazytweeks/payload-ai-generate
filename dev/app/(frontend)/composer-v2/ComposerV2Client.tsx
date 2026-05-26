@@ -333,19 +333,52 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
   const [plan, setPlan] = useState<ComposerPlan | null>(null);
   const [mode, setMode] = useState<ComposerMode>('idle');
   const [generatedFiles, setGeneratedFiles] = useState<GeneratedFile[]>([]);
+  const [composerSessionId, setComposerSessionId] = useState<string | undefined>();
   const [composerUiId, setComposerUiId] = useState<string | undefined>();
 
   const refsRef = useRef(references);
   const presetIdRef = useRef(presetId);
   const planRef = useRef(plan);
+  const composerSessionIdRef = useRef(composerSessionId);
   const composerUiIdRef = useRef(composerUiId);
+  const lastPlanMessageIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     refsRef.current = references;
     presetIdRef.current = presetId;
     planRef.current = plan;
+    composerSessionIdRef.current = composerSessionId;
     composerUiIdRef.current = composerUiId;
-  }, [composerUiId, plan, presetId, references]);
+  }, [composerSessionId, composerUiId, plan, presetId, references]);
+
+  const persistComposerSession = useCallback(
+    async ({ messages, nextPlan }: { messages: UIMessage[]; nextPlan: ComposerPlan }) => {
+      const response = await fetch('/api/ai-generate/composer-session', {
+        body: JSON.stringify({
+          composerSessionId: composerSessionIdRef.current,
+          firstPrompt,
+          messages,
+          plan: nextPlan,
+          presetId: presetIdRef.current || undefined,
+          references: referencesToBody(refsRef.current),
+          title: firstPrompt || undefined,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? 'Failed to save composer session.');
+      }
+
+      const payload = (await response.json()) as { id?: string };
+      if (payload.id) setComposerSessionId(payload.id);
+    },
+    [firstPrompt]
+  );
 
   const planTransport = useMemo(
     () =>
@@ -369,6 +402,7 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
         api: '/api/ai-generate/ui-generate-v2',
         prepareSendMessagesRequest: async ({ messages }) => ({
           body: {
+            composerSessionId: composerSessionIdRef.current,
             composerUiId: composerUiIdRef.current,
             messages,
             plan: planRef.current,
@@ -387,9 +421,14 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
     if (!last || last.role !== 'assistant') return;
     const extracted = extractPlanFromMessage(last);
     if (!extracted) return;
+    if (lastPlanMessageIdRef.current === last.id) return;
+    lastPlanMessageIdRef.current = last.id;
     setPlan(extracted);
     setMode('plan-ready');
-  }, [planChat.messages, planChat.status]);
+    persistComposerSession({ messages: planChat.messages, nextPlan: extracted }).catch((error) => {
+      console.error(error);
+    });
+  }, [persistComposerSession, planChat.messages, planChat.status]);
 
   useEffect(() => {
     const extracted = extractGeneratedFiles(generationChat.messages);
@@ -402,9 +441,12 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
     (message: PromptInputMessage) => {
       const text = message.text.trim();
       if (!text || planChat.status !== 'ready') return;
+      setFirstPrompt(text);
       setPlan(null);
+      setComposerSessionId(undefined);
       setComposerUiId(undefined);
       setGeneratedFiles([]);
+      lastPlanMessageIdRef.current = undefined;
       setMode('planning');
       planChat.sendMessage({ text });
     },
@@ -468,7 +510,8 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
           setReferences={setReferences}
         />
         <div className="mt-auto border-t border-zinc-800 p-4 text-xs text-zinc-500">
-          {statusLabel[mode]} {composerUiId ? `- saved ${composerUiId}` : ''}
+          {statusLabel[mode]} {composerSessionId ? `- session ${composerSessionId}` : ''}
+          {composerUiId ? ` - UI ${composerUiId}` : ''}
         </div>
       </aside>
 

@@ -14,12 +14,12 @@ export function ToolPart({
   toolName: string;
 }) {
   const [open, setOpen] = useState(false);
-  const dot =
-    state === 'result'
-      ? 'bg-emerald-500'
-      : state.includes('error')
-        ? 'bg-red-500'
-        : 'bg-amber-400 animate-pulse';
+  const isDone = state === 'output-available' || state === 'result';
+  const dot = isDone
+    ? 'bg-emerald-500'
+    : state.includes('error')
+      ? 'bg-red-500'
+      : 'bg-amber-400 animate-pulse';
 
   return (
     <div className="mb-2 overflow-hidden rounded-lg border border-zinc-800 bg-[#0d0d12]">
@@ -30,9 +30,7 @@ export function ToolPart({
       >
         <span className={`inline-block h-2 w-2 shrink-0 rounded-full ${dot}`} />
         <span className="font-mono text-xs text-violet-400">{toolName}</span>
-        <span className="ml-auto text-[10px] text-zinc-600">
-          {state === 'result' ? 'done' : state}
-        </span>
+        <span className="ml-auto text-[10px] text-zinc-600">{isDone ? 'done' : state}</span>
         <span className="text-[10px] text-zinc-700">{open ? '▼' : '▶'}</span>
       </button>
       {open && (

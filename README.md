@@ -1,14 +1,16 @@
 # payload-ai-generate
 
 > **⚠️ Early Beta — Under Active Development**
-> This plugin is in early beta (`0.1.0-beta.1`). APIs, collection slugs, and block types may change between releases without a deprecation period. Do not use in production environments without thoroughly reviewing each update. Breaking changes will be noted in [CHANGELOG.md](./CHANGELOG.md).
+> This plugin is in early beta (`0.1.3-beta.1`). APIs, collection slugs, and block types may change between releases without a deprecation period. Do not use in production environments without thoroughly reviewing each update. Breaking changes will be noted in [CHANGELOG.md](./CHANGELOG.md).
 
 `payload-ai-generate` is a Payload CMS plugin that adds:
 
 - AI prompt and preset collections
+- AI composer planning sessions and persisted multi-file UI outputs
 - A synced registry of supported OpenAI and Google model IDs
 - A `payload.ai` service for text generation and streaming
 - A `/api/ai-generate/stream` endpoint for generating block payloads
+- A `/api/ai-generate/composer` endpoint for planning UI generation sessions
 - A built-in `ai-html-block` for rendering AI-generated HTML/CSS/JS content in a sandboxed iframe
 - Portable AI prompt preview support with a built-in endpoint fallback and an optional host-app React preview page
 
@@ -48,6 +50,8 @@ The plugin registers these collection slugs:
 - `aiModelsOptions`
 - `ai-prompts`
 - `ai-presets`
+- `ai-composer`
+- `ai-composer-ui`
 
 On init it syncs the model registry collection so the database always contains the current package-supported models. Missing models are created, removed models are marked `isRemoved`, and a default model is kept per provider when possible.
 

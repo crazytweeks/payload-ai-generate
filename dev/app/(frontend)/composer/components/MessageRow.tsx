@@ -45,20 +45,22 @@ export function MessageRow({ msg }: { msg: UIMessage }) {
               return <ReasoningPart key={key} text={rp.text} state={rp.state} />;
             }
 
-            if (part.type === 'tool-invocation') {
+            if (part.type === 'tool-invocation' || part.type.startsWith('tool-')) {
               const ti = part as unknown as {
                 args?: unknown;
+                input?: unknown;
+                output?: unknown;
                 result?: unknown;
                 state: string;
-                toolName: string;
-                type: 'tool-invocation';
+                toolName?: string;
+                type: string;
               };
               return (
                 <ToolPart
                   key={key}
-                  toolName={ti.toolName}
-                  input={ti.args}
-                  output={ti.result}
+                  toolName={ti.toolName ?? ti.type.replace(/^tool-/, '')}
+                  input={ti.input ?? ti.args}
+                  output={ti.output ?? ti.result}
                   state={ti.state}
                 />
               );
@@ -69,7 +71,10 @@ export function MessageRow({ msg }: { msg: UIMessage }) {
               const visible = tp.text.replace(/```json[\s\S]*?```/g, '').trim();
               if (!visible) return null;
               return (
-                <p key={key} className="mb-2 text-sm leading-relaxed text-zinc-300 whitespace-pre-wrap">
+                <p
+                  key={key}
+                  className="mb-2 text-sm leading-relaxed text-zinc-300 whitespace-pre-wrap"
+                >
                   {visible}
                 </p>
               );

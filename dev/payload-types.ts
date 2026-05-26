@@ -357,12 +357,7 @@ export interface AiComposer {
    */
   referenceCollections?:
     | {
-        referenceCollection:
-          | 'test-messages'
-          | 'test-products'
-          | 'test-announcements'
-          | 'users'
-          | 'posts';
+        collection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
         isBeingUsed?: boolean | null;
         limit?: number | null;
         dataLoading: 'server' | 'client';
@@ -736,7 +731,7 @@ export interface AiComposerSelect<T extends boolean = true> {
   referenceCollections?:
     | T
     | {
-        referenceCollection?: T;
+        collection?: T;
         isBeingUsed?: T;
         limit?: T;
         dataLoading?: T;

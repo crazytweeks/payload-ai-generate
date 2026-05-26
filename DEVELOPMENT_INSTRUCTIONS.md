@@ -78,7 +78,7 @@ The npm package name is **`payload-ai-generate`**
 
 ## 7. Testing
 
-- Run tests from inside the plugin directory: `bun test` (uses Vitest).
+- Run tests from inside the plugin directory: `bun run test` (uses Vitest).
 - Do not run tests in a way that hits the live dev database. Use the test database configured in `dev/.env.example`.
 - Before pushing, verify TypeScript compiles: `bun run build:types` (or check that the dev server has no TS errors in the tmux output).
 
@@ -95,13 +95,13 @@ The composer lives at `dev/app/(frontend)/composer/` and is a dev-only feature (
 | `usePlanChat.ts` | `useChat` transport → `/api/ai-generate/composer`, extracts `ComposerPlan` on completion |
 | `useGenChat.ts` | `useChat` transport → `/api/ai-generate/ui-generate`, collects `write_file` results into `generatedFiles` |
 | `planExtract.ts` | Parses plan JSON from text or reasoning parts (Gemini puts it in reasoning) |
-| `components/ToolPart.tsx` | Renders tool call steps — pulsing amber dot while running, green when `state === 'result'` |
+| `components/ToolPart.tsx` | Renders tool call steps — pulsing amber dot while running, green when `state === 'output-available'` |
 | `components/CodeBlock.tsx` | Async shiki highlighting (vesper theme) — loads grammar lazily in browser |
 | `components/FileTree.tsx` | Tree from flat path list — dirs before files, collapsible |
 
 ### AI SDK v6 gotchas
-- Tool invocation parts are **flat**: `part.toolName`, `part.state`, `part.args`, `part.result` — there is **no** `part.toolInvocation` nesting (that was v3/v4).
-- Completed tool state is `'result'`, **not** `'output-available'` (v3/v4 name). Always use `'result'`.
+- Tool invocation parts are **flat**: `part.type`, `part.state`, `part.input`, `part.output` — there is **no** `part.toolInvocation` nesting (that was v3/v4).
+- Completed tool state is `'output-available'` in AI SDK v6. Older local code may also tolerate `'result'` for compatibility.
 - `useChat` from `@ai-sdk/react` with `DefaultChatTransport` for custom endpoints.
 - Server route must return `result.toUIMessageStreamResponse()` — not raw NDJSON.
 
@@ -118,7 +118,7 @@ The composer lives at `dev/app/(frontend)/composer/` and is a dev-only feature (
 
 ## 9. Versioning & Publishing
 
-- Current version: `0.1.0-beta.1` — this is a **beta**. Do not publish a stable `1.0.0` until all items in the "Before First Stable Release" section of TASKS.md are done.
+- Current version: `0.1.3-beta.1` — this is a **beta**. Do not publish a stable `1.0.0` until all items in the "Before First Stable Release" section of TASKS.md are done.
 - Bump version in `package.json`, add a CHANGELOG entry, then tag: `git tag v0.x.x-beta.y`.
 - Publish: `npm publish --access public` (dry run first: `npm publish --dry-run`).
 - Do not publish from inside the monorepo `node_modules` context — publish from the submodule root directly.

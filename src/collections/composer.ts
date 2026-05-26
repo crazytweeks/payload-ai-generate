@@ -43,7 +43,7 @@ export const buildAIComposerCollection = (pluginOptions: AIPluginOptions): Colle
       },
       fields: [
         {
-          name: 'referenceCollection',
+          name: 'collection',
           type: 'select',
           required: true,
           options: Object.entries(pluginOptions.referenceCollections ?? {})

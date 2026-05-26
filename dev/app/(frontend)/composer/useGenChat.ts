@@ -17,7 +17,12 @@ export const useGenChat = ({ onFilesChange, onGenerationDone, planRef, refsRef }
     () =>
       refsRef.current
         .filter((r) => r.collection.trim())
-        .map((r) => ({ collection: r.collection, dataLoading: 'server', isBeingUsed: true, limit: r.limit })),
+        .map((r) => ({
+          collection: r.collection,
+          dataLoading: 'server',
+          isBeingUsed: true,
+          limit: r.limit,
+        })),
     [refsRef]
   );
 
@@ -40,16 +45,24 @@ export const useGenChat = ({ onFilesChange, onGenerationDone, planRef, refsRef }
     for (const msg of messages) {
       if (msg.role !== 'assistant') continue;
       for (const part of msg.parts) {
-        if (part.type !== 'tool-invocation') continue;
+        if (part.type !== 'tool-invocation' && !part.type.startsWith('tool-')) continue;
         const ti = part as unknown as {
           args?: GeneratedFile;
+          input?: GeneratedFile;
+          output?: unknown;
           result?: unknown;
           state: string;
-          toolName: string;
-          type: 'tool-invocation';
+          toolName?: string;
+          type: string;
         };
-        if (ti.toolName === 'write_file' && ti.state === 'result' && ti.args) {
-          files.push(ti.args);
+        const toolName = ti.toolName ?? ti.type.replace(/^tool-/, '');
+        const input = ti.input ?? ti.args;
+        if (
+          toolName === 'write_file' &&
+          (ti.state === 'output-available' || ti.state === 'result') &&
+          input
+        ) {
+          files.push(input);
         }
       }
     }

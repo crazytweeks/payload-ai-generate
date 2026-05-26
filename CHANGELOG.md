@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.1.3-beta.1 — 2026-05-26
+
+- Added Composer v2 session persistence: plans and chat messages are saved to `ai-composer`.
+- Linked generated `ai-composer-ui` documents back to their Composer planning session.
+- Fixed Composer reference row storage to use the same `collection` field expected by generation tools.
+- Updated AI SDK v6 tool-part handling to support `tool-*` parts and `output-available` tool state.
+- Scoped Vitest to package unit tests so dev integration/e2e specs do not run under the wrong test runner.
+- Added the missing `@ai-sdk/react` package dependency used by the dev Composer UI.
+
+---
+
 ## 0.1.2-beta.1 — 2026-05-26
 
 - Added **AI Composer** plan-mode feature: new `ai-composer` Payload collection, `src/composer/` streaming module, and `POST /api/ai-generate/composer` endpoint for plan generation.

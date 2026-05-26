@@ -17,7 +17,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 ## Active / In Progress
 
 - [ ] Verify planning-phase tool calls (fetch_reference_docs) appear in Live Stream when references are attached
-- [ ] Wire generated files into `ai-composer-ui` Payload collection (persist output server-side)
 - [ ] MCP connections / AI skills for additional composer capabilities
 
 ---
@@ -127,12 +126,13 @@ This file is the source of truth for planned work, feature ideas, known issues, 
   - Generation phase: `useGenChat` + `/api/ai-generate/ui-generate` → AI calls `write_file` tool once per file
   - `write_file` tool results populate `generatedFiles` state live as generation streams
   - Dual `useChat` hooks so planning and generation don't interfere
-- [x] **Fixed AI SDK v6 state naming** — `output-available` → `result` in `useGenChat.ts` and `ToolPart.tsx`; flat part shape (no nested `.toolInvocation`) — root cause of "0 files generated" bug
+- [x] **Fixed AI SDK v6 tool part handling** — supports `tool-*` parts and `output-available` state in `useGenChat.ts` and `ToolPart.tsx`; flat part shape (no nested `.toolInvocation`) — root cause of "0 files generated" bug
 - [x] **IDE code editor** — `CodeEditorView` replaced with split FileTree + CodeBlock panel:
   - `FileTree.tsx` — tree built from generated file paths, collapsible folders, lucide icons
   - `CodeBlock.tsx` — async shiki syntax highlighting (vesper dark theme), copy button
 - [x] **Tool call steps visible** in composer Live Stream — `ToolPart` renders status dot (amber pulsing → green done), expandable input/output JSON
 - [x] **`ai-composer-ui` Payload collection** (`ai-composer-ui` slug) — stores multi-file UI output with title, status, plan JSON, files array, composerSession relationship
+- [x] **Composer v2 persistence** — saves plans/messages to `ai-composer` and links generated files in `ai-composer-ui` to the session
 - [x] **Multi-file generation** — AI splits output into one `write_file` call per file, avoiding re-render storms from large single-HTML payloads
 - [x] **AI SDK DevTools wired** (`devToolsMiddleware`) — visible at `http://localhost:4000/api/ai-devtools` and in the DevTools panel
 - [x] Composer split into maintainable component files: `ComposerClient`, `LeftSidebar`, `PlanView`, `MessageRow`, `ReasoningPart`, `ToolPart`, `CodeEditorView`, `CodeBlock`, `FileTree`, `usePlanChat`, `useGenChat`, `planExtract`, `types`
@@ -153,6 +153,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 - [x] Security: replaced `dangerouslySetInnerHTML` + direct DOM injection with sandboxed iframe in `ClientComponent`
 - [x] Fixed `</script>` injection vulnerability in `PreviewFrame`
 - [x] Package renamed `@flash-lightning/ai-generate` → `payload-ai-generate`
+- [x] Version bumped to `0.1.3-beta.1`
 - [x] Version set to `0.1.0-beta.1`
 - [x] README rewritten with beta warning and correct import paths
 - [x] CHANGELOG rewritten as clean plugin history (alpha → beta)
