@@ -16,6 +16,11 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [ ] Move Composer V2 API endpoints (`ui-generate`, `composer`) from host app to plugin core `src/endpoints/`
+- [ ] Move Composer UI components from host app to plugin `src/components/` and export them
+- [ ] Fix persistence for Composer V2 (save sessions and generated UI outputs via Local API)
+- [ ] Create `ai-media` collection for reference uploads
+- [ ] Redesign Composer V2 UI (follow-up messages, file/media upload support)
 - [ ] Verify planning-phase tool calls (fetch_reference_docs) appear in Live Stream when references are attached
 - [ ] MCP connections / AI skills for additional composer capabilities
 

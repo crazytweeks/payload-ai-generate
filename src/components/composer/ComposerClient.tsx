@@ -21,9 +21,11 @@ export function ComposerClient({
   const [refinementText, setRefinementText] = useState('');
   const [presetId, setPresetId] = useState('');
   const [references, setReferences] = useState<ReferenceRow[]>([]);
+  const [mediaRefs, setMediaRefs] = useState<{ id: string; url: string; alt: string; mediaId: string }[]>([]);
   const [plan, setPlan] = useState<ComposerPlan | null>(null);
   const [mode, setMode] = useState<ComposerMode>('idle');
   const [generatedFiles, setGeneratedFiles] = useState<GeneratedFile[]>([]);
+  const [sessionId, setSessionId] = useState<string>('');
 
   // stable refs shared with chat hooks so transports don't need re-creation
   const refsRef = useRef(references);
@@ -36,6 +38,11 @@ export function ComposerClient({
     planRef.current = plan;
   }, [references, presetId, plan]);
 
+  const sessionIdRef = useRef(sessionId);
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
+
   // ── planning chat ─────────────────────────────────────────────────────────
   const handlePlanReady = useCallback((extracted: ComposerPlan | null) => {
     setPlan(extracted);
@@ -47,6 +54,7 @@ export function ComposerClient({
     onModeChange: setMode,
     refsRef,
     presetIdRef,
+    sessionIdRef,
   });
 
   // ── generation chat ───────────────────────────────────────────────────────
@@ -56,6 +64,7 @@ export function ComposerClient({
       onGenerationDone: () => setMode('generated'),
       planRef,
       refsRef,
+      sessionIdRef,
     });
 
   // ── derived state ─────────────────────────────────────────────────────────
@@ -77,24 +86,75 @@ export function ComposerClient({
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
   }, []);
 
-  const handleStartPlanning = useCallback(() => {
+  const handleStartPlanning = useCallback(async () => {
     if (!firstPrompt.trim() || isPlanStreaming) return;
     syncRefs();
     setMode('planning');
     setPlan(null);
     planRef.current = null;
-    sendMessage({ text: firstPrompt.trim() });
+    
+    // Create session in Payload
+    let sid = sessionId;
+    if (!sid) {
+      try {
+        const res = await fetch('/api/ai-composer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: firstPrompt.slice(0, 50),
+            firstPrompt: firstPrompt,
+            preset: presetId || null,
+            referenceMedia: mediaRefs.map(m => m.mediaId),
+            referenceCollections: references.map(r => ({
+              referenceCollection: r.collection,
+              limit: r.limit,
+              isBeingUsed: true,
+              dataLoading: 'server'
+            }))
+          })
+        });
+        if (res.ok) {
+          const doc = await res.json();
+          sid = doc.doc.id;
+          setSessionId(sid);
+        }
+      } catch (err) {
+        console.error('Failed to create session:', err);
+      }
+    }
+    
+    // Pass media refs in the message
+    const attachments = mediaRefs.map(m => ({
+      name: m.alt || 'attachment',
+      url: m.url,
+      contentType: m.url.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+    }));
+
+    sendMessage({
+      content: firstPrompt.trim(),
+      role: 'user',
+      experimental_attachments: attachments.length > 0 ? attachments : undefined,
+    });
     scrollToEnd();
-  }, [firstPrompt, isPlanStreaming, sendMessage, scrollToEnd, syncRefs]);
+  }, [firstPrompt, mediaRefs, isPlanStreaming, sendMessage, scrollToEnd, syncRefs, sessionId, presetId, references]);
 
   const handleRefine = useCallback(() => {
-    if (!refinementText.trim() || isPlanStreaming) return;
-    syncRefs();
-    setMode('refining');
-    sendMessage({ text: refinementText.trim() });
+    if (!refinementText.trim()) return;
+    
+    if (isGenerating) {
+      if (isGenStreaming) return;
+      syncRefs();
+      sendGenMessage({ content: refinementText.trim(), role: 'user' });
+    } else {
+      if (isPlanStreaming) return;
+      syncRefs();
+      setMode('refining');
+      sendMessage({ content: refinementText.trim(), role: 'user' });
+    }
+    
     setRefinementText('');
     scrollToEnd();
-  }, [refinementText, isPlanStreaming, sendMessage, scrollToEnd, syncRefs]);
+  }, [refinementText, isPlanStreaming, isGenStreaming, isGenerating, sendMessage, sendGenMessage, scrollToEnd, syncRefs]);
 
   const handleProceed = useCallback(() => {
     if (!planRef.current || isGenStreaming) return;
@@ -108,6 +168,25 @@ export function ComposerClient({
     setMode('plan-ready');
     setGeneratedFiles([]);
   }, []);
+
+  const handleUploadMedia = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('alt', file.name);
+
+    try {
+      const res = await fetch('/api/ai-media', { method: 'POST', body: formData });
+      if (res.ok) {
+        const doc = await res.json();
+        setMediaRefs((p) => [...p, { id: crypto.randomUUID(), mediaId: doc.doc.id, url: doc.doc.url, alt: file.name }]);
+      }
+    } catch (err) {
+      console.error('Failed to upload media:', err);
+    }
+  };
 
   // ── render ────────────────────────────────────────────────────────────────
   return (
@@ -128,6 +207,9 @@ export function ComposerClient({
         presets={presets}
         referenceCollections={referenceCollections}
         references={references}
+        mediaRefs={mediaRefs}
+        onUploadMedia={handleUploadMedia}
+        onRemoveMedia={(id) => setMediaRefs((p) => p.filter((m) => m.id !== id))}
         setFirstPrompt={setFirstPrompt}
         setPresetId={setPresetId}
       />
@@ -201,13 +283,13 @@ export function ComposerClient({
         )}
 
         {/* Refinement input */}
-        {(mode === 'plan-ready' || mode === 'refining') && (
+        {(mode === 'plan-ready' || mode === 'refining' || mode === 'generated') && (
           <div className="border-t border-zinc-800 p-3">
             <div className="flex gap-2">
               <textarea
                 className="flex-1 resize-none rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-700"
                 rows={2}
-                placeholder="Refine the plan — e.g. 'make it mobile-first, use a card grid instead'…"
+                placeholder={isGenerating ? "Refine the generated UI — e.g. 'make the button blue'…" : "Refine the plan — e.g. 'make it mobile-first, use a card grid instead'…"}
                 value={refinementText}
                 onChange={(e) => setRefinementText(e.target.value)}
                 onKeyDown={(e) => {
@@ -216,7 +298,7 @@ export function ComposerClient({
               />
               <button
                 type="button"
-                disabled={!refinementText.trim() || isPlanStreaming}
+                disabled={!refinementText.trim() || isPlanStreaming || isGenStreaming}
                 onClick={handleRefine}
                 className="self-end rounded-lg bg-zinc-700 px-3 py-2 text-xs font-semibold text-zinc-200 disabled:opacity-40 hover:bg-zinc-600"
               >

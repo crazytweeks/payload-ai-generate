@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.1.5-beta.1 — 2026-05-27
+
+- Migrated `ComposerV2Client` and API routes (`uiGenerateEndpointHandler.ts`, `composerEndpointHandler.ts`) into the plugin core.
+- Added file/media upload support to Composer V2, linked to the `ai-media` collection.
+- Added generation-phase follow-up message support (refinements) to Composer V2.
+- Exported `ComposerV2Client` and `ComposerClient` from the plugin index for external reuse.
+- Replaced custom REST session APIs with standard Payload local API integrations.
+
+---
+
 ## 0.1.4-beta.1 — 2026-05-27
 
 - Added **Composer v2 sessions sidebar**: collapsible panel listing all saved `ai-composer` sessions with timestamps; clicking a session restores its prompt, plan, messages, references, and preset without re-triggering AI calls; new-session button resets state.

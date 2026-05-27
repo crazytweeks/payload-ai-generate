@@ -1,6 +1,6 @@
 {
   "name": "payload-ai-generate",
-  "version": "0.1.4-beta.1",
+  "version": "0.1.5-beta.1",
   "description": "AI generation plugin for Payload CMS",
   "homepage": "https://github.com/crazytweeks/payload-ai-generate",
   "repository": {
@@ -79,7 +79,7 @@
     "lint": "bun biome lint .",
     "test": "vitest",
     "devtool": "NODE_ENV=development bunx @ai-sdk/devtools",
-    "dev": "bunx concurrently \"bun run devserver\" \"bun run devtool\""
+    "dev": "concurrently \"bun run devserver\" \"bun run devtool\""
   },
   "dependencies": {
     "@ai-sdk/devtools": "^0.0.18",

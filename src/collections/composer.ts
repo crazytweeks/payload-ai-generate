@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
-import { aiComposerCollectionSlug, aiPresetCollectionSlug } from './constants';
+import { aiComposerCollectionSlug, aiMediaCollectionSlug, aiPresetCollectionSlug } from './constants';
 
 export const buildAIComposerCollection = (pluginOptions: AIPluginOptions): CollectionConfig => ({
   slug: aiComposerCollectionSlug,
@@ -36,6 +36,16 @@ export const buildAIComposerCollection = (pluginOptions: AIPluginOptions): Colle
       relationTo: aiPresetCollectionSlug,
       admin: {
         description: 'Optional AI preset defining model, provider, and system prompt.',
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'referenceMedia',
+      type: 'relationship',
+      relationTo: aiMediaCollectionSlug,
+      hasMany: true,
+      admin: {
+        description: 'Reference files (images, PDFs) attached to this composition session.',
         position: 'sidebar',
       },
     },

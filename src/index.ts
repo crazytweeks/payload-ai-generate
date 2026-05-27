@@ -7,6 +7,7 @@ import {
   aiPromptCollectionSlug,
   buildAIComposerCollection,
   buildAIComposerUICollection,
+  buildAIMediaCollection,
   buildAIModelsCollection,
   buildAIPresetCollection,
   buildAIPromptCollection,
@@ -24,6 +25,7 @@ import { buildTestProductsCollection, testProductsCollectionSlug } from './dev-t
 import { composerEndpointHandler } from './endpoints/composerEndpointHandler';
 import { customEndpointHandler } from './endpoints/customEndpointHandler';
 import { previewEndpointHandler } from './endpoints/previewHandler';
+import { uiGenerateEndpointHandler } from './endpoints/uiGenerateEndpointHandler';
 
 const upsertCollection = (
   collections: CollectionConfig[] | undefined,
@@ -59,6 +61,11 @@ export {
 };
 export { ComposerUIPreviewFrame, buildComposerUISrcDoc } from './composer-ui';
 export type { ComposerUIFile } from './composer-ui';
+
+export { ComposerClient } from './components/composer/ComposerClient';
+export type { ComposerPlan, GeneratedFile, ReferenceRow, ComposerMode } from './components/composer/types';
+
+export { ComposerV2Client } from './components/composer-v2/ComposerV2Client';
 
 /**
  * Extends a Payload config with the AI prompt tools, preset support, and model registry sync.
@@ -98,6 +105,7 @@ export const aiGenerate =
       buildAIComposerCollection(effectivePluginOptions)
     );
     config.collections = upsertCollection(config.collections, buildAIComposerUICollection());
+    config.collections = upsertCollection(config.collections, buildAIMediaCollection());
 
     if (pluginOptions.devTestCollections) {
       config.collections = upsertCollection(config.collections, buildTestMessagesCollection());
@@ -127,6 +135,11 @@ export const aiGenerate =
         handler: composerEndpointHandler,
         method: 'post',
         path: '/ai-generate/composer',
+      },
+      {
+        handler: uiGenerateEndpointHandler,
+        method: 'post',
+        path: '/ai-generate/ui-generate',
       },
     ];
 

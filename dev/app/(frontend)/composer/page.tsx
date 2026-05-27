@@ -1,6 +1,6 @@
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
-import { ComposerClient } from './ComposerClient';
+import { ComposerClient } from '@plugin/index';
 
 export const dynamic = 'force-dynamic';
 

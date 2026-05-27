@@ -11,9 +11,10 @@ type Params = {
   onModeChange: (mode: ComposerMode) => void;
   refsRef: React.MutableRefObject<ReferenceRow[]>;
   presetIdRef: React.MutableRefObject<string>;
+  sessionIdRef: React.MutableRefObject<string>;
 };
 
-export const usePlanChat = ({ onPlanReady, onModeChange, refsRef, presetIdRef }: Params) => {
+export const usePlanChat = ({ onPlanReady, onModeChange, refsRef, presetIdRef, sessionIdRef }: Params) => {
   const buildRefBody = useCallback(
     () =>
       refsRef.current
@@ -27,10 +28,10 @@ export const usePlanChat = ({ onPlanReady, onModeChange, refsRef, presetIdRef }:
       new DefaultChatTransport({
         api: '/api/ai-generate/composer',
         prepareSendMessagesRequest: async ({ messages }) => ({
-          body: { messages, references: buildRefBody(), presetId: presetIdRef.current || undefined },
+          body: { messages, references: buildRefBody(), presetId: presetIdRef.current || undefined, sessionId: sessionIdRef.current || undefined },
         }),
       }),
-    [buildRefBody, presetIdRef]
+    [buildRefBody, presetIdRef, sessionIdRef]
   );
 
   const { messages, sendMessage, status, stop } = useChat({ transport });

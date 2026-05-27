@@ -5,10 +5,10 @@ import { DefaultChatTransport, type UIMessage } from 'ai';
 import { Code2, Eye, FileCode2, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { buildComposerUISrcDoc } from '@plugin/composer-ui';
-import { CodeBlock } from '../composer/components/CodeBlock';
-import { FileTree } from '../composer/components/FileTree';
-import { PlanView } from '../composer/components/PlanView';
-import { extractPlanFromMessage } from '../composer/planExtract';
+import { CodeBlock } from '@plugin/components/composer/components/CodeBlock';
+import { FileTree } from '@plugin/components/composer/components/FileTree';
+import { PlanView } from '@plugin/components/composer/components/PlanView';
+import { extractPlanFromMessage } from '@plugin/components/composer/planExtract';
 import {
   Conversation,
   ConversationContent,
@@ -347,6 +347,7 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
       limit: 10,
     }))
   );
+  const [mediaRefs, setMediaRefs] = useState<{ id: string; url: string; alt: string; mediaId: string }[]>([]);
   const [plan, setPlan] = useState<ComposerPlan | null>(null);
   const [mode, setMode] = useState<ComposerMode>('idle');
   const [generatedFiles, setGeneratedFiles] = useState<GeneratedFile[]>([]);
@@ -378,6 +379,7 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
           plan: nextPlan,
           presetId: presetIdRef.current || undefined,
           references: referencesToBody(refsRef.current),
+          referenceMedia: mediaRefs.map(m => m.mediaId),
           title: firstPrompt || undefined,
         }),
         headers: {
@@ -465,17 +467,36 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
       setGeneratedFiles([]);
       lastPlanMessageIdRef.current = undefined;
       setMode('planning');
-      planChat.sendMessage({ text });
+      
+      const attachments = mediaRefs.map(m => ({
+        name: m.alt || 'attachment',
+        url: m.url,
+        contentType: m.url.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+      }));
+
+      planChat.sendMessage({ 
+        content: text, 
+        role: 'user',
+        experimental_attachments: attachments.length > 0 ? attachments : undefined
+      });
     },
-    [planChat]
+    [planChat, mediaRefs]
   );
 
   const refinePlan = useCallback(() => {
-    if (!refinement.trim() || planChat.status !== 'ready') return;
-    setMode('refining');
-    planChat.sendMessage({ text: refinement.trim() });
+    if (!refinement.trim()) return;
+    
+    if (mode === 'generated' || mode === 'generating') {
+      if (generationChat.status !== 'ready') return;
+      setMode('generating');
+      generationChat.sendMessage({ content: refinement.trim(), role: 'user' });
+    } else {
+      if (planChat.status !== 'ready') return;
+      setMode('refining');
+      planChat.sendMessage({ content: refinement.trim(), role: 'user' });
+    }
     setRefinement('');
-  }, [planChat, refinement]);
+  }, [planChat, generationChat, refinement, mode]);
 
   const generateUI = useCallback(() => {
     if (!planRef.current || generationChat.status !== 'ready') return;
@@ -498,6 +519,7 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
     setComposerSessionId(undefined);
     setComposerUiId(undefined);
     setGeneratedFiles([]);
+    setMediaRefs([]);
     lastPlanMessageIdRef.current = undefined;
     setMode('idle');
     planChat.setMessages([]);
@@ -524,6 +546,7 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
         setComposerSessionId(String(session.id));
         setComposerUiId(undefined);
         setGeneratedFiles([]);
+        setMediaRefs([]);
         lastPlanMessageIdRef.current = undefined;
 
         const loadedPlan = session.plan as ComposerPlan | null | undefined;
@@ -553,6 +576,23 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
     },
     [generationChat, planChat]
   );
+
+  const handleUploadMedia = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('alt', file.name);
+    try {
+      const res = await fetch('/api/ai-media', { method: 'POST', body: formData });
+      if (res.ok) {
+        const doc = await res.json();
+        setMediaRefs((p) => [...p, { id: crypto.randomUUID(), mediaId: doc.doc.id, url: doc.doc.url, alt: file.name }]);
+      }
+    } catch (err) {
+      console.error('Failed to upload media:', err);
+    }
+  };
 
   return (
     <div className="flex h-[calc(100vh-45px)] bg-[#101114] text-zinc-100">
@@ -627,11 +667,27 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
               placeholder="Describe the UI to build..."
               value={firstPrompt}
             />
-            <PromptInputSubmit
-              disabled={!firstPrompt.trim() || isBusy}
-              status={isBusy ? 'streaming' : 'ready'}
-            />
+            <div className="flex items-center gap-2 mt-2">
+              <label className="cursor-pointer rounded-lg bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-300 hover:bg-zinc-700">
+                + Image/File
+                <input type="file" className="hidden" accept="image/*,.pdf,text/*" onChange={handleUploadMedia} />
+              </label>
+              <PromptInputSubmit
+                disabled={!firstPrompt.trim() || isBusy}
+                status={isBusy ? 'streaming' : 'ready'}
+              />
+            </div>
           </PromptInput>
+          {mediaRefs.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {mediaRefs.map((m) => (
+                <div key={m.id} className="group relative flex items-center gap-2 rounded-md bg-zinc-800 px-2 py-1">
+                  <span className="max-w-[120px] truncate text-[10px] text-zinc-300">{m.alt || 'Attachment'}</span>
+                  <button type="button" onClick={() => setMediaRefs(p => p.filter(x => x.id !== m.id))} className="text-[10px] text-zinc-500 hover:text-red-400">×</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
@@ -649,8 +705,11 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
             <textarea
               className="min-h-20 w-full resize-none rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-cyan-600"
               onChange={(event) => setRefinement(event.currentTarget.value)}
-              placeholder="Refine the plan..."
+              placeholder={mode === 'generated' ? "Refine the generated UI..." : "Refine the plan..."}
               value={refinement}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) refinePlan();
+              }}
             />
             <div className="grid grid-cols-2 gap-2">
               <button

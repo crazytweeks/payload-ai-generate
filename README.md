@@ -71,6 +71,11 @@ import {
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
 } from 'payload-ai-generate';
+
+```
+
+```ts
+import { ComposerClient, ComposerV2Client } from 'payload-ai-generate';
 ```
 
 ```ts

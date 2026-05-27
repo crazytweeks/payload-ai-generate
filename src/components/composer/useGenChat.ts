@@ -10,9 +10,10 @@ type Params = {
   onGenerationDone: () => void;
   planRef: React.MutableRefObject<ComposerPlan | null>;
   refsRef: React.MutableRefObject<ReferenceRow[]>;
+  sessionIdRef: React.MutableRefObject<string>;
 };
 
-export const useGenChat = ({ onFilesChange, onGenerationDone, planRef, refsRef }: Params) => {
+export const useGenChat = ({ onFilesChange, onGenerationDone, planRef, refsRef, sessionIdRef }: Params) => {
   const buildRefBody = useCallback(
     () =>
       refsRef.current
@@ -31,10 +32,10 @@ export const useGenChat = ({ onFilesChange, onGenerationDone, planRef, refsRef }
       new DefaultChatTransport({
         api: '/api/ai-generate/ui-generate',
         prepareSendMessagesRequest: async ({ messages }) => ({
-          body: { messages, plan: planRef.current, references: buildRefBody() },
+          body: { messages, plan: planRef.current, references: buildRefBody(), sessionId: sessionIdRef.current || undefined },
         }),
       }),
-    [buildRefBody, planRef]
+    [buildRefBody, planRef, sessionIdRef]
   );
 
   const { messages, sendMessage, status, stop } = useChat({ transport });

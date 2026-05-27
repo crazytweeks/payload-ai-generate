@@ -15,6 +15,9 @@ type Props = {
   presets: { id: string; title: string }[];
   referenceCollections: string[];
   references: ReferenceRow[];
+  mediaRefs: { id: string; url: string; alt: string; mediaId: string }[];
+  onUploadMedia: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveMedia: (id: string) => void;
   setFirstPrompt: (v: string) => void;
   setPresetId: (v: string) => void;
 };
@@ -32,6 +35,9 @@ export function LeftSidebar({
   presets,
   referenceCollections,
   references,
+  mediaRefs,
+  onUploadMedia,
+  onRemoveMedia,
   setFirstPrompt,
   setPresetId,
 }: Props) {
@@ -65,14 +71,31 @@ export function LeftSidebar({
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onStartPlanning();
             }}
           />
-          <button
-            type="button"
-            disabled={!firstPrompt.trim()}
-            onClick={onStartPlanning}
-            className="mt-2 w-full rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40 hover:bg-violet-600"
-          >
-            Analyse & Plan ⌘↵
-          </button>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <label className="cursor-pointer rounded-lg bg-zinc-800 px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-700">
+              + Image/File
+              <input type="file" className="hidden" accept="image/*,.pdf,text/*" onChange={onUploadMedia} />
+            </label>
+            <button
+              type="button"
+              disabled={!firstPrompt.trim()}
+              onClick={onStartPlanning}
+              className="flex-1 rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40 hover:bg-violet-600"
+            >
+              Analyse & Plan ⌘↵
+            </button>
+          </div>
+          
+          {mediaRefs.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {mediaRefs.map((m) => (
+                <div key={m.id} className="group relative flex items-center gap-2 rounded-md bg-zinc-800 px-2 py-1">
+                  <span className="max-w-[120px] truncate text-[10px] text-zinc-300">{m.alt || 'Attachment'}</span>
+                  <button type="button" onClick={() => onRemoveMedia(m.id)} className="text-[10px] text-zinc-500 hover:text-red-400">×</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

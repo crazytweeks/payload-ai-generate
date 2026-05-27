@@ -1,8 +1,10 @@
 export { buildAIComposerCollection } from './collections/composer';
 export { buildAIComposerUICollection } from './collections/composer-ui';
+export { buildAIMediaCollection } from './collections/media';
 export {
   aiComposerCollectionSlug,
   aiComposerUICollectionSlug,
+  aiMediaCollectionSlug,
   aiModelsOptionsCollectionSlug,
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
