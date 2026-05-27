@@ -58,6 +58,7 @@ export const seedTestMessagesCollection = async (payload: Payload) => {
     await payload.create({
       collection,
       data: message,
+      draft: false,
     });
   }
 };

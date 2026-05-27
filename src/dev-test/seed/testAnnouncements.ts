@@ -55,6 +55,7 @@ export const seedTestAnnouncementsCollection = async (payload: Payload) => {
     await payload.create({
       collection,
       data: announcement,
+      draft: false,
     });
   }
 };
