@@ -1,0 +1,82 @@
+# syntax=docker/dockerfile:1.7
+# Builds the plugin's dev app (./dev) as a standalone Next.js container.
+#
+# Coolify setup:
+#   Repository : https://github.com/crazytweeks/payload-ai-generate
+#   Branch     : main
+#   Build context : /
+#   Dockerfile    : Dockerfile.dev
+#   Port          : 3000
+#
+# Required runtime environment variables (set in Coolify):
+#   DATABASE_URL              mongodb+srv://...
+#   DATABASE_NAME             (optional, default: ai-plugin-dev)
+#   PAYLOAD_SECRET            random secret string
+#   OPENAI_API_KEY            sk-...
+#   GOOGLE_AI_API             (optional, if using Gemini models)
+#   PREVIEW_SECRET            random secret for preview auth
+#   NEXT_PUBLIC_SERVER_URL    https://your-coolify-domain.com
+#   PAYLOAD_AI_GENERATE_TEST_COLLECTIONS  true (enables dev reference collections)
+
+# ── deps ───────────────────────────────────────────────────────────────────────
+FROM oven/bun:alpine AS deps
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat
+
+COPY package.json tsconfig.json ./
+
+RUN --mount=type=cache,id=bun-install-ai-plugin-dev,target=/root/.bun/install/cache \
+  bun install
+
+# ── builder ────────────────────────────────────────────────────────────────────
+FROM deps AS builder
+WORKDIR /app
+
+COPY src ./src
+COPY dev ./dev
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true
+
+# DATABASE_URL may be needed during build if Payload validates config at compile time.
+# Set it in Coolify as a build variable (DATABASE_URL_PUBLIC) pointing to your DB.
+ARG DATABASE_URL
+ARG DATABASE_URL_PUBLIC
+
+RUN --mount=type=cache,id=next-cache-ai-plugin-dev,target=/app/dev/.next/cache \
+  if [ -n "${DATABASE_URL_PUBLIC:-}" ]; then \
+    export DATABASE_URL="$DATABASE_URL_PUBLIC"; \
+    echo "Using DATABASE_URL_PUBLIC as build-time DATABASE_URL"; \
+  fi; \
+  ./node_modules/.bin/next build dev
+
+# Strip any env files that might have been copied in
+RUN find dev/.next/standalone -name '.env*' -delete 2>/dev/null || true
+
+# ── runner ─────────────────────────────────────────────────────────────────────
+FROM node:24-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+ENV PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true
+
+RUN addgroup --system --gid 1001 nodejs && \
+  adduser --system --uid 1001 nextjs
+
+# Next.js standalone output — mirrors directory layout relative to the plugin root,
+# so server.js lands at dev/server.js and static assets at dev/.next/static/
+COPY --from=builder --chown=nextjs:nodejs /app/dev/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/dev/.next/static ./dev/.next/static
+
+# Payload media uploads — mount a persistent volume at /app/dev/media in Coolify
+RUN mkdir -p dev/media dev/.next/cache && \
+  chown -R nextjs:nodejs dev/media dev/.next
+
+USER nextjs
+EXPOSE 3000
+
+CMD ["node", "dev/server.js"]
