@@ -1,5 +1,5 @@
 import type { CollectionSlug, Payload } from 'payload';
-import type { TestProduct } from '../../../dev/payload-types';
+import type { TestProduct } from '../../payload-types';
 import { testProductsCollectionSlug } from '../testProducts';
 
 const testProductsSeedData: Omit<TestProduct, 'id' | 'createdAt' | 'updatedAt'>[] = [

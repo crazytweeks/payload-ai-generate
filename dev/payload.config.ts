@@ -120,7 +120,7 @@ const buildConfigWithMemoryDB = buildConfig({
   secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
   sharp,
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    outputFile: path.resolve(dirname, '../src/payload-types.ts'),
   },
 });
 

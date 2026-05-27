@@ -2,9 +2,6 @@ import { devToolsMiddleware } from '@ai-sdk/devtools';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import configPromise from '@payload-config';
-import type { UIMessage } from 'ai';
-import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
-import { getPayload } from 'payload';
 import type { AIPluginOptions } from '@plugin/ai-types';
 import { aiComposerUICollectionSlug } from '@plugin/collections/constants';
 import type { ComposerPlan } from '@plugin/composer/types';
@@ -12,6 +9,9 @@ import { createCollectionTools } from '@plugin/tools/collectionTools';
 import { createReferenceTools } from '@plugin/tools/referenceTools';
 import type { GeneratedFile } from '@plugin/tools/uiGenerationTools';
 import { createUIGenerationTools } from '@plugin/tools/uiGenerationTools';
+import type { UIMessage } from 'ai';
+import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
+import { getPayload } from 'payload';
 
 export const dynamic = 'force-dynamic';
 

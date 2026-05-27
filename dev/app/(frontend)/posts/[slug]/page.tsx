@@ -1,18 +1,14 @@
 import configPromise from '@payload-config';
+import { AiComposerUiBlockComponentClient } from '@plugin/blocks/ai-composer-ui-block/ClientComponent';
+import { resolveAiComposerUiDoc } from '@plugin/blocks/ai-composer-ui-block/Component';
+import type { AiComposerUiBlockProps } from '@plugin/blocks/ai-composer-ui-block/types';
+import { AiHtmlBlockComponentClient } from '@plugin/blocks/ai-html-block/ClientComponent';
+import { resolveAiHtmlPromptDoc } from '@plugin/blocks/ai-html-block/Component';
+import type { AiHtmlBlockProps } from '@plugin/blocks/ai-html-block/types';
 import { draftMode } from 'next/headers';
 import Link from 'next/link';
 import { getPayload } from 'payload';
 import { cache } from 'react';
-import {
-  resolveAiHtmlPromptDoc,
-} from '@plugin/blocks/ai-html-block/Component';
-import { AiHtmlBlockComponentClient } from '@plugin/blocks/ai-html-block/ClientComponent';
-import type { AiHtmlBlockProps } from '@plugin/blocks/ai-html-block/types';
-import {
-  resolveAiComposerUiDoc,
-} from '@plugin/blocks/ai-composer-ui-block/Component';
-import { AiComposerUiBlockComponentClient } from '@plugin/blocks/ai-composer-ui-block/ClientComponent';
-import type { AiComposerUiBlockProps } from '@plugin/blocks/ai-composer-ui-block/types';
 import { LivePreviewListener } from '../../../../components/LivePreviewListener';
 
 type Args = {

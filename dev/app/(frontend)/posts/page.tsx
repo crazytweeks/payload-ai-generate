@@ -69,10 +69,30 @@ export default async function PostsPage() {
               >
                 {post.title || '(Untitled)'}
               </Link>
-              <p style={{ color: '#52525b', fontSize: '12px', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <p
+                style={{
+                  color: '#52525b',
+                  fontSize: '12px',
+                  margin: '4px 0 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
                 /{post.slug} · {new Date(post.updatedAt).toLocaleDateString()}
                 {(post as any)._status === 'draft' && (
-                  <span style={{ color: '#f59e0b', fontSize: '11px', fontWeight: 600, background: '#422006', padding: '1px 6px', borderRadius: '4px' }}>draft</span>
+                  <span
+                    style={{
+                      color: '#f59e0b',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      background: '#422006',
+                      padding: '1px 6px',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    draft
+                  </span>
                 )}
               </p>
             </li>
