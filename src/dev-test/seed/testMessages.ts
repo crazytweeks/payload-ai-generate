@@ -1,7 +1,8 @@
 import type { CollectionSlug, Payload } from 'payload';
+import type { TestMessage } from '../../../dev/payload-types';
 import { testMessagesCollectionSlug } from '../testMessages';
 
-const testMessagesSeedData = [
+const testMessagesSeedData: Omit<TestMessage, 'id' | 'createdAt' | 'updatedAt'>[] = [
   {
     key: 'welcome',
     title: 'Welcome Message',
@@ -57,7 +58,11 @@ export const seedTestMessagesCollection = async (payload: Payload) => {
 
     await payload.create({
       collection,
-      data: message,
+      data: {
+        ...message,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
       draft: false,
     });
   }

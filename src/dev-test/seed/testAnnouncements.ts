@@ -1,7 +1,8 @@
 import type { CollectionSlug, Payload } from 'payload';
+import type { TestAnnouncement } from '../../../dev/payload-types';
 import { testAnnouncementsCollectionSlug } from '../testAnnouncements';
 
-const testAnnouncementsSeedData = [
+const testAnnouncementsSeedData: Omit<TestAnnouncement, 'id' | 'createdAt' | 'updatedAt'>[] = [
   {
     key: 'spring-release',
     headline: 'Spring Release Window',
@@ -26,7 +27,7 @@ const testAnnouncementsSeedData = [
     startsAt: '2026-05-01T12:00:00.000Z',
     isPublished: true,
   },
-] as const;
+];
 
 export const seedTestAnnouncementsCollection = async (payload: Payload) => {
   const collection = testAnnouncementsCollectionSlug as CollectionSlug;
@@ -54,7 +55,11 @@ export const seedTestAnnouncementsCollection = async (payload: Payload) => {
 
     await payload.create({
       collection,
-      data: announcement,
+      data: {
+        ...announcement,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
       draft: false,
     });
   }

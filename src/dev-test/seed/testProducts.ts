@@ -1,7 +1,8 @@
 import type { CollectionSlug, Payload } from 'payload';
+import type { TestProduct } from '../../../dev/payload-types';
 import { testProductsCollectionSlug } from '../testProducts';
 
-const testProductsSeedData = [
+const testProductsSeedData: Omit<TestProduct, 'id' | 'createdAt' | 'updatedAt'>[] = [
   {
     sku: 'AI-BLOCK-STARTER',
     name: 'AI Block Starter',
@@ -26,7 +27,7 @@ const testProductsSeedData = [
     price: 29,
     isPublished: false,
   },
-] as const;
+];
 
 export const seedTestProductsCollection = async (payload: Payload) => {
   const collection = testProductsCollectionSlug as CollectionSlug;
@@ -54,7 +55,11 @@ export const seedTestProductsCollection = async (payload: Payload) => {
 
     await payload.create({
       collection,
-      data: product,
+      data: {
+        ...product,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
       draft: false,
     });
   }
