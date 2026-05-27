@@ -8,6 +8,11 @@ import {
 } from '@plugin/blocks/ai-html-block/Component';
 import { AiHtmlBlockComponentClient } from '@plugin/blocks/ai-html-block/ClientComponent';
 import type { AiHtmlBlockProps } from '@plugin/blocks/ai-html-block/types';
+import {
+  resolveAiComposerUiDoc,
+} from '@plugin/blocks/ai-composer-ui-block/Component';
+import { AiComposerUiBlockComponentClient } from '@plugin/blocks/ai-composer-ui-block/ClientComponent';
+import type { AiComposerUiBlockProps } from '@plugin/blocks/ai-composer-ui-block/types';
 import { LivePreviewListener } from '../../../../components/LivePreviewListener';
 
 type Args = {
@@ -58,6 +63,15 @@ export default async function PostPage({ params: paramsPromise }: Args) {
                 />
               );
             }
+            if (block.blockType === 'ai-composer-ui-block') {
+              return (
+                <AiComposerUiBlockWithDebugData
+                  key={block.id ?? block.blockType}
+                  composerUI={block.composerUI}
+                  payload={payload}
+                />
+              );
+            }
             return null;
           })
         ) : (
@@ -88,6 +102,32 @@ const AiHtmlBlockWithDebugData = async ({ code, payload }: AiHtmlBlockProps) => 
           }}
         >
           {JSON.stringify(promptDoc, null, 2)}
+        </pre>
+      </details>
+    </section>
+  );
+};
+
+const AiComposerUiBlockWithDebugData = async ({ composerUI, payload }: AiComposerUiBlockProps) => {
+  const uiDoc = await resolveAiComposerUiDoc({ composerUI, payload });
+
+  return (
+    <section style={{ display: 'grid', gap: '1rem' }}>
+      <AiComposerUiBlockComponentClient composerUI={uiDoc} />
+      <details open>
+        <summary>AI Composer UI data</summary>
+        <pre
+          style={{
+            background: '#111827',
+            color: '#e5e7eb',
+            fontSize: '0.8rem',
+            lineHeight: 1.5,
+            overflowX: 'auto',
+            padding: '1rem',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          {JSON.stringify(uiDoc, null, 2)}
         </pre>
       </details>
     </section>

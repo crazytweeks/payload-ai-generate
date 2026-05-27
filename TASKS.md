@@ -18,7 +18,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 - [ ] Verify planning-phase tool calls (fetch_reference_docs) appear in Live Stream when references are attached
 - [ ] MCP connections / AI skills for additional composer capabilities
-- [~] Add AI Composer UI Block (ai-composer-ui-block) for multi-file rendering — 🤖 Antigravity (2026-05-27T10:13Z)
 
 ---
 
@@ -122,6 +121,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Completed
 
+- [x] **AI Composer UI Block** (`ai-composer-ui-block`) for rendering multi-file static output pages in host apps, using sandboxed iframes and unified `srcDoc` built from files list
 - [x] **AI Composer — full pipeline** (plan → generate → IDE view):
   - Planning phase: `usePlanChat` + `/api/ai-generate/composer` → extracts `ComposerPlan` JSON from assistant response (text or reasoning parts, Gemini fallback)
   - Generation phase: `useGenChat` + `/api/ai-generate/ui-generate` → AI calls `write_file` tool once per file

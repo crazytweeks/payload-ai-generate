@@ -97,9 +97,7 @@ export interface Config {
     'test-announcements': TestAnnouncementsSelect<false> | TestAnnouncementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    'payload-locked-documents':
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
@@ -145,7 +143,7 @@ export interface Post {
   id: string;
   title: string;
   slug: string;
-  content?: AiHtmlBlockType[] | null;
+  content?: (AiHtmlBlockType | AiComposerUiBlockType)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -192,7 +190,7 @@ export interface AiPrompt {
         /**
          * Collection to query for this reference data source.
          */
-        collection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
+        referenceCollection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
         /**
          * Maximum number of documents to load from this collection.
          */
@@ -336,55 +334,17 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * AI Composer sessions — plan and generate UI blocks through conversation.
- *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ai-composer".
+ * via the `definition` "AiComposerUiBlockType".
  */
-export interface AiComposer {
-  id: string;
-  title: string;
+export interface AiComposerUiBlockType {
   /**
-   * The initial prompt that starts this composition session.
+   * Select an AI Composer UI document whose generated multi-file source files should be rendered by this block.
    */
-  firstPrompt: string;
-  /**
-   * Optional AI preset defining model, provider, and system prompt.
-   */
-  preset?: (string | null) | AiPreset;
-  /**
-   * Reference collection queries injected into the AI context.
-   */
-  referenceCollections?:
-    | {
-        collection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
-        isBeingUsed?: boolean | null;
-        limit?: number | null;
-        dataLoading: 'server' | 'client';
-        filtersJSON?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  messages?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  plan?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
+  composerUI: string | AiComposerUi;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ai-composer-ui-block';
 }
 /**
  * AI-generated multi-file UI outputs linked to a Composer planning session.
@@ -434,6 +394,57 @@ export interface AiComposerUi {
    * AI generation trace — steps, tool calls, token counts.
    */
   generationLog?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * AI Composer sessions — plan and generate UI blocks through conversation.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-composer".
+ */
+export interface AiComposer {
+  id: string;
+  title: string;
+  /**
+   * The initial prompt that starts this composition session.
+   */
+  firstPrompt: string;
+  /**
+   * Optional AI preset defining model, provider, and system prompt.
+   */
+  preset?: (string | null) | AiPreset;
+  /**
+   * Reference collection queries injected into the AI context.
+   */
+  referenceCollections?:
+    | {
+        referenceCollection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
+        isBeingUsed?: boolean | null;
+        limit?: number | null;
+        dataLoading: 'server' | 'client';
+        filtersJSON?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  messages?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  plan?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -629,6 +640,7 @@ export interface PostsSelect<T extends boolean = true> {
     | T
     | {
         'ai-html-block'?: T | AiHtmlBlockTypeSelect<T>;
+        'ai-composer-ui-block'?: T | AiComposerUiBlockTypeSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -640,6 +652,15 @@ export interface PostsSelect<T extends boolean = true> {
  */
 export interface AiHtmlBlockTypeSelect<T extends boolean = true> {
   code?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AiComposerUiBlockType_select".
+ */
+export interface AiComposerUiBlockTypeSelect<T extends boolean = true> {
+  composerUI?: T;
   id?: T;
   blockName?: T;
 }
@@ -688,7 +709,7 @@ export interface AiPromptsSelect<T extends boolean = true> {
   referenceCollections?:
     | T
     | {
-        collection?: T;
+        referenceCollection?: T;
         limit?: T;
         isBeingUsed?: T;
         dataLoading?: T;
@@ -731,7 +752,7 @@ export interface AiComposerSelect<T extends boolean = true> {
   referenceCollections?:
     | T
     | {
-        collection?: T;
+        referenceCollection?: T;
         isBeingUsed?: T;
         limit?: T;
         dataLoading?: T;
@@ -887,6 +908,7 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
