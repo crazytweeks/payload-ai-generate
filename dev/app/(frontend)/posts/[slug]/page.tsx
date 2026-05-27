@@ -5,9 +5,9 @@ import { getPayload } from 'payload';
 import { cache } from 'react';
 import {
   resolveAiHtmlPromptDoc,
-} from '../../../../../src/blocks/ai-html-block/Component';
-import { AiHtmlBlockComponentClient } from '../../../../../src/blocks/ai-html-block/ClientComponent';
-import type { AiHtmlBlockProps } from '../../../../../src/blocks/ai-html-block/types';
+} from '@plugin/blocks/ai-html-block/Component';
+import { AiHtmlBlockComponentClient } from '@plugin/blocks/ai-html-block/ClientComponent';
+import type { AiHtmlBlockProps } from '@plugin/blocks/ai-html-block/types';
 import { LivePreviewListener } from '../../../../components/LivePreviewListener';
 
 type Args = {

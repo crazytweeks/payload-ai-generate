@@ -1,5 +1,5 @@
-import type { AIReferenceDataSource } from '../../../../src/ai-types';
-import type { ComposerPlan } from '../../../../src/composer/types';
+import type { AIReferenceDataSource } from '@plugin/ai-types';
+import type { ComposerPlan } from '@plugin/composer/types';
 
 export type { AIReferenceDataSource, ComposerPlan };
 

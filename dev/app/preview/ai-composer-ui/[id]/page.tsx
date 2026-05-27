@@ -1,7 +1,7 @@
 import configPromise from '@payload-config';
 import { notFound } from 'next/navigation';
 import { getPayload } from 'payload';
-import { ComposerUIPreviewFrame } from '../../../../../src/composer-ui';
+import { ComposerUIPreviewFrame } from '@plugin/composer-ui';
 
 export const dynamic = 'force-dynamic';
 

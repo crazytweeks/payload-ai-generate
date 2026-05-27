@@ -16,7 +16,6 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
-- [~] Composer v2 — sessions sidebar (list, select, restore, new session) — 🤖 agent-claude (2026-05-27T00:00Z)
 - [ ] Verify planning-phase tool calls (fetch_reference_docs) appear in Live Stream when references are attached
 - [ ] MCP connections / AI skills for additional composer capabilities
 
@@ -133,6 +132,8 @@ This file is the source of truth for planned work, feature ideas, known issues, 
   - `CodeBlock.tsx` — async shiki syntax highlighting (vesper dark theme), copy button
 - [x] **Tool call steps visible** in composer Live Stream — `ToolPart` renders status dot (amber pulsing → green done), expandable input/output JSON
 - [x] **`ai-composer-ui` Payload collection** (`ai-composer-ui` slug) — stores multi-file UI output with title, status, plan JSON, files array, composerSession relationship
+- [x] **Composer v2 sessions sidebar** — collapsible sidebar listing saved sessions; select to restore full state (prompt, plan, messages, references, preset); new-session button resets
+- [x] **`@plugin/*` path alias** — added to `dev/tsconfig.json`; replaced all deep relative `../../../../../../src/` imports across 14 dev files
 - [x] **Composer v2 persistence** — saves plans/messages to `ai-composer` and links generated files in `ai-composer-ui` to the session
 - [x] **Multi-file generation** — AI splits output into one `write_file` call per file, avoiding re-render storms from large single-HTML payloads
 - [x] **AI SDK DevTools wired** (`devToolsMiddleware`) — visible at `http://localhost:4000/api/ai-devtools` and in the DevTools panel

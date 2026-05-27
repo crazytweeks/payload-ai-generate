@@ -4,7 +4,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { Code2, Eye, FileCode2, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { buildComposerUISrcDoc } from '../../../../src/composer-ui';
+import { buildComposerUISrcDoc } from '@plugin/composer-ui';
 import { CodeBlock } from '../composer/components/CodeBlock';
 import { FileTree } from '../composer/components/FileTree';
 import { PlanView } from '../composer/components/PlanView';
@@ -28,6 +28,7 @@ import {
   WebPreviewUrl,
 } from './components/ai-elements';
 import type { ComposerMode, ComposerPlan, GeneratedFile, ReferenceRow } from './types';
+import { SessionsSidebar } from './components/SessionsSidebar';
 
 type Props = {
   presets: { id: string; title: string }[];
@@ -319,6 +320,22 @@ function CodeAndPreview({
   );
 }
 
+type AiComposerSession = {
+  firstPrompt: string;
+  id: string;
+  messages?: unknown;
+  plan?: unknown;
+  referenceCollections?: {
+    collection: string;
+    dataLoading: 'client' | 'server';
+    id?: string | null;
+    isBeingUsed?: boolean | null;
+    limit?: number | null;
+  }[] | null;
+  preset?: string | null | { id: string };
+  title: string;
+};
+
 export function ComposerV2Client({ presets, referenceCollections }: Props) {
   const [firstPrompt, setFirstPrompt] = useState('');
   const [refinement, setRefinement] = useState('');
@@ -474,8 +491,77 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
     generationChat.status === 'streaming' ||
     generationChat.status === 'submitted';
 
+  const resetSession = useCallback(() => {
+    setFirstPrompt('');
+    setRefinement('');
+    setPlan(null);
+    setComposerSessionId(undefined);
+    setComposerUiId(undefined);
+    setGeneratedFiles([]);
+    lastPlanMessageIdRef.current = undefined;
+    setMode('idle');
+    planChat.setMessages([]);
+    generationChat.setMessages([]);
+  }, [generationChat, planChat]);
+
+  const loadSession = useCallback(
+    async (id: string) => {
+      if (
+        planChat.status === 'streaming' ||
+        planChat.status === 'submitted' ||
+        generationChat.status === 'streaming' ||
+        generationChat.status === 'submitted'
+      )
+        return;
+      try {
+        const res = await fetch(`/api/ai-generate/composer-session/${id}`);
+        if (!res.ok) return;
+        const data = (await res.json()) as { session: AiComposerSession };
+        const session = data.session;
+
+        setFirstPrompt(session.firstPrompt ?? '');
+        setRefinement('');
+        setComposerSessionId(String(session.id));
+        setComposerUiId(undefined);
+        setGeneratedFiles([]);
+        lastPlanMessageIdRef.current = undefined;
+
+        const loadedPlan = session.plan as ComposerPlan | null | undefined;
+        setPlan(loadedPlan ?? null);
+        setMode(loadedPlan ? 'plan-ready' : 'idle');
+
+        const msgs = Array.isArray(session.messages) ? (session.messages as UIMessage[]) : [];
+        planChat.setMessages(msgs);
+        generationChat.setMessages([]);
+
+        if (session.referenceCollections?.length) {
+          setReferences(
+            session.referenceCollections.map((ref) => ({
+              collection: ref.collection,
+              id: ref.id ?? crypto.randomUUID(),
+              limit: ref.limit ?? 10,
+            }))
+          );
+        }
+
+        const resolvedPreset =
+          session.preset && typeof session.preset === 'object' ? session.preset.id : session.preset;
+        setPresetId(resolvedPreset ?? '');
+      } catch {
+        // silently ignore
+      }
+    },
+    [generationChat, planChat]
+  );
+
   return (
-    <div className="grid h-[calc(100vh-45px)] grid-cols-[320px_minmax(0,1fr)_380px] bg-[#101114] text-zinc-100">
+    <div className="flex h-[calc(100vh-45px)] bg-[#101114] text-zinc-100">
+      <SessionsSidebar
+        activeSessionId={composerSessionId}
+        onNewSession={resetSession}
+        onSelectSession={(id) => void loadSession(id)}
+      />
+      <div className="grid min-w-0 flex-1 grid-cols-[320px_minmax(0,1fr)_380px]">
       <aside className="flex min-h-0 flex-col border-r border-zinc-800 bg-[#15171b]">
         <div className="p-4">
           <h1 className="text-base font-semibold">Composer v2</h1>
@@ -587,6 +673,7 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
           </div>
         ) : null}
       </aside>
+      </div>
     </div>
   );
 }

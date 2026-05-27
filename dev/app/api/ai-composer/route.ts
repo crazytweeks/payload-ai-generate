@@ -2,8 +2,8 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { UIMessage } from 'ai';
 import { convertToModelMessages, stepCountIs, streamText } from 'ai';
-import { buildBlockGenerationSystemPrompt } from '../../../../src/block-generation/prompt';
-import { createContextTools } from '../../../../src/tools/contextTools';
+import { buildBlockGenerationSystemPrompt } from '@plugin/block-generation/prompt';
+import { createContextTools } from '@plugin/tools/contextTools';
 
 const BLOCK_SCHEMA_HINT = `
 Output a JSON object matching this schema wrapped in <block_json>…</block_json> tags when you have the final result:

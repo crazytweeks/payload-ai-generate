@@ -1,12 +1,32 @@
 import configPromise from '@payload-config';
 import type { UIMessage } from 'ai';
 import { getPayload } from 'payload';
-import type { AIReferenceDataSource } from '../../../../../src/ai-types';
-import { aiComposerCollectionSlug } from '../../../../../src/collections/constants';
-import type { ComposerPlan } from '../../../../../src/composer/types';
+import type { AIReferenceDataSource } from '@plugin/ai-types';
+import { aiComposerCollectionSlug } from '@plugin/collections/constants';
+import type { ComposerPlan } from '@plugin/composer/types';
 import type { AiComposer } from '../../../../payload-types';
 
 export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  const payload = await getPayload({ config: configPromise });
+
+  const result = await payload.find({
+    collection: aiComposerCollectionSlug,
+    depth: 0,
+    limit: 50,
+    overrideAccess: true,
+    sort: '-updatedAt',
+  });
+
+  const sessions = result.docs.map((doc) => ({
+    id: String(doc.id),
+    title: typeof doc.title === 'string' ? doc.title : String(doc.id),
+    updatedAt: doc.updatedAt,
+  }));
+
+  return Response.json({ sessions });
+}
 
 type ComposerSessionRequest = {
   composerSessionId?: string;
@@ -30,7 +50,7 @@ const normalizeReferences = (references: AIReferenceDataSource[] = []): Composer
   references
     .filter(
       (reference): reference is AIReferenceDataSource & { collection: string } =>
-        typeof reference.collection === 'string' && reference.collection.length > 0
+        typeof reference.referenceCollection === 'string' && reference.referenceCollection.length > 0
     )
     .map((reference) => ({
       collection: reference.collection as ComposerReference['collection'],

@@ -5,13 +5,13 @@ import configPromise from '@payload-config';
 import type { UIMessage } from 'ai';
 import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
 import { getPayload } from 'payload';
-import type { AIPluginOptions } from '../../../../../src/ai-types';
-import { aiComposerUICollectionSlug } from '../../../../../src/collections/constants';
-import type { ComposerPlan } from '../../../../../src/composer/types';
-import { createCollectionTools } from '../../../../../src/tools/collectionTools';
-import { createReferenceTools } from '../../../../../src/tools/referenceTools';
-import type { GeneratedFile } from '../../../../../src/tools/uiGenerationTools';
-import { createUIGenerationTools } from '../../../../../src/tools/uiGenerationTools';
+import type { AIPluginOptions } from '@plugin/ai-types';
+import { aiComposerUICollectionSlug } from '@plugin/collections/constants';
+import type { ComposerPlan } from '@plugin/composer/types';
+import { createCollectionTools } from '@plugin/tools/collectionTools';
+import { createReferenceTools } from '@plugin/tools/referenceTools';
+import type { GeneratedFile } from '@plugin/tools/uiGenerationTools';
+import { createUIGenerationTools } from '@plugin/tools/uiGenerationTools';
 
 export const dynamic = 'force-dynamic';
 

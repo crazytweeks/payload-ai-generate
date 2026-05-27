@@ -1,7 +1,7 @@
 # payload-ai-generate
 
 > **⚠️ Early Beta — Under Active Development**
-> This plugin is in early beta (`0.1.3-beta.1`). APIs, collection slugs, and block types may change between releases without a deprecation period. Do not use in production environments without thoroughly reviewing each update. Breaking changes will be noted in [CHANGELOG.md](./CHANGELOG.md).
+> This plugin is in early beta (`0.1.4-beta.1`). APIs, collection slugs, and block types may change between releases without a deprecation period. Do not use in production environments without thoroughly reviewing each update. Breaking changes will be noted in [CHANGELOG.md](./CHANGELOG.md).
 
 `payload-ai-generate` is a Payload CMS plugin that adds:
 

@@ -18,6 +18,7 @@
     "ignoreDeprecations": "6.0",
     "paths": {
       "@payload-config": ["./payload.config.ts"],
+      "@plugin/*": ["../src/*"],
       "payload-ai-generate": ["../src/index.ts"],
       "payload-ai-generate/client": ["../src/exports/client.ts"],
       "payload-ai-generate/rsc": ["../src/exports/rsc.ts"]

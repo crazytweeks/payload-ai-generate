@@ -5,7 +5,7 @@ import { buildConfig } from 'payload';
 import { aiGenerate } from 'payload-ai-generate';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
-import { AiHtmlBlock } from '../src/blocks/ai-html-block/config';
+import { AiHtmlBlock } from '@plugin/blocks/ai-html-block/config';
 import { testEmailAdapter } from './helpers/testEmailAdapter';
 
 const filename = fileURLToPath(import.meta.url);

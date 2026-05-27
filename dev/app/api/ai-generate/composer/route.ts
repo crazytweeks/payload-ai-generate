@@ -5,9 +5,9 @@ import configPromise from '@payload-config';
 import type { UIMessage } from 'ai';
 import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
 import { getPayload } from 'payload';
-import type { AIPluginOptions, AIReferenceDataSource } from '../../../../../src/ai-types';
-import { buildComposerSystemPrompt } from '../../../../../src/composer/prompt';
-import { createReferenceTools } from '../../../../../src/tools/referenceTools';
+import type { AIPluginOptions, AIReferenceDataSource } from '@plugin/ai-types';
+import { buildComposerSystemPrompt } from '@plugin/composer/prompt';
+import { createReferenceTools } from '@plugin/tools/referenceTools';
 
 export const dynamic = 'force-dynamic';
 

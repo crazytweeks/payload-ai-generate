@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.1.4-beta.1 — 2026-05-27
+
+- Added **Composer v2 sessions sidebar**: collapsible panel listing all saved `ai-composer` sessions with timestamps; clicking a session restores its prompt, plan, messages, references, and preset without re-triggering AI calls; new-session button resets state.
+- Added `GET /api/ai-generate/composer-session` endpoint (list recent sessions) and `GET /api/ai-generate/composer-session/[id]` endpoint (fetch single session).
+- Added `@plugin/*` TypeScript path alias in `dev/tsconfig.json` pointing to `../src/`; replaced all deep relative `../../../../../../src/` imports across 14 dev files.
+- Fixed `dev` script in `package.json` to run `devserver` and `devtool` in parallel via `concurrently`.
+
+---
+
 ## 0.1.3-beta.1 — 2026-05-26
 
 - Added Composer v2 session persistence: plans and chat messages are saved to `ai-composer`.
