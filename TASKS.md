@@ -16,6 +16,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 ## Active / In Progress
 
+- [~] Composer v2 — sessions sidebar (list, select, restore, new session) — 🤖 agent-claude (2026-05-27T00:00Z)
 - [ ] Verify planning-phase tool calls (fetch_reference_docs) appear in Live Stream when references are attached
 - [ ] MCP connections / AI skills for additional composer capabilities
 
