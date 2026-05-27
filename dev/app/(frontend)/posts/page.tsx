@@ -11,11 +11,13 @@ export default async function PostsPage() {
     collection: 'posts',
     depth: 0,
     limit: 50,
-    overrideAccess: false,
+    overrideAccess: true,
+    draft: true,
     select: {
       title: true,
       slug: true,
       updatedAt: true,
+      _status: true,
     },
   });
 
@@ -67,8 +69,11 @@ export default async function PostsPage() {
               >
                 {post.title || '(Untitled)'}
               </Link>
-              <p style={{ color: '#52525b', fontSize: '12px', margin: '4px 0 0' }}>
+              <p style={{ color: '#52525b', fontSize: '12px', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 /{post.slug} · {new Date(post.updatedAt).toLocaleDateString()}
+                {(post as any)._status === 'draft' && (
+                  <span style={{ color: '#f59e0b', fontSize: '11px', fontWeight: 600, background: '#422006', padding: '1px 6px', borderRadius: '4px' }}>draft</span>
+                )}
               </p>
             </li>
           ))}

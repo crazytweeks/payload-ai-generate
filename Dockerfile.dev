@@ -67,14 +67,16 @@ ENV PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true
 RUN addgroup --system --gid 1001 nodejs && \
   adduser --system --uid 1001 nextjs
 
-# Next.js standalone output — mirrors directory layout relative to the plugin root,
-# so server.js lands at dev/server.js and static assets at dev/.next/static/
+# Next.js standalone output.
+# When built from WORKDIR=/app with source at /app/dev, Next.js standalone output
+# places server.js at: dev/.next/standalone/dev/server.js
+# After COPY to /app, it lands at /app/dev/server.js — matching CMD below.
 COPY --from=builder --chown=nextjs:nodejs /app/dev/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/dev/.next/static ./dev/.next/static
 
 # Payload media uploads — mount a persistent volume at /app/dev/media in Coolify
-RUN mkdir -p dev/media dev/.next/cache && \
-  chown -R nextjs:nodejs dev/media dev/.next
+RUN mkdir -p dev/media dev/public dev/.next/cache && \
+  chown -R nextjs:nodejs dev/media dev/public dev/.next
 
 USER nextjs
 EXPOSE 3000
