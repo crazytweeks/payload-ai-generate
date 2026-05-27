@@ -98,7 +98,7 @@ export const uiGenerateEndpointHandler: PayloadHandler = async (req) => {
 
   let initialMessages = body.messages ?? [];
   if (initialMessages.length === 0) {
-    initialMessages = [{ role: 'user', content: 'Generate the UI now based on the plan above.', id: 'initial-user', parts: [] }];
+    initialMessages = [{ role: 'user', id: 'initial-user', parts: [{ type: 'text', text: 'Generate the UI now based on the plan above.' }] }];
   }
 
   const result = streamText({

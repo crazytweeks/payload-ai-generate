@@ -25,7 +25,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUncheckedSideEffectImports": false,
-    "ignoreDeprecations": "5.0"
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*", "index.ts"],
   "exclude": ["node_modules", "dist", "dev"]

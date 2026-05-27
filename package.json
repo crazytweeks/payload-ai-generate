@@ -1,6 +1,6 @@
 {
   "name": "payload-ai-generate",
-  "version": "0.1.5-beta.1",
+  "version": "0.1.5-beta.2",
   "description": "AI generation plugin for Payload CMS",
   "homepage": "https://github.com/crazytweeks/payload-ai-generate",
   "repository": {
@@ -72,6 +72,8 @@
     "dev:generate-types": "bun run dev:payload generate:types",
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
     "build:watch": "bun run build:swc --watch",
+    "build:devserver": "cd dev && NODE_ENV=development PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true next build",
+    "start": "",
     "generate:importmap": "PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true bun run dev:generate-importmap",
     "generate:types": "PAYLOAD_AI_GENERATE_TEST_COLLECTIONS=true bun run dev:generate-types",
     "gen": "bun run generate:importmap && bun run generate:types",
@@ -86,34 +88,34 @@
     "@ai-sdk/google": "^3.0.75",
     "@ai-sdk/openai": "^3.0.64",
     "@ai-sdk/react": "^3.0.193",
-    "@payloadcms/live-preview-react": "^3.84.1",
+    "@payloadcms/live-preview-react": "^3.85.0",
     "ai": "^6.0.191",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@payloadcms/db-mongodb": "3.84.1",
-    "@payloadcms/db-postgres": "3.84.1",
-    "@payloadcms/db-sqlite": "3.84.1",
-    "@payloadcms/next": "3.84.1",
-    "@payloadcms/richtext-lexical": "3.84.1",
-    "@payloadcms/ui": "3.84.1",
+    "@payloadcms/db-mongodb": "3.85.0",
+    "@payloadcms/db-postgres": "3.85.0",
+    "@payloadcms/db-sqlite": "3.85.0",
+    "@payloadcms/next": "3.85.0",
+    "@payloadcms/richtext-lexical": "3.85.0",
+    "@payloadcms/ui": "3.85.0",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "25.9.1",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "concurrently": "^9.2.1",
-    "lucide-react": "^0.511.0",
+    "lucide-react": "^1.16.0",
     "next": "16.2.6",
-    "payload": "3.84.1",
+    "payload": "3.85.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "shiki": "^3.7.0",
+    "shiki": "^4.1.0",
     "tailwindcss": "^4.3.0",
     "typescript": "6.0.3",
     "vitest": "4.1.7"
   },
   "peerDependencies": {
-    "payload": "^3.84.1"
+    "payload": "^3.85.0"
   },
   "publishConfig": {
     "main": "./dist/index.js",

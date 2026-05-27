@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.1.5-beta.2 — 2026-05-27
+
+- Fixed typescript compilation errors with Vercel AI SDK v6 / `@ai-sdk/react` updates by migrating `sendMessage` / `sendGenMessage` calls to use `text` instead of `content` and `files` instead of `experimental_attachments`.
+- Enriched client attachments mapper with `type: 'file'` and `mediaType` properties required by the latest `FileUIPart` specifications.
+- Restored missing `useEffect` import in the legacy client.
+- Fixed unused `lastUserMessage` compiler warning in the plan endpoint handler.
+- Fixed UI message parts typing in the code generation handler.
+- Silenced deprecated TS options warning by setting `ignoreDeprecations` to `"6.0"`.
+
+---
+
 ## 0.1.5-beta.1 — 2026-05-27
 
 - Migrated `ComposerV2Client` and API routes (`uiGenerateEndpointHandler.ts`, `composerEndpointHandler.ts`) into the plugin core.

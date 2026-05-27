@@ -51,12 +51,6 @@ export const composerEndpointHandler: PayloadHandler = async (req) => {
   });
 
   const hasTools = Object.keys(requestTools).length > 0;
-  const lastUserMsg = [...body.messages].reverse().find((m) => m.role === 'user');
-  const lastUserMessage =
-    lastUserMsg?.parts
-      ?.filter((p) => p.type === 'text')
-      .map((p) => (p as { type: 'text'; text: string }).text)
-      .join('') ?? '';
 
   req.payload.logger.info({
     msg: '[composer] POST',

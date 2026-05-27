@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CodeEditorView } from './components/CodeEditorView';
 import { LeftSidebar } from './components/LeftSidebar';
 import { MessageRow } from './components/MessageRow';
@@ -125,15 +125,16 @@ export function ComposerClient({
     
     // Pass media refs in the message
     const attachments = mediaRefs.map(m => ({
+      type: 'file' as const,
       name: m.alt || 'attachment',
       url: m.url,
       contentType: m.url.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+      mediaType: m.url.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
     }));
 
     sendMessage({
-      content: firstPrompt.trim(),
-      role: 'user',
-      experimental_attachments: attachments.length > 0 ? attachments : undefined,
+      text: firstPrompt.trim(),
+      files: attachments.length > 0 ? attachments : undefined,
     });
     scrollToEnd();
   }, [firstPrompt, mediaRefs, isPlanStreaming, sendMessage, scrollToEnd, syncRefs, sessionId, presetId, references]);
@@ -144,12 +145,12 @@ export function ComposerClient({
     if (isGenerating) {
       if (isGenStreaming) return;
       syncRefs();
-      sendGenMessage({ content: refinementText.trim(), role: 'user' });
+      sendGenMessage({ text: refinementText.trim() });
     } else {
       if (isPlanStreaming) return;
       syncRefs();
       setMode('refining');
-      sendMessage({ content: refinementText.trim(), role: 'user' });
+      sendMessage({ text: refinementText.trim() });
     }
     
     setRefinementText('');

@@ -74,6 +74,7 @@ export interface Config {
     'ai-presets': AiPreset;
     'ai-composer': AiComposer;
     'ai-composer-ui': AiComposerUi;
+    'ai-media': AiMedia;
     'test-messages': TestMessage;
     'test-products': TestProduct;
     'test-announcements': TestAnnouncement;
@@ -92,6 +93,7 @@ export interface Config {
     'ai-presets': AiPresetsSelect<false> | AiPresetsSelect<true>;
     'ai-composer': AiComposerSelect<false> | AiComposerSelect<true>;
     'ai-composer-ui': AiComposerUiSelect<false> | AiComposerUiSelect<true>;
+    'ai-media': AiMediaSelect<false> | AiMediaSelect<true>;
     'test-messages': TestMessagesSelect<false> | TestMessagesSelect<true>;
     'test-products': TestProductsSelect<false> | TestProductsSelect<true>;
     'test-announcements': TestAnnouncementsSelect<false> | TestAnnouncementsSelect<true>;
@@ -415,6 +417,10 @@ export interface AiComposer {
    */
   preset?: (string | null) | AiPreset;
   /**
+   * Reference files (images, PDFs) attached to this composition session.
+   */
+  referenceMedia?: (string | AiMedia)[] | null;
+  /**
    * Reference collection queries injected into the AI context.
    */
   referenceCollections?:
@@ -447,6 +453,30 @@ export interface AiComposer {
     | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Media and documents specifically for AI reference and composition.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-media".
+ */
+export interface AiMedia {
+  id: string;
+  /**
+   * Description of the media file (used as context for AI).
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -570,6 +600,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-composer-ui';
         value: string | AiComposerUi;
+      } | null)
+    | ({
+        relationTo: 'ai-media';
+        value: string | AiMedia;
       } | null)
     | ({
         relationTo: 'test-messages';
@@ -749,6 +783,7 @@ export interface AiComposerSelect<T extends boolean = true> {
   title?: T;
   firstPrompt?: T;
   preset?: T;
+  referenceMedia?: T;
   referenceCollections?:
     | T
     | {
@@ -785,6 +820,24 @@ export interface AiComposerUiSelect<T extends boolean = true> {
   generationLog?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-media_select".
+ */
+export interface AiMediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

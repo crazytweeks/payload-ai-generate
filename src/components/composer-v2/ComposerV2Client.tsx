@@ -469,15 +469,16 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
       setMode('planning');
       
       const attachments = mediaRefs.map(m => ({
+        type: 'file' as const,
         name: m.alt || 'attachment',
         url: m.url,
         contentType: m.url.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+        mediaType: m.url.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
       }));
 
       planChat.sendMessage({ 
-        content: text, 
-        role: 'user',
-        experimental_attachments: attachments.length > 0 ? attachments : undefined
+        text: text, 
+        files: attachments.length > 0 ? attachments : undefined
       });
     },
     [planChat, mediaRefs]
@@ -489,11 +490,11 @@ export function ComposerV2Client({ presets, referenceCollections }: Props) {
     if (mode === 'generated' || mode === 'generating') {
       if (generationChat.status !== 'ready') return;
       setMode('generating');
-      generationChat.sendMessage({ content: refinement.trim(), role: 'user' });
+      generationChat.sendMessage({ text: refinement.trim() });
     } else {
       if (planChat.status !== 'ready') return;
       setMode('refining');
-      planChat.sendMessage({ content: refinement.trim(), role: 'user' });
+      planChat.sendMessage({ text: refinement.trim() });
     }
     setRefinement('');
   }, [planChat, generationChat, refinement, mode]);

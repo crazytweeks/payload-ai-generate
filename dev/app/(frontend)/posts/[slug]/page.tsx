@@ -67,7 +67,7 @@ export default async function PostPage({ params: paramsPromise }: Args) {
               return (
                 <AiComposerUiBlockWithDebugData
                   key={block.id ?? block.blockType}
-                  composerUI={block.composerUI}
+                  composerUI={block.composerUI as any}
                   payload={payload}
                 />
               );
