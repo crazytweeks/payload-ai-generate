@@ -18,6 +18,7 @@ This file is the source of truth for planned work, feature ideas, known issues, 
 
 - [ ] Verify planning-phase tool calls (fetch_reference_docs) appear in Live Stream when references are attached
 - [ ] MCP connections / AI skills for additional composer capabilities
+- [~] Add AI Composer UI Block (ai-composer-ui-block) for multi-file rendering — 🤖 Antigravity (2026-05-27T10:13Z)
 
 ---
 
