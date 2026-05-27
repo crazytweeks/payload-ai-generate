@@ -16,6 +16,12 @@ const nextConfig = {
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
     }
+    
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
+      react: path.resolve(dirname, '../../../node_modules/react'),
+      'react-dom': path.resolve(dirname, '../../../node_modules/react-dom'),
+    }
 
     return webpackConfig
   },
