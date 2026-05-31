@@ -82,7 +82,8 @@
     "lint": "bun biome lint .",
     "test": "vitest",
     "devtool": "NODE_ENV=development bunx @ai-sdk/devtools",
-    "dev": "concurrently \"bun run devserver\" \"bun run devtool\""
+    "dev": "concurrently \"bun run devserver\" \"bun run devtool\"",
+    "coolify-status": "bun ../../scripts/coolify/coolify.ts status-check payload-ai-generate"
   },
   "dependencies": {
     "@ai-sdk/devtools": "^0.0.18",
