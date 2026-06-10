@@ -88,27 +88,27 @@
   "dependencies": {
     "@ai-sdk/devtools": "^0.0.18",
     "@ai-sdk/google": "^3.0.80",
-    "@ai-sdk/openai": "^3.0.67",
-    "@ai-sdk/react": "^3.0.195",
-    "@payloadcms/live-preview-react": "^3.85.0",
-    "ai": "^6.0.193",
+    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/react": "^3.0.201",
+    "@payloadcms/live-preview-react": "^3.85.1",
+    "ai": "^6.0.199",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@payloadcms/db-mongodb": "3.85.0",
-    "@payloadcms/db-postgres": "3.85.0",
-    "@payloadcms/db-sqlite": "3.85.0",
-    "@payloadcms/next": "3.85.0",
-    "@payloadcms/richtext-lexical": "3.85.0",
-    "@payloadcms/ui": "3.85.0",
+    "@payloadcms/db-mongodb": "3.85.1",
+    "@payloadcms/db-postgres": "3.85.1",
+    "@payloadcms/db-sqlite": "3.85.1",
+    "@payloadcms/next": "3.85.1",
+    "@payloadcms/richtext-lexical": "3.85.1",
+    "@payloadcms/ui": "3.85.1",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "25.9.2",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "concurrently": "^10.0.0",
     "lucide-react": "^1.17.0",
-    "next": "16.2.7",
-    "payload": "3.85.0",
+    "next": "16.2.9",
+    "payload": "3.85.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "shiki": "^4.1.0",
@@ -117,7 +117,7 @@
     "vitest": "4.1.8"
   },
   "peerDependencies": {
-    "payload": "^3.85.0"
+    "payload": "^3.85.1"
   },
   "publishConfig": {
     "main": "./dist/index.js",
