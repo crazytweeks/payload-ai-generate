@@ -27,7 +27,7 @@ type AIPromptPreviewDoc = {
 };
 
 const queryPromptByID = cache(async (id: string, draft: boolean) => {
-  const payload = await getPayload({ config });
+  const payload = await getPayload({ config: config as any });
 
   try {
     return (await payload.findByID({
@@ -44,7 +44,7 @@ const queryPromptByID = cache(async (id: string, draft: boolean) => {
 export async function AIPromptPreviewPage({ defaultAdditionalData, params, serverURL }: Props) {
   const { isEnabled: draft } = await draftMode();
   const resolvedParams = await params;
-  const payload = await getPayload({ config });
+  const payload = await getPayload({ config: config as any });
   const doc = await queryPromptByID(resolvedParams.id, draft);
 
   if (!doc) {
