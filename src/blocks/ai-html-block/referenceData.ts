@@ -16,7 +16,9 @@ const parseJSON = (value: string | null | undefined): unknown => {
 
 const parseWhere = (value: string | null | undefined): Where | undefined => {
   const parsed = parseJSON(value);
-  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Where) : undefined;
+  return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+    ? (parsed as Where)
+    : undefined;
 };
 
 const getPluginOptions = (payload: BasePayload): AIPluginOptions => {

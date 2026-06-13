@@ -14,12 +14,23 @@ type Params = {
   sessionIdRef: React.MutableRefObject<string>;
 };
 
-export const usePlanChat = ({ onPlanReady, onModeChange, refsRef, presetIdRef, sessionIdRef }: Params) => {
+export const usePlanChat = ({
+  onPlanReady,
+  onModeChange,
+  refsRef,
+  presetIdRef,
+  sessionIdRef,
+}: Params) => {
   const buildRefBody = useCallback(
     () =>
       refsRef.current
         .filter((r) => r.collection.trim())
-        .map((r) => ({ collection: r.collection, dataLoading: 'server', isBeingUsed: true, limit: r.limit })),
+        .map((r) => ({
+          collection: r.collection,
+          dataLoading: 'server',
+          isBeingUsed: true,
+          limit: r.limit,
+        })),
     [refsRef]
   );
 
@@ -28,7 +39,12 @@ export const usePlanChat = ({ onPlanReady, onModeChange, refsRef, presetIdRef, s
       new DefaultChatTransport({
         api: '/api/ai-generate/composer',
         prepareSendMessagesRequest: async ({ messages }) => ({
-          body: { messages, references: buildRefBody(), presetId: presetIdRef.current || undefined, sessionId: sessionIdRef.current || undefined },
+          body: {
+            messages,
+            references: buildRefBody(),
+            presetId: presetIdRef.current || undefined,
+            sessionId: sessionIdRef.current || undefined,
+          },
         }),
       }),
     [buildRefBody, presetIdRef, sessionIdRef]

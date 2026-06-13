@@ -9,7 +9,15 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body style={{ padding: '2rem', textAlign: 'center', fontFamily: 'sans-serif', background: '#0f0f11', color: '#e2e2e8' }}>
+      <body
+        style={{
+          padding: '2rem',
+          textAlign: 'center',
+          fontFamily: 'sans-serif',
+          background: '#0f0f11',
+          color: '#e2e2e8',
+        }}
+      >
         <h2>Something went wrong!</h2>
         <p style={{ color: '#ef4444' }}>{error?.message || 'An unexpected error occurred.'}</p>
         <button

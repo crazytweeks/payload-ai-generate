@@ -30,10 +30,7 @@ export type PartialAiHtmlBlock = Partial<
  * };
  * ```
  */
-export type NormalizedAiHtmlBlock = Omit<
-  AIGeneratedHtmlBlock,
-  'css' | 'js' | 'variables'
-> & {
+export type NormalizedAiHtmlBlock = Omit<AIGeneratedHtmlBlock, 'css' | 'js' | 'variables'> & {
   css: string;
   js: string;
   variables: AIGeneratedVariable[];

@@ -1,6 +1,10 @@
 import type { CollectionConfig } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
-import { aiComposerCollectionSlug, aiMediaCollectionSlug, aiPresetCollectionSlug } from './constants';
+import {
+  aiComposerCollectionSlug,
+  aiMediaCollectionSlug,
+  aiPresetCollectionSlug,
+} from './constants';
 
 export const buildAIComposerCollection = (pluginOptions: AIPluginOptions): CollectionConfig => ({
   slug: aiComposerCollectionSlug,

@@ -48,7 +48,9 @@ export const createCollectionTools = ({
         where: z
           .string()
           .optional()
-          .describe('Payload where clause as JSON string, e.g. \'{"status":{"equals":"published"}}\'.'),
+          .describe(
+            'Payload where clause as JSON string, e.g. \'{"status":{"equals":"published"}}\'.'
+          ),
         limit: z.number().int().min(1).max(100).default(10),
         sort: z.string().optional().describe('Field to sort by, prefix with - for descending.'),
       }),
@@ -73,7 +75,9 @@ export const createCollectionTools = ({
       inputSchema: z.object({
         collection: z.string().describe('Collection slug.'),
         id: z.string().describe('Document ID.'),
-        data: z.string().describe('JSON string of fields to update, e.g. \'{"status":"published"}\'.'),
+        data: z
+          .string()
+          .describe('JSON string of fields to update, e.g. \'{"status":"published"}\'.'),
       }),
       execute: async ({ collection, id, data }) => {
         guard(collection);

@@ -1,9 +1,4 @@
-import type {
-  CollectionConfig,
-  CollectionSlug,
-  Field,
-  UIField,
-} from 'payload';
+import type { CollectionConfig, CollectionSlug, Field, UIField } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
 import { aiPresetCollectionSlug, aiPromptCollectionSlug } from './constants';
 

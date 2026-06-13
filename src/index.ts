@@ -52,20 +52,22 @@ export type { AIGenerateTextParams, AIPluginOptions, PayloadAIService } from './
  * Collection slug for the generated AI model registry.
  */
 export { aiComposerUICollectionSlug } from './collections/constants';
-
+export { ComposerClient } from './components/composer/ComposerClient';
+export type {
+  ComposerMode,
+  ComposerPlan,
+  GeneratedFile,
+  ReferenceRow,
+} from './components/composer/types';
+export { ComposerV2Client } from './components/composer-v2/ComposerV2Client';
+export type { ComposerUIFile } from './composer-ui';
+export { buildComposerUISrcDoc, ComposerUIPreviewFrame } from './composer-ui';
 export {
   aiModelsOptionsCollectionSlug,
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
   aiServiceCreate,
 };
-export { ComposerUIPreviewFrame, buildComposerUISrcDoc } from './composer-ui';
-export type { ComposerUIFile } from './composer-ui';
-
-export { ComposerClient } from './components/composer/ComposerClient';
-export type { ComposerPlan, GeneratedFile, ReferenceRow, ComposerMode } from './components/composer/types';
-
-export { ComposerV2Client } from './components/composer-v2/ComposerV2Client';
 
 /**
  * Extends a Payload config with the AI prompt tools, preset support, and model registry sync.

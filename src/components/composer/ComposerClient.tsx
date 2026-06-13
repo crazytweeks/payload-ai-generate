@@ -21,7 +21,9 @@ export function ComposerClient({
   const [refinementText, setRefinementText] = useState('');
   const [presetId, setPresetId] = useState('');
   const [references, setReferences] = useState<ReferenceRow[]>([]);
-  const [mediaRefs, setMediaRefs] = useState<{ id: string; url: string; alt: string; mediaId: string }[]>([]);
+  const [mediaRefs, setMediaRefs] = useState<
+    { id: string; url: string; alt: string; mediaId: string }[]
+  >([]);
   const [plan, setPlan] = useState<ComposerPlan | null>(null);
   const [mode, setMode] = useState<ComposerMode>('idle');
   const [generatedFiles, setGeneratedFiles] = useState<GeneratedFile[]>([]);
@@ -49,7 +51,12 @@ export function ComposerClient({
     planRef.current = extracted;
   }, []);
 
-  const { messages, sendMessage, isStreaming: isPlanStreaming, stop: stopPlan } = usePlanChat({
+  const {
+    messages,
+    sendMessage,
+    isStreaming: isPlanStreaming,
+    stop: stopPlan,
+  } = usePlanChat({
     onPlanReady: handlePlanReady,
     onModeChange: setMode,
     refsRef,
@@ -58,14 +65,17 @@ export function ComposerClient({
   });
 
   // ── generation chat ───────────────────────────────────────────────────────
-  const { sendMessage: sendGenMessage, isStreaming: isGenStreaming, stop: stopGen } =
-    useGenChat({
-      onFilesChange: setGeneratedFiles,
-      onGenerationDone: () => setMode('generated'),
-      planRef,
-      refsRef,
-      sessionIdRef,
-    });
+  const {
+    sendMessage: sendGenMessage,
+    isStreaming: isGenStreaming,
+    stop: stopGen,
+  } = useGenChat({
+    onFilesChange: setGeneratedFiles,
+    onGenerationDone: () => setMode('generated'),
+    planRef,
+    refsRef,
+    sessionIdRef,
+  });
 
   // ── derived state ─────────────────────────────────────────────────────────
   const isStreaming = isPlanStreaming || isGenStreaming;
@@ -76,7 +86,12 @@ export function ComposerClient({
     () =>
       references
         .filter((r) => r.collection.trim())
-        .map((r) => ({ collection: r.collection, dataLoading: 'server' as const, isBeingUsed: true, limit: r.limit })),
+        .map((r) => ({
+          collection: r.collection,
+          dataLoading: 'server' as const,
+          isBeingUsed: true,
+          limit: r.limit,
+        })),
     [references]
   );
 
@@ -92,7 +107,7 @@ export function ComposerClient({
     setMode('planning');
     setPlan(null);
     planRef.current = null;
-    
+
     // Create session in Payload
     let sid = sessionId;
     if (!sid) {
@@ -104,14 +119,14 @@ export function ComposerClient({
             title: firstPrompt.slice(0, 50),
             firstPrompt: firstPrompt,
             preset: presetId || null,
-            referenceMedia: mediaRefs.map(m => m.mediaId),
-            referenceCollections: references.map(r => ({
+            referenceMedia: mediaRefs.map((m) => m.mediaId),
+            referenceCollections: references.map((r) => ({
               referenceCollection: r.collection,
               limit: r.limit,
               isBeingUsed: true,
-              dataLoading: 'server'
-            }))
-          })
+              dataLoading: 'server',
+            })),
+          }),
         });
         if (res.ok) {
           const doc = await res.json();
@@ -122,9 +137,9 @@ export function ComposerClient({
         console.error('Failed to create session:', err);
       }
     }
-    
+
     // Pass media refs in the message
-    const attachments = mediaRefs.map(m => ({
+    const attachments = mediaRefs.map((m) => ({
       type: 'file' as const,
       name: m.alt || 'attachment',
       url: m.url,
@@ -137,11 +152,21 @@ export function ComposerClient({
       files: attachments.length > 0 ? attachments : undefined,
     });
     scrollToEnd();
-  }, [firstPrompt, mediaRefs, isPlanStreaming, sendMessage, scrollToEnd, syncRefs, sessionId, presetId, references]);
+  }, [
+    firstPrompt,
+    mediaRefs,
+    isPlanStreaming,
+    sendMessage,
+    scrollToEnd,
+    syncRefs,
+    sessionId,
+    presetId,
+    references,
+  ]);
 
   const handleRefine = useCallback(() => {
     if (!refinementText.trim()) return;
-    
+
     if (isGenerating) {
       if (isGenStreaming) return;
       syncRefs();
@@ -152,10 +177,19 @@ export function ComposerClient({
       setMode('refining');
       sendMessage({ text: refinementText.trim() });
     }
-    
+
     setRefinementText('');
     scrollToEnd();
-  }, [refinementText, isPlanStreaming, isGenStreaming, isGenerating, sendMessage, sendGenMessage, scrollToEnd, syncRefs]);
+  }, [
+    refinementText,
+    isPlanStreaming,
+    isGenStreaming,
+    isGenerating,
+    sendMessage,
+    sendGenMessage,
+    scrollToEnd,
+    syncRefs,
+  ]);
 
   const handleProceed = useCallback(() => {
     if (!planRef.current || isGenStreaming) return;
@@ -182,7 +216,10 @@ export function ComposerClient({
       const res = await fetch('/api/ai-media', { method: 'POST', body: formData });
       if (res.ok) {
         const doc = await res.json();
-        setMediaRefs((p) => [...p, { id: crypto.randomUUID(), mediaId: doc.doc.id, url: doc.doc.url, alt: file.name }]);
+        setMediaRefs((p) => [
+          ...p,
+          { id: crypto.randomUUID(), mediaId: doc.doc.id, url: doc.doc.url, alt: file.name },
+        ]);
       }
     } catch (err) {
       console.error('Failed to upload media:', err);
@@ -198,7 +235,9 @@ export function ComposerClient({
         firstPrompt={firstPrompt}
         isStreaming={isStreaming}
         mode={mode}
-        onAddRef={() => setReferences((p) => [...p, { id: crypto.randomUUID(), collection: '', limit: 10 }])}
+        onAddRef={() =>
+          setReferences((p) => [...p, { id: crypto.randomUUID(), collection: '', limit: 10 }])
+        }
         onRemoveRef={(id) => setReferences((p) => p.filter((r) => r.id !== id))}
         onStartPlanning={handleStartPlanning}
         onUpdateRef={(id, field, value) =>
@@ -290,7 +329,11 @@ export function ComposerClient({
               <textarea
                 className="flex-1 resize-none rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-700"
                 rows={2}
-                placeholder={isGenerating ? "Refine the generated UI — e.g. 'make the button blue'…" : "Refine the plan — e.g. 'make it mobile-first, use a card grid instead'…"}
+                placeholder={
+                  isGenerating
+                    ? "Refine the generated UI — e.g. 'make the button blue'…"
+                    : "Refine the plan — e.g. 'make it mobile-first, use a card grid instead'…"
+                }
                 value={refinementText}
                 onChange={(e) => setRefinementText(e.target.value)}
                 onKeyDown={(e) => {

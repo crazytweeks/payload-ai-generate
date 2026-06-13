@@ -1,9 +1,8 @@
 import config from '@payload-config';
+import { customEndpointHandler } from '@plugin/endpoints/customEndpointHandler';
 import type { Payload } from 'payload';
 import { createPayloadRequest, getPayload } from 'payload';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-
-import { customEndpointHandler } from '@plugin/endpoints/customEndpointHandler';
 
 let payload: Payload;
 

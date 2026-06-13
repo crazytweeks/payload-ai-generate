@@ -5,8 +5,8 @@ import type { UIMessage } from 'ai';
 import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
 import type { PayloadHandler } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
-import type { ComposerPlan } from '../composer/types';
 import { aiComposerUICollectionSlug } from '../collections/constants';
+import type { ComposerPlan } from '../composer/types';
 import { createCollectionTools } from '../tools/collectionTools';
 import { createReferenceTools } from '../tools/referenceTools';
 import type { GeneratedFile } from '../tools/uiGenerationTools';
@@ -60,7 +60,12 @@ export const uiGenerateEndpointHandler: PayloadHandler = async (req) => {
   const body = (await req.json()) as {
     messages?: UIMessage[];
     plan: ComposerPlan;
-    references?: Array<{ collection: string; isBeingUsed: boolean; limit: number; dataLoading: 'server' | 'client' }>;
+    references?: Array<{
+      collection: string;
+      isBeingUsed: boolean;
+      limit: number;
+      dataLoading: 'server' | 'client';
+    }>;
     sessionTitle?: string;
     sessionId?: string;
     uiArtifactId?: string; // If refining an existing generated UI
@@ -76,7 +81,9 @@ export const uiGenerateEndpointHandler: PayloadHandler = async (req) => {
   const writtenFiles: GeneratedFile[] = [];
   const writeFileTool = createUIGenerationTools((file) => {
     writtenFiles.push(file);
-    req.payload.logger.info(`[ui-generate] write_file: ${file.path} (${file.content.length} chars)`);
+    req.payload.logger.info(
+      `[ui-generate] write_file: ${file.path} (${file.content.length} chars)`
+    );
   });
 
   const referenceFetchTools = createReferenceTools({
@@ -98,7 +105,13 @@ export const uiGenerateEndpointHandler: PayloadHandler = async (req) => {
 
   let initialMessages = body.messages ?? [];
   if (initialMessages.length === 0) {
-    initialMessages = [{ role: 'user', id: 'initial-user', parts: [{ type: 'text', text: 'Generate the UI now based on the plan above.' }] }];
+    initialMessages = [
+      {
+        role: 'user',
+        id: 'initial-user',
+        parts: [{ type: 'text', text: 'Generate the UI now based on the plan above.' }],
+      },
+    ];
   }
 
   const result = streamText({

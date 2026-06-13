@@ -49,9 +49,7 @@ export function CodeEditorView({
   const [activeFile, setActiveFile] = useState<string | undefined>(undefined);
 
   const active =
-    files.find((f) => f.path === activeFile) ??
-    files.find((f) => f.isEntryPoint) ??
-    files[0];
+    files.find((f) => f.path === activeFile) ?? files.find((f) => f.isEntryPoint) ?? files[0];
 
   if (files.length === 0) return <EmptyState isGenerating={isGenerating} />;
 

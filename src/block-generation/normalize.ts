@@ -131,9 +131,7 @@ export const parseGeneratedBlockCandidate = (generated: unknown): AIGeneratedHtm
  * });
  * ```
  */
-export const validateGeneratedBlock = (
-  generated: AIGeneratedHtmlBlock
-): ValidationResult => {
+export const validateGeneratedBlock = (generated: AIGeneratedHtmlBlock): ValidationResult => {
   const parsed = parseGeneratedBlockCandidate(generated);
   const html = parsed.html.trim();
 

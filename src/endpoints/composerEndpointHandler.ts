@@ -5,9 +5,9 @@ import type { UIMessage } from 'ai';
 import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
 import type { PayloadHandler } from 'payload';
 import type { AIPluginOptions, AIReferenceDataSource } from '../ai-types';
+import { aiComposerCollectionSlug } from '../collections/constants';
 import { buildComposerSystemPrompt } from '../composer/prompt';
 import { createReferenceTools } from '../tools/referenceTools';
-import { aiComposerCollectionSlug } from '../collections/constants';
 
 function resolveModel(pluginOptions: AIPluginOptions) {
   const openaiKey = pluginOptions.openaiApiKey ?? process.env.OPENAI_API_KEY;
@@ -60,7 +60,7 @@ export const composerEndpointHandler: PayloadHandler = async (req) => {
     hasTools,
   });
 
-  let initialMessages = body.messages;
+  const initialMessages = body.messages;
   if (!initialMessages || initialMessages.length === 0) {
     return Response.json({ error: 'messages are required' }, { status: 400 });
   }

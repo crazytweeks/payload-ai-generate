@@ -1,5 +1,4 @@
-import type { ModelMessage, streamText } from 'ai';
-import type { ToolSet } from 'ai';
+import type { ModelMessage, streamText, ToolSet } from 'ai';
 import type { CollectionSlug } from 'payload';
 import { type GoogleModelId, models, type OpenAIModelId } from './models';
 

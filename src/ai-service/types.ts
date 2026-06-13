@@ -1,10 +1,6 @@
 import type { streamText } from 'ai';
 import type { Payload } from 'payload';
-import type {
-  AIGeneratedHtmlBlock,
-  AIProviderName,
-  PayloadAIService,
-} from '../ai-types';
+import type { AIGeneratedHtmlBlock, AIProviderName, PayloadAIService } from '../ai-types';
 
 /**
  * Symbol used to store the runtime AI service on a Payload instance.

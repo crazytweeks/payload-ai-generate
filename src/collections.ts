@@ -1,6 +1,5 @@
 export { buildAIComposerCollection } from './collections/composer';
 export { buildAIComposerUICollection } from './collections/composer-ui';
-export { buildAIMediaCollection } from './collections/media';
 export {
   aiComposerCollectionSlug,
   aiComposerUICollectionSlug,
@@ -9,6 +8,7 @@ export {
   aiPresetCollectionSlug,
   aiPromptCollectionSlug,
 } from './collections/constants';
+export { buildAIMediaCollection } from './collections/media';
 export { buildAIModelsCollection, syncAIModelsCollection } from './collections/models';
 export { buildAIPresetCollection } from './collections/preset';
 export { buildAIPromptCollection } from './collections/prompt';
