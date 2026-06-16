@@ -63,7 +63,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "prebuild": "bun run models:extract",
-    "build": "bun run copyfiles && bun run build:types",
+    "build": "bun run copyfiles",
     "build:types": "rm -f tsconfig.tsbuildinfo && tsc --outDir dist --rootDir ./src",
     "clean": "rimraf {dist,*.tsbuildinfo}",
     "copyfiles": "find src -type f \\( -name '*.json' -o -name '*.css' -o -name '*.scss' -o -name '*.html' -o -name '*.svg' -o -name '*.png' \\) | while IFS= read -r f; do d=\"dist/${f#src/}\"; mkdir -p \"$(dirname \"$d\")\"; cp \"$f\" \"$d\"; done",
@@ -114,7 +114,7 @@
     "shiki": "^4.1.0",
     "tailwindcss": "^4.3.1",
     "typescript": "6.0.3",
-    "vitest": "4.1.8"
+    "vitest": "4.1.9"
   },
   "peerDependencies": {
     "payload": "^3.85.1"
