@@ -1,11 +1,18 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@plugin/*": ["src/*"]
+      "@plugin/*": [
+        "src/*"
+      ]
     },
     "target": "es2022",
-    "lib": ["es2022", "dom", "dom.iterable"],
+    "lib": [
+      "es2022",
+      "dom",
+      "dom.iterable"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
@@ -24,9 +31,15 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "noUncheckedSideEffectImports": false,
-    "ignoreDeprecations": "6.0"
+    "noUncheckedSideEffectImports": false
   },
-  "include": ["src/**/*", "index.ts"],
-  "exclude": ["node_modules", "dist", "dev"]
+  "include": [
+    "src/**/*",
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dev"
+  ]
 }
