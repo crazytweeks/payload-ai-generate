@@ -99,9 +99,7 @@ export interface Config {
     'test-announcements': TestAnnouncementsSelect<false> | TestAnnouncementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    'payload-locked-documents':
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
@@ -194,12 +192,7 @@ export interface AiPrompt {
         /**
          * Collection to query for this reference data source.
          */
-        referenceCollection:
-          | 'test-messages'
-          | 'test-products'
-          | 'test-announcements'
-          | 'users'
-          | 'posts';
+        referenceCollection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
         /**
          * Maximum number of documents to load from this collection.
          */
@@ -432,12 +425,7 @@ export interface AiComposer {
    */
   referenceCollections?:
     | {
-        referenceCollection:
-          | 'test-messages'
-          | 'test-products'
-          | 'test-announcements'
-          | 'users'
-          | 'posts';
+        referenceCollection: 'test-messages' | 'test-products' | 'test-announcements' | 'users' | 'posts';
         isBeingUsed?: boolean | null;
         limit?: number | null;
         dataLoading: 'server' | 'client';
@@ -973,6 +961,7 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
