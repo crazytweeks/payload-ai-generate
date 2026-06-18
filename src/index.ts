@@ -13,9 +13,6 @@ import {
   buildAIPromptCollection,
   syncAIModelsCollection,
 } from './collections';
-import { seedTestAnnouncementsCollection } from './dev-test/seed/testAnnouncements';
-import { seedTestMessagesCollection } from './dev-test/seed/testMessages';
-import { seedTestProductsCollection } from './dev-test/seed/testProducts';
 import {
   buildTestAnnouncementsCollection,
   testAnnouncementsCollectionSlug,
@@ -165,6 +162,11 @@ export const aiGenerate =
       }
       if (pluginOptions.devTestCollections) {
         try {
+          const { seedTestMessagesCollection } = await import('./dev-test/seed/testMessages');
+          const { seedTestProductsCollection } = await import('./dev-test/seed/testProducts');
+          const { seedTestAnnouncementsCollection } = await import(
+            './dev-test/seed/testAnnouncements'
+          );
           await seedTestMessagesCollection(payload);
           await seedTestProductsCollection(payload);
           await seedTestAnnouncementsCollection(payload);
