@@ -60,7 +60,7 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
     ([fields]) => fields[presetFieldPath]?.value as RelationshipValue
   );
   const [formFields] = useAllFormFields();
-  const formValues = reduceFieldsToValues(formFields, true);
+  const formValues = reduceFieldsToValues(formFields as any, true);
   const referencesValue =
     referencesFieldPath && referencesFieldPath in formValues
       ? formValues[referencesFieldPath]
