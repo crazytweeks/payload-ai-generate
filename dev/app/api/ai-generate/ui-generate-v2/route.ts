@@ -1,4 +1,3 @@
-import { devToolsMiddleware } from '@ai-sdk/devtools';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import configPromise from '@payload-config';
@@ -10,7 +9,7 @@ import { createReferenceTools } from '@plugin/tools/referenceTools';
 import type { GeneratedFile } from '@plugin/tools/uiGenerationTools';
 import { createUIGenerationTools } from '@plugin/tools/uiGenerationTools';
 import type { UIMessage } from 'ai';
-import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
+import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 import { getPayload } from 'payload';
 
 export const dynamic = 'force-dynamic';
@@ -91,7 +90,7 @@ export async function POST(req: Request) {
   }
 
   const { model: baseModel, provider } = resolveModel(pluginOptions);
-  const model = wrapLanguageModel({ model: baseModel, middleware: devToolsMiddleware() });
+  const model = baseModel;
 
   const writtenFiles = new Map<string, GeneratedFile>();
   const generationEvents: string[] = [];

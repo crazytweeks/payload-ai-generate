@@ -1,7 +1,6 @@
-import { devToolsMiddleware } from '@ai-sdk/devtools';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
-import { type GatewayModelId, gateway, stepCountIs, streamText, wrapLanguageModel } from 'ai';
+import { type GatewayModelId, gateway, stepCountIs, streamText } from 'ai';
 import { resolveOptions } from '../ai-service/options';
 import type { AIPluginOptions, AIProviderName } from '../ai-types';
 import { buildComposerSystemPrompt, buildComposerUserPrompt } from './prompt';
@@ -9,10 +8,7 @@ import type { ComposerMessage, ComposerPlan, ComposerStreamParams } from './type
 
 const getModel = (model: GatewayModelId) => {
   if (process.env.PAYLOAD_AI_GENERATE_TEST_COLLECTIONS === 'true') {
-    return wrapLanguageModel({
-      model: gateway(model ?? 'google/gemini-3.5-flash'),
-      middleware: devToolsMiddleware(),
-    });
+    return gateway(model ?? 'google/gemini-3.5-flash');
   }
 
   return model ?? 'openai/gpt-5.5';

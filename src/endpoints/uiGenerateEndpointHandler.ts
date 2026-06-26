@@ -1,8 +1,7 @@
-import { devToolsMiddleware } from '@ai-sdk/devtools';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { UIMessage } from 'ai';
-import { convertToModelMessages, stepCountIs, streamText, wrapLanguageModel } from 'ai';
+import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 import type { PayloadHandler } from 'payload';
 import type { AIPluginOptions } from '../ai-types';
 import { aiComposerUICollectionSlug } from '../collections/constants';
@@ -76,7 +75,7 @@ export const uiGenerateEndpointHandler: PayloadHandler = async (req) => {
   }
 
   const { model: baseModel, provider } = resolveModel(pluginOptions);
-  const model = wrapLanguageModel({ model: baseModel, middleware: devToolsMiddleware() });
+  const model = baseModel;
 
   const writtenFiles: GeneratedFile[] = [];
   const writeFileTool = createUIGenerationTools((file) => {
