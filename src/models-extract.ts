@@ -14,22 +14,34 @@ async function extractModels(): Promise<ModelMap> {
 
   /**
    * Reads a `type Foo = 'a' | 'b' | ...` declaration and returns the literal members.
+   * Tries each name in `typeNames` in order; returns the first successful match.
    */
-  const extractUnionLiterals = (source: string, typeName: string): string[] => {
-    const typePattern = new RegExp(String.raw`type\s+${typeName}\s*=\s*([^;]+);`, 's');
-    const typeMatch = source.match(typePattern);
-
-    if (!typeMatch) {
-      throw new Error(`Could not find ${typeName} in declaration file.`);
+  const extractUnionLiterals = (source: string, ...typeNames: string[]): string[] => {
+    for (const typeName of typeNames) {
+      const typePattern = new RegExp(String.raw`type\s+${typeName}\s*=\s*([^;]+);`, 's');
+      const typeMatch = source.match(typePattern);
+      if (typeMatch) {
+        const literals = typeMatch[1].match(/'([^']+)'/g) ?? [];
+        return [...new Set(literals.map((literal) => literal.slice(1, -1)))];
+      }
     }
-
-    const literals = typeMatch[1].match(/'([^']+)'/g) ?? [];
-    return [...new Set(literals.map((literal) => literal.slice(1, -1)))];
+    throw new Error(`Could not find any of [${typeNames.join(', ')}] in declaration file.`);
   };
 
   return {
-    google: extractUnionLiterals(googleSource, 'GoogleGenerativeAIModelId'),
-    openai: extractUnionLiterals(openaiSource, 'OpenAIResponsesModelId'),
+    // Prefer the most-specific type; fall back to broader aliases across SDK versions
+    google: extractUnionLiterals(
+      googleSource,
+      'GoogleGenerativeAIModelId',
+      'GoogleLanguageModelId',
+      'GoogleModelId',
+    ),
+    openai: extractUnionLiterals(
+      openaiSource,
+      'OpenAIResponsesModelId',
+      'OpenAIChatModelId',
+      'OpenAIModelId',
+    ),
   };
 }
 
