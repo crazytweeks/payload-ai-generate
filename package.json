@@ -87,11 +87,11 @@
   },
   "dependencies": {
     "@ai-sdk/devtools": "^1.0.0",
-    "@ai-sdk/google": "^4.0.0",
-    "@ai-sdk/openai": "^4.0.0",
-    "@ai-sdk/react": "^4.0.3",
+    "@ai-sdk/google": "^4.0.2",
+    "@ai-sdk/openai": "^4.0.2",
+    "@ai-sdk/react": "^4.0.5",
     "@payloadcms/live-preview-react": "^3.85.1",
-    "ai": "^7.0.2",
+    "ai": "^7.0.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
