@@ -11,13 +11,13 @@ Rules and conventions for agents and developers working on this plugin.
 
 ## 1. Dev Server — Do Not Disturb
 
-A live dev server runs on **tmux session `tx dev`** at **http://localhost:4000**.
+A live dev server runs on **herdr pane `tx dev`** at **http://localhost:4000**.
 
-- **Never** kill, restart, or modify the tmux session or the Next.js process inside it.
+- **Never** kill, restart, or modify the herdr pane or the Next.js process inside it.
 - **Never** run `bun dev`, `next dev`, or any command that starts a server on port 4000.
 - **Never** delete or overwrite `dev/.env` (the running server's active env file — not committed).
 - Hot reload is active — file saves are picked up automatically. You do not need to restart anything after editing `src/` files.
-- If you need to verify a runtime change, check the tmux session output passively: `tmux capture-pane -pt tx:dev` (read-only).
+- If you need to verify a runtime change, check the herdr pane output passively: `herdr pane read tx:dev` (read-only).
 
 ---
 
@@ -80,7 +80,7 @@ The npm package name is **`payload-ai-generate`**
 
 - Run tests from inside the plugin directory: `bun run test` (uses Vitest).
 - Do not run tests in a way that hits the live dev database. Use the test database configured in `dev/.env.example`.
-- Before pushing, verify TypeScript compiles: `bun run build:types` (or check that the dev server has no TS errors in the tmux output).
+- Before pushing, verify TypeScript compiles: `bun run build:types` (or check that the dev server has no TS errors in the herdr output).
 
 ---
 
