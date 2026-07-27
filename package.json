@@ -86,7 +86,7 @@
     "coolify-status": "bun ../../scripts/coolify/coolify.ts status-check payload-ai-generate"
   },
   "dependencies": {
-    "@ai-sdk/devtools": "^1.0.6",
+    "@ai-sdk/devtools": "^1.0.7",
     "@ai-sdk/google": "^4.0.20",
     "@ai-sdk/openai": "^4.0.17",
     "@ai-sdk/react": "^4.0.36",
@@ -102,10 +102,10 @@
     "@payloadcms/richtext-lexical": "^3.86.0",
     "@payloadcms/ui": "^3.86.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "concurrently": "^10.0.0",
+    "concurrently": "^10.0.4",
     "lucide-react": "^1.25.0",
     "next": "^16.2.10",
     "payload": "^3.86.0",
