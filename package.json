@@ -87,20 +87,20 @@
   },
   "dependencies": {
     "@ai-sdk/devtools": "^1.0.9",
-    "@ai-sdk/google": "^4.0.29",
-    "@ai-sdk/openai": "^4.0.25",
-    "@ai-sdk/react": "^4.0.47",
-    "@payloadcms/live-preview-react": "^3.86.0",
-    "ai": "^7.0.44",
+    "@ai-sdk/google": "^4.0.31",
+    "@ai-sdk/openai": "^4.0.27",
+    "@ai-sdk/react": "^4.0.50",
+    "@payloadcms/live-preview-react": "^3.87.0",
+    "ai": "^7.0.47",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@payloadcms/db-mongodb": "^3.86.0",
-    "@payloadcms/db-postgres": "^3.86.0",
-    "@payloadcms/db-sqlite": "^3.86.0",
-    "@payloadcms/next": "^3.86.0",
-    "@payloadcms/richtext-lexical": "^3.86.0",
-    "@payloadcms/ui": "^3.86.0",
+    "@payloadcms/db-mongodb": "^3.87.0",
+    "@payloadcms/db-postgres": "^3.87.0",
+    "@payloadcms/db-sqlite": "^3.87.0",
+    "@payloadcms/next": "^3.87.0",
+    "@payloadcms/richtext-lexical": "^3.87.0",
+    "@payloadcms/ui": "^3.87.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
@@ -108,16 +108,16 @@
     "concurrently": "^10.0.4",
     "lucide-react": "^1.28.0",
     "next": "^16.2.10",
-    "payload": "^3.86.0",
+    "payload": "^3.87.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "shiki": "^4.3.0",
+    "shiki": "^4.4.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   },
   "peerDependencies": {
-    "payload": "^3.86.0"
+    "payload": "^3.87.0"
   },
   "publishConfig": {
     "main": "./dist/index.js",
