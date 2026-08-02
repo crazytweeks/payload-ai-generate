@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@plugin/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "target": "es2022",

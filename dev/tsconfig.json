@@ -14,7 +14,6 @@
     ".next/types/**/*.ts"
   ],
   "compilerOptions": {
-    "baseUrl": "./",
     "allowJs": true,
     "ignoreDeprecations": "6.0",
     "paths": {
