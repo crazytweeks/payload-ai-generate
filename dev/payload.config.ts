@@ -121,6 +121,9 @@ const buildConfigWithMemoryDB = buildConfig({
   sharp,
   typescript: {
     outputFile: path.resolve(dirname, '../src/payload-types.ts'),
+    declare: {
+      ignoreTSError: true,
+    },
   },
 });
 
