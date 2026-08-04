@@ -86,7 +86,7 @@
     "coolify-status": "bun ../../scripts/coolify/coolify.ts status-check payload-ai-generate"
   },
   "dependencies": {
-    "@ai-sdk/devtools": "^1.0.9",
+    "@ai-sdk/devtools": "^1.0.10",
     "@ai-sdk/google": "^4.0.31",
     "@ai-sdk/openai": "^4.0.27",
     "@ai-sdk/react": "^4.0.51",
