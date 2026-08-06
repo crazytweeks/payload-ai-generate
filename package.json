@@ -86,12 +86,12 @@
     "coolify-status": "bun ../../scripts/coolify/coolify.ts status-check payload-ai-generate"
   },
   "dependencies": {
-    "@ai-sdk/devtools": "^1.0.10",
-    "@ai-sdk/google": "^4.0.34",
-    "@ai-sdk/openai": "^4.0.30",
-    "@ai-sdk/react": "^4.0.55",
+    "@ai-sdk/devtools": "^1.0.11",
+    "@ai-sdk/google": "^4.0.36",
+    "@ai-sdk/openai": "^4.0.32",
+    "@ai-sdk/react": "^4.0.58",
     "@payloadcms/live-preview-react": "^3.87.0",
-    "ai": "^7.0.52",
+    "ai": "^7.0.55",
     "zod": "^4.4.3"
   },
   "devDependencies": {
