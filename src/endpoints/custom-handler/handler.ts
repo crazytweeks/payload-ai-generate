@@ -1,7 +1,7 @@
 import type { PayloadHandler } from 'payload';
 import type { AIPluginOptions } from '../../ai-types';
 import { resolvePayloadAI } from '../../aiService';
-import { buildAiHtmlPrompt } from '../../block-generation';
+import { buildAiHtmlPrompt } from '../../block-generation.js';
 import { createReferenceTools } from '../../tools/referenceTools';
 import {
   buildInputMessages,

@@ -1,5 +1,5 @@
 import type { ServerComponentProps } from 'payload';
-import { aiPromptCollectionSlug } from '../collections';
+import { aiPromptCollectionSlug } from '../collections.js';
 
 import styles from './BeforeDashboardServer.module.css';
 
