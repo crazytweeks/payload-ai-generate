@@ -19,51 +19,51 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/index.ts",
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./models": {
-      "import": "./src/models.json",
-      "types": "./src/models.json",
-      "default": "./src/models.json"
+      "import": "./dist/models.json",
+      "types": "./dist/models.json",
+      "default": "./dist/models.json"
     },
     "./models-types": {
-      "import": "./src/models.ts",
-      "types": "./src/models.ts",
-      "default": "./src/models.ts"
+      "import": "./dist/models.js",
+      "types": "./dist/models.d.ts",
+      "default": "./dist/models.js"
     },
     "./client": {
-      "import": "./src/exports/client.ts",
-      "types": "./src/exports/client.ts",
-      "default": "./src/exports/client.ts"
+      "import": "./dist/exports/client.js",
+      "types": "./dist/exports/client.d.ts",
+      "default": "./dist/exports/client.js"
     },
     "./rsc": {
-      "import": "./src/exports/rsc.ts",
-      "types": "./src/exports/rsc.ts",
-      "default": "./src/exports/rsc.ts"
+      "import": "./dist/exports/rsc.js",
+      "types": "./dist/exports/rsc.d.ts",
+      "default": "./dist/exports/rsc.js"
     },
     "./preview": {
-      "import": "./src/exports/rsc.ts",
-      "types": "./src/exports/rsc.ts",
-      "default": "./src/exports/rsc.ts"
+      "import": "./dist/exports/rsc.js",
+      "types": "./dist/exports/rsc.d.ts",
+      "default": "./dist/exports/rsc.js"
     },
     "./blocks": {
-      "import": "./src/exports/blocks.ts",
-      "types": "./src/exports/blocks.ts",
-      "default": "./src/exports/blocks.ts"
+      "import": "./dist/exports/blocks.js",
+      "types": "./dist/exports/blocks.d.ts",
+      "default": "./dist/exports/blocks.js"
     },
     "./blocks/client": {
-      "import": "./src/exports/blocks-client.ts",
-      "types": "./src/exports/blocks-client.ts",
-      "default": "./src/exports/blocks-client.ts"
+      "import": "./dist/exports/blocks-client.js",
+      "types": "./dist/exports/blocks-client.d.ts",
+      "default": "./dist/exports/blocks-client.js"
     }
   },
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "prebuild": "bun run models:extract",
-    "build": "bun run copyfiles",
+    "build": "bun run build:types && bun run copyfiles",
     "build:types": "rm -f tsconfig.tsbuildinfo && tsc --outDir dist --rootDir ./src",
     "clean": "rimraf {dist,*.tsbuildinfo}",
     "copyfiles": "find src -type f \\( -name '*.json' -o -name '*.css' -o -name '*.scss' -o -name '*.html' -o -name '*.svg' -o -name '*.png' \\) | while IFS= read -r f; do d=\"dist/${f#src/}\"; mkdir -p \"$(dirname \"$d\")\"; cp \"$f\" \"$d\"; done",

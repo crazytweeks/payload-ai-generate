@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "paths": {
       "@plugin/*": [
@@ -15,7 +16,7 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false,
@@ -32,8 +33,7 @@
     "noUncheckedSideEffectImports": false
   },
   "include": [
-    "src/**/*",
-    "index.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",

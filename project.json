@@ -1,0 +1,31 @@
+{
+  "name": "@flash-lightning/payload-ai-generate",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/ai-generate/src",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run dev",
+        "cwd": "packages/ai-generate"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "options": {
+        "command": "bun run build",
+        "cwd": "packages/ai-generate"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "packages/ai-generate"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:plugin", "platform:web"]
+}
