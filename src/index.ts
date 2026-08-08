@@ -12,7 +12,7 @@ import {
   buildAIPresetCollection,
   buildAIPromptCollection,
   syncAIModelsCollection,
-} from './collections';
+} from './collections.js';
 import {
   buildTestAnnouncementsCollection,
   testAnnouncementsCollectionSlug,

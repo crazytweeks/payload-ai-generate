@@ -24,7 +24,7 @@ import {
   generatedAiHtmlSchema,
   parseGeneratedBlockCandidate,
   validateGeneratedBlock,
-} from '../block-generation';
+} from '../block-generation.js';
 import { createContextTools } from '../tools/contextTools';
 import {
   createEventQueue,

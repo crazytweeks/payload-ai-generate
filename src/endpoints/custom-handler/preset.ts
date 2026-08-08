@@ -1,5 +1,5 @@
 import type { PayloadHandler } from 'payload';
-import { aiModelsOptionsCollectionSlug, aiPresetCollectionSlug } from '../../collections';
+import { aiModelsOptionsCollectionSlug, aiPresetCollectionSlug } from '../../collections.js';
 import type { AIModelReference } from './types';
 
 /**
