@@ -89,6 +89,8 @@ const buildConfigWithMemoryDB = buildConfig({
     connectOptions: {
       dbName: process.env.DATABASE_NAME || 'ai-plugin-dev',
       appName: process.env.DATABASE_APP_NAME || 'ai-plugin-dev',
+
+      maxPoolSize: 10,
     },
   }),
   editor: lexicalEditor(),
