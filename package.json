@@ -87,11 +87,11 @@
   },
   "dependencies": {
     "@ai-sdk/devtools": "^1.0.12",
-    "@ai-sdk/google": "^4.0.42",
+    "@ai-sdk/google": "^4.0.44",
     "@ai-sdk/openai": "^4.0.40",
-    "@ai-sdk/react": "^4.0.65",
+    "@ai-sdk/react": "^4.0.68",
     "@payloadcms/live-preview-react": "^3.88.0",
-    "ai": "^7.0.62",
+    "ai": "^7.0.65",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -107,7 +107,7 @@
     "@types/react-dom": "^19.2.4",
     "concurrently": "^10.0.4",
     "lucide-react": "^1.31.0",
-    "next": "^16.2.10",
+    "next": "^16.3.1",
     "payload": "^3.88.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
