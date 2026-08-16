@@ -1,6 +1,9 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "customConditions": [
+      "@nx-workspace-preview/source"
+    ],
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@plugin/*": [
         "./src/*"
