@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.2.0-beta.1 — 2026-08-22
+
+- Bumped `next` to `^16.3.2` and `vitest` to `^4.1.11` (routine monorepo dependency sync).
+
+---
+
 ## 0.1.5-beta.2 — 2026-05-27
 
 - Fixed typescript compilation errors with Vercel AI SDK v6 / `@ai-sdk/react` updates by migrating `sendMessage` / `sendGenMessage` calls to use `text` instead of `content` and `files` instead of `experimental_attachments`.
