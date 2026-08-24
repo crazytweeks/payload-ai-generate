@@ -287,7 +287,7 @@ export interface AiPreset {
   createdAt: string;
 }
 /**
- * Registry of package-supported AI models. Synced automatically on init and used by AI presets.
+ * Registry of available AI models and their capabilities. Google and OpenAI come from the package model list; OpenRouter is fetched live from its public catalogue. Synced on init and used by AI presets and by consuming apps to pick a model that can perform a given task.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "aiModelsOptions".
@@ -295,9 +295,32 @@ export interface AiPreset {
 export interface AiModelsOption {
   id: string;
   name: string;
-  provider: 'google' | 'openai';
+  provider: 'google' | 'openai' | 'openrouter';
   modelId: string;
   description?: string | null;
+  /**
+   * Raw modality string from the provider, e.g. "text+image+file->text".
+   */
+  modality?: string | null;
+  /**
+   * What this model can actually do. Populated from the provider catalogue and used to keep a task from being sent to a model that cannot perform it — e.g. a text-only model cannot read a scanned PDF, and a model without structured output will drift out of a JSON schema.
+   */
+  capabilities?: {
+    inputText?: boolean | null;
+    inputImage?: boolean | null;
+    inputFile?: boolean | null;
+    inputAudio?: boolean | null;
+    inputVideo?: boolean | null;
+    outputText?: boolean | null;
+    outputImage?: boolean | null;
+    outputAudio?: boolean | null;
+    structuredOutputs?: boolean | null;
+    reasoning?: boolean | null;
+    toolCalling?: boolean | null;
+  };
+  contextLength?: number | null;
+  promptPrice?: number | null;
+  completionPrice?: number | null;
   /**
    * If true, this model will still be available for selection in AI presets, but it will be marked as deprecated in the admin UI.
    */
@@ -724,6 +747,25 @@ export interface AiModelsOptionsSelect<T extends boolean = true> {
   provider?: T;
   modelId?: T;
   description?: T;
+  modality?: T;
+  capabilities?:
+    | T
+    | {
+        inputText?: T;
+        inputImage?: T;
+        inputFile?: T;
+        inputAudio?: T;
+        inputVideo?: T;
+        outputText?: T;
+        outputImage?: T;
+        outputAudio?: T;
+        structuredOutputs?: T;
+        reasoning?: T;
+        toolCalling?: T;
+      };
+  contextLength?: T;
+  promptPrice?: T;
+  completionPrice?: T;
   isDeprecated?: T;
   isRemoved?: T;
   isDefault?: T;

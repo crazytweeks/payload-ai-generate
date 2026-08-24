@@ -1,5 +1,6 @@
 import type { CollectionConfig, Payload } from 'payload';
 import { models } from '../models';
+import { fetchOpenRouterModels, type OpenRouterModel } from '../openrouter';
 import { aiModelsOptionsCollectionSlug } from './constants';
 import {
   type AIModelDoc,
@@ -96,16 +97,115 @@ export const syncAIModelsCollection = async (payload: Payload) => {
 };
 
 /**
+ * Synchronizes the OpenRouter half of the registry from its live catalogue.
+ *
+ * Differs from the static sync above in two ways that matter:
+ *   - the source is an HTTP endpoint, so it can fail; callers must treat that
+ *     as non-fatal (a stale list is not a reason for an app not to boot);
+ *   - the catalogue carries capabilities, which are written on every run so
+ *     the registry tracks upstream changes (a model gaining vision, say).
+ *
+ * User-owned flags — `isEnabled`, `isDefault`, `isDeprecated` — are never
+ * overwritten. Only provider-owned facts are refreshed.
+ */
+export const syncOpenRouterModels = async (
+  payload: Payload,
+  options?: { models?: OpenRouterModel[] }
+): Promise<{ created: number; updated: number; removed: number; total: number }> => {
+  const catalogue = options?.models ?? (await fetchOpenRouterModels());
+
+  const existing = await payload.find({
+    collection: aiModelsOptionsCollectionSlug,
+    where: { provider: { equals: 'openrouter' } },
+    depth: 0,
+    limit: 5000,
+    overrideAccess: true,
+  });
+
+  const existingByModelId = new Map<string, AIModelDoc>(
+    existing.docs.map((doc) => [String((doc as AIModelDoc).modelId), doc as AIModelDoc])
+  );
+  const catalogueIds = new Set(catalogue.map((model) => model.modelId));
+
+  let created = 0;
+  let updated = 0;
+  let removed = 0;
+
+  for (const model of catalogue) {
+    const providerFacts = {
+      name: model.name,
+      description: model.description || undefined,
+      modality: model.modality,
+      contextLength: model.contextLength,
+      promptPrice: model.promptPrice,
+      completionPrice: model.completionPrice,
+      capabilities: model.capabilities,
+    };
+
+    const current = existingByModelId.get(model.modelId);
+
+    if (!current) {
+      await payload.create({
+        collection: aiModelsOptionsCollectionSlug,
+        data: {
+          provider: 'openrouter',
+          modelId: model.modelId,
+          isDefault: false,
+          isEnabled: true,
+          isRemoved: false,
+          ...providerFacts,
+        },
+        overrideAccess: true,
+      });
+      created += 1;
+      continue;
+    }
+
+    await payload.update({
+      collection: aiModelsOptionsCollectionSlug,
+      id: current.id,
+      data: {
+        ...providerFacts,
+        // A model reappearing upstream is no longer removed. Enabled/default
+        // stay as the user left them.
+        ...(current.isRemoved ? { isRemoved: false } : {}),
+      },
+      overrideAccess: true,
+    });
+    updated += 1;
+  }
+
+  // Models that vanished upstream are retired, not deleted — presets pointing
+  // at them keep resolving.
+  for (const doc of existing.docs) {
+    const typed = doc as AIModelDoc;
+    if (catalogueIds.has(String(typed.modelId)) || typed.isRemoved) continue;
+
+    await payload.update({
+      collection: aiModelsOptionsCollectionSlug,
+      id: typed.id,
+      data: { isDefault: false, isEnabled: false, isRemoved: true },
+      overrideAccess: true,
+    });
+    removed += 1;
+  }
+
+  await ensureFallbackDefaultForProvider(payload, 'openrouter');
+
+  return { created, updated, removed, total: catalogue.length };
+};
+
+/**
  * Builds the collection that stores selectable AI models for presets.
  */
 export const buildAIModelsCollection = (): CollectionConfig => ({
   slug: aiModelsOptionsCollectionSlug,
   admin: {
     group: 'AI',
-    defaultColumns: ['name', 'provider', 'isDefault', 'isEnabled', 'isDeprecated', 'isRemoved'],
+    defaultColumns: ['name', 'provider', 'modality', 'isDefault', 'isEnabled', 'isRemoved'],
     useAsTitle: 'name',
     description:
-      'Registry of package-supported AI models. Synced automatically on init and used by AI presets.',
+      'Registry of available AI models and their capabilities. Google and OpenAI come from the package model list; OpenRouter is fetched live from its public catalogue. Synced on init and used by AI presets and by consuming apps to pick a model that can perform a given task.',
   },
   labels: {
     singular: 'AI Model',
@@ -141,6 +241,85 @@ export const buildAIModelsCollection = (): CollectionConfig => ({
     {
       name: 'description',
       type: 'textarea',
+    },
+    {
+      name: 'modality',
+      type: 'text',
+      label: 'Modality',
+      admin: {
+        readOnly: true,
+        description: 'Raw modality string from the provider, e.g. "text+image+file->text".',
+      },
+    },
+    {
+      name: 'capabilities',
+      type: 'group',
+      label: 'Capabilities',
+      admin: {
+        description:
+          'What this model can actually do. Populated from the provider catalogue and used to keep a task from being sent to a model that cannot perform it — e.g. a text-only model cannot read a scanned PDF, and a model without structured output will drift out of a JSON schema.',
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'inputText', type: 'checkbox', label: 'Text in', defaultValue: true },
+            {
+              name: 'inputImage',
+              type: 'checkbox',
+              label: 'Image in (vision)',
+              defaultValue: false,
+            },
+            { name: 'inputFile', type: 'checkbox', label: 'File / PDF in', defaultValue: false },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'inputAudio', type: 'checkbox', label: 'Audio in', defaultValue: false },
+            { name: 'inputVideo', type: 'checkbox', label: 'Video in', defaultValue: false },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'outputText', type: 'checkbox', label: 'Text out', defaultValue: true },
+            { name: 'outputImage', type: 'checkbox', label: 'Image out', defaultValue: false },
+            { name: 'outputAudio', type: 'checkbox', label: 'Audio out', defaultValue: false },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'structuredOutputs',
+              type: 'checkbox',
+              label: 'Structured output',
+              defaultValue: false,
+            },
+            { name: 'reasoning', type: 'checkbox', label: 'Thinking', defaultValue: false },
+            { name: 'toolCalling', type: 'checkbox', label: 'Tools', defaultValue: false },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'contextLength',
+      type: 'number',
+      label: 'Context Length',
+      admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'promptPrice',
+      type: 'number',
+      label: 'Prompt Price (USD/token)',
+      admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'completionPrice',
+      type: 'number',
+      label: 'Completion Price (USD/token)',
+      admin: { readOnly: true, position: 'sidebar' },
     },
     {
       name: 'isDeprecated',

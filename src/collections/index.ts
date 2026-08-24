@@ -9,7 +9,11 @@ export {
   aiPromptCollectionSlug,
 } from './constants';
 export { buildAIMediaCollection } from './media';
-export { buildAIModelsCollection, syncAIModelsCollection } from './models';
+export {
+  buildAIModelsCollection,
+  syncAIModelsCollection,
+  syncOpenRouterModels,
+} from './models';
 export { buildAIPresetCollection } from './preset';
 export { buildAIPromptCollection } from './prompt';
 export {

@@ -1,6 +1,6 @@
 import type { CollectionConfig, Where } from 'payload';
 import { aiModelsOptionsCollectionSlug, aiPresetCollectionSlug } from './constants';
-import { providerOptions } from './shared';
+import { generationProviderOptions } from './shared';
 
 /**
  * Builds reusable AI presets containing provider, model, and system prompt defaults.
@@ -43,7 +43,7 @@ export const buildAIPresetCollection = (): CollectionConfig => ({
       name: 'provider',
       required: true,
       type: 'select',
-      options: providerOptions,
+      options: generationProviderOptions,
     },
     {
       admin: {

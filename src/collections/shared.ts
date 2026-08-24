@@ -4,10 +4,23 @@ import { fileURLToPath } from 'node:url';
 import type { Payload } from 'payload';
 import { type GoogleModelId, models, type OpenAIModelId } from '../models';
 
+import type { ModelCapabilities } from '../openrouter';
 import { aiModelsOptionsCollectionSlug } from './constants';
 
-export type AIProvider = keyof typeof models;
-type AiModelId = GoogleModelId | OpenAIModelId;
+/**
+ * Providers whose model list is a static artifact generated into `models.ts`.
+ */
+export type StaticAIProvider = keyof typeof models;
+
+/**
+ * All providers. `openrouter` is not in `models.ts` because its catalogue is
+ * fetched live from a public endpoint rather than generated at build time —
+ * see `src/openrouter.ts`.
+ */
+export type AIProvider = StaticAIProvider | 'openrouter';
+
+/** Static-provider model ids; OpenRouter ids are free-form (`vendor/model`). */
+type AiModelId = GoogleModelId | OpenAIModelId | (string & {});
 
 export type AIModelDoc = {
   id: number | string;
@@ -18,19 +31,56 @@ export type AIModelDoc = {
   isDeprecated?: boolean | null;
   isEnabled?: boolean | null;
   isRemoved?: boolean | null;
+  contextLength?: number | null;
+  promptPrice?: number | null;
+  completionPrice?: number | null;
+  modality?: string | null;
+  capabilities?: Partial<ModelCapabilities> | null;
 };
 
 /**
  * Provider options reused by admin select fields.
  */
-export const providerOptions = Object.keys(models).map((provider) => ({
-  label: provider.charAt(0).toUpperCase() + provider.slice(1),
+export const ALL_PROVIDERS: AIProvider[] = [
+  ...(Object.keys(models) as StaticAIProvider[]),
+  'openrouter',
+];
+
+const PROVIDER_LABELS: Record<string, string> = {
+  google: 'Google',
+  openai: 'OpenAI',
+  openrouter: 'OpenRouter',
+};
+
+const toOption = (provider: string) => ({
+  label: PROVIDER_LABELS[provider] ?? provider.charAt(0).toUpperCase() + provider.slice(1),
   value: provider,
-}));
+});
+
+/**
+ * Every provider the model REGISTRY can describe, including ones this plugin
+ * cannot itself run. Use for the models collection.
+ */
+export const providerOptions = ALL_PROVIDERS.map(toOption);
+
+/**
+ * Only the providers this plugin's own generation runtime can execute
+ * (`src/ai-service/provider-runner.ts`). Use for anything that will be handed
+ * to that runtime — AI presets, above all.
+ *
+ * OpenRouter is deliberately absent: the registry stores its models and their
+ * capabilities for consuming apps to select from, but the plugin does not route
+ * generation through it. Offering it here would let a preset choose OpenRouter
+ * and then silently run on OpenAI, because the runtime falls through to OpenAI
+ * for any non-Google provider.
+ */
+export const generationProviderOptions = (Object.keys(models) as StaticAIProvider[]).map(toOption);
 
 const defaultModels: Record<AIProvider, AiModelId> = {
   google: 'gemini-2.5-flash',
   openai: 'gpt-4o-mini',
+  // A capable general default; consumers override per task via the collection.
+  openrouter: 'openai/gpt-5.5',
 };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

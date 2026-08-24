@@ -12,6 +12,7 @@ import {
   buildAIPresetCollection,
   buildAIPromptCollection,
   syncAIModelsCollection,
+  syncOpenRouterModels,
 } from './collections';
 import {
   buildTestAnnouncementsCollection,
@@ -21,6 +22,7 @@ import { buildTestMessagesCollection, testMessagesCollectionSlug } from './dev-t
 import { buildTestProductsCollection, testProductsCollectionSlug } from './dev-test/testProducts';
 import { composerEndpointHandler } from './endpoints/composerEndpointHandler';
 import { customEndpointHandler } from './endpoints/customEndpointHandler';
+import { openrouterSyncHandler } from './endpoints/openrouterSyncHandler';
 import { previewEndpointHandler } from './endpoints/previewHandler';
 import { uiGenerateEndpointHandler } from './endpoints/uiGenerateEndpointHandler';
 
@@ -59,6 +61,19 @@ export type {
 export { ComposerV2Client } from './components/composer-v2/ComposerV2Client';
 export type { ComposerUIFile } from './composer-ui';
 export { buildComposerUISrcDoc, ComposerUIPreviewFrame } from './composer-ui';
+// OpenRouter catalogue + capability helpers, so consuming apps can pick a model
+// that is actually able to perform a given task.
+export type {
+  CapabilityRequirement,
+  ModelCapabilities,
+  OpenRouterModel,
+} from './openrouter';
+export {
+  deriveCapabilities,
+  describeCapabilities,
+  fetchOpenRouterModels,
+  modelSupports,
+} from './openrouter';
 export {
   aiModelsOptionsCollectionSlug,
   aiPresetCollectionSlug,
@@ -140,6 +155,11 @@ export const aiGenerate =
         method: 'post',
         path: '/ai-generate/ui-generate',
       },
+      {
+        handler: openrouterSyncHandler,
+        method: 'post',
+        path: '/ai-generate/openrouter/sync',
+      },
     ];
 
     if (pluginOptions.disabled) {
@@ -157,6 +177,23 @@ export const aiGenerate =
       } catch (error) {
         payload.logger.error({
           msg: 'Failed to sync AI models collection during init',
+          err: error,
+        });
+      }
+
+      // OpenRouter's catalogue is fetched over the network, so this is the one
+      // sync that can fail for reasons entirely outside the app. Non-fatal by
+      // design: a stale or absent model list must never stop the app booting.
+      // Re-runnable on demand via POST /api/ai-generate/openrouter/sync.
+      try {
+        const result = await syncOpenRouterModels(payload);
+        payload.logger.info({
+          msg: 'Synced OpenRouter models',
+          ...result,
+        });
+      } catch (error) {
+        payload.logger.warn({
+          msg: 'Failed to sync OpenRouter models during init (continuing without them)',
           err: error,
         });
       }

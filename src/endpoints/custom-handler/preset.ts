@@ -80,7 +80,22 @@ export const resolvePresetValues = async (
   });
 
   model = await resolvePresetModelId(payload, preset.model as AIModelReference, req);
-  provider = preset.provider;
+
+  // Presets may only choose providers this plugin's generation runtime can
+  // actually execute (see `generationProviderOptions`). A stored value outside
+  // that set — e.g. an `openrouter` preset saved before the provider split, or
+  // written directly through the API — must NOT be passed through: the runtime
+  // falls through to OpenAI for any non-Google provider, so honouring it would
+  // silently run on the wrong vendor. Fall back to the plugin default instead.
+  const storedProvider = preset.provider as string | undefined;
+  if (storedProvider === 'google' || storedProvider === 'openai') {
+    provider = storedProvider;
+  } else if (storedProvider) {
+    payload.logger.warn({
+      msg: `AI preset ${presetId} specifies provider "${storedProvider}", which this plugin cannot run. Falling back to the default provider.`,
+    });
+  }
+
   system = preset.systemPrompt ?? system;
 
   return {
