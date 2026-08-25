@@ -18,7 +18,9 @@ export const openrouterSyncHandler: PayloadHandler = async (req) => {
   }
 
   try {
-    const result = await syncOpenRouterModels(req.payload);
+    // Explicit manual action — bypass the freshness window so an admin can
+    // always pull the catalogue on demand.
+    const result = await syncOpenRouterModels(req.payload, { force: true });
 
     req.payload.logger.info({
       msg: 'OpenRouter model sync run manually',

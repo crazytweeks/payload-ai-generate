@@ -73,6 +73,13 @@ export const syncAIModelsCollection = async (payload: Payload) => {
   }
 
   for (const doc of existing.docs) {
+    // OpenRouter rows are owned by the live-catalogue sync below — the static
+    // package list must never retire them (it would mark every one of them
+    // removed on every init, and the OpenRouter sync would flip them back).
+    if ((doc as AIModelDoc).provider === 'openrouter') {
+      continue;
+    }
+
     const key = `${doc.provider}:${doc.modelId}`;
 
     if (expectedKeys.has(key)) {
@@ -97,23 +104,40 @@ export const syncAIModelsCollection = async (payload: Payload) => {
 };
 
 /**
+ * How long a registry synced from the live catalogue is trusted without a
+ * re-fetch. Boots more frequent than this skip both the outbound call and all
+ * registry writes — dev servers restart often, and every restart used to pay
+ * for hundreds of writes.
+ */
+const OPENROUTER_SYNC_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+
+/**
  * Synchronizes the OpenRouter half of the registry from its live catalogue.
  *
  * Differs from the static sync above in two ways that matter:
  *   - the source is an HTTP endpoint, so it can fail; callers must treat that
  *     as non-fatal (a stale list is not a reason for an app not to boot);
- *   - the catalogue carries capabilities, which are written on every run so
+ *   - the catalogue carries capabilities, which are refreshed when this runs so
  *     the registry tracks upstream changes (a model gaining vision, say).
  *
  * User-owned flags — `isEnabled`, `isDefault`, `isDeprecated` — are never
  * overwritten. Only provider-owned facts are refreshed.
+ *
+ * Pass `force: true` for explicit manual re-syncs (the admin endpoint does);
+ * otherwise the sync is skipped when the newest openrouter row was written
+ * within {@link OPENROUTER_SYNC_MAX_AGE_MS}. Only provider-owned facts that
+ * actually changed are written.
  */
 export const syncOpenRouterModels = async (
   payload: Payload,
-  options?: { models?: OpenRouterModel[] }
-): Promise<{ created: number; updated: number; removed: number; total: number }> => {
-  const catalogue = options?.models ?? (await fetchOpenRouterModels());
-
+  options?: { models?: OpenRouterModel[]; force?: boolean }
+): Promise<{
+  created: number;
+  updated: number;
+  removed: number;
+  total: number;
+  skipped?: boolean;
+}> => {
   const existing = await payload.find({
     collection: aiModelsOptionsCollectionSlug,
     where: { provider: { equals: 'openrouter' } },
@@ -121,6 +145,35 @@ export const syncOpenRouterModels = async (
     limit: 5000,
     overrideAccess: true,
   });
+
+  // Freshness short-circuit: if some prior boot already synced recently,
+  // neither fetch nor write anything. A missing/empty registry never counts as
+  // fresh — a fresh install must populate itself.
+  let lastSyncedAt = Number.NaN;
+  for (const doc of existing.docs) {
+    const time = doc.updatedAt ? new Date(doc.updatedAt as string).getTime() : Number.NaN;
+    if (!Number.isNaN(time) && (Number.isNaN(lastSyncedAt) || time > lastSyncedAt)) {
+      lastSyncedAt = time;
+    }
+  }
+
+  if (
+    !options?.force &&
+    !options?.models &&
+    existing.docs.length > 0 &&
+    !Number.isNaN(lastSyncedAt) &&
+    Date.now() - lastSyncedAt < OPENROUTER_SYNC_MAX_AGE_MS
+  ) {
+    return {
+      created: 0,
+      updated: 0,
+      removed: 0,
+      total: existing.docs.length,
+      skipped: true,
+    };
+  }
+
+  const catalogue = options?.models ?? (await fetchOpenRouterModels());
 
   const existingByModelId = new Map<string, AIModelDoc>(
     existing.docs.map((doc) => [String((doc as AIModelDoc).modelId), doc as AIModelDoc])
@@ -131,17 +184,19 @@ export const syncOpenRouterModels = async (
   let updated = 0;
   let removed = 0;
 
-  for (const model of catalogue) {
-    const providerFacts = {
-      name: model.name,
-      description: model.description || undefined,
-      modality: model.modality,
-      contextLength: model.contextLength,
-      promptPrice: model.promptPrice,
-      completionPrice: model.completionPrice,
-      capabilities: model.capabilities,
-    };
+  /** Provider-owned facts only; compared field-by-field before any write. */
+  const factsFor = (model: OpenRouterModel) => ({
+    name: model.name,
+    description: model.description || undefined,
+    modality: model.modality,
+    contextLength: model.contextLength,
+    promptPrice: model.promptPrice,
+    completionPrice: model.completionPrice,
+    capabilities: model.capabilities,
+  });
 
+  for (const model of catalogue) {
+    const providerFacts = factsFor(model);
     const current = existingByModelId.get(model.modelId);
 
     if (!current) {
@@ -161,15 +216,33 @@ export const syncOpenRouterModels = async (
       continue;
     }
 
+    // Write only what actually drifted — an unchanged catalogue must not touch
+    // the database. Every write here fires the collection's afterChange hooks,
+    // which cost extra queries per row.
+    const patch: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(providerFacts)) {
+      const currentValue = (current as Record<string, unknown>)[key];
+      const changed =
+        key === 'capabilities'
+          ? JSON.stringify(currentValue ?? null) !== JSON.stringify(value ?? null)
+          : (currentValue ?? undefined) !== (value ?? undefined);
+      if (changed) {
+        patch[key] = value;
+      }
+    }
+
+    if (current.isRemoved) {
+      patch.isRemoved = false;
+    }
+
+    if (Object.keys(patch).length === 0) {
+      continue;
+    }
+
     await payload.update({
       collection: aiModelsOptionsCollectionSlug,
       id: current.id,
-      data: {
-        ...providerFacts,
-        // A model reappearing upstream is no longer removed. Enabled/default
-        // stay as the user left them.
-        ...(current.isRemoved ? { isRemoved: false } : {}),
-      },
+      data: patch,
       overrideAccess: true,
     });
     updated += 1;

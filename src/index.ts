@@ -172,6 +172,19 @@ export const aiGenerate =
       }
 
       installPayloadAI(payload, aiService);
+
+      /**
+       * `next build` boots Payload once per page-data worker just to read route
+       * metadata — none of those workers ever serve a request. Each boot here
+       * would cost a live catalogue fetch plus hundreds of registry writes
+       * against the database, multiplied by every worker, which dominated build
+       * time. The runtime server performs the real sync when it actually boots.
+       */
+      if (process.env.NEXT_PHASE === 'phase-production-build') {
+        payload.logger.info({ msg: 'Skipping AI model registry sync during production build' });
+        return;
+      }
+
       try {
         await syncAIModelsCollection(payload);
       } catch (error) {
@@ -185,6 +198,7 @@ export const aiGenerate =
       // sync that can fail for reasons entirely outside the app. Non-fatal by
       // design: a stale or absent model list must never stop the app booting.
       // Re-runnable on demand via POST /api/ai-generate/openrouter/sync.
+      // Skipped when the registry was synced recently — see syncOpenRouterModels.
       try {
         const result = await syncOpenRouterModels(payload);
         payload.logger.info({
