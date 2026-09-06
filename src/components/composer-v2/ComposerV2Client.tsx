@@ -1,11 +1,11 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { CodeBlock } from '@plugin/components/composer/components/CodeBlock';
-import { FileTree } from '@plugin/components/composer/components/FileTree';
-import { PlanView } from '@plugin/components/composer/components/PlanView';
-import { extractPlanFromMessage } from '@plugin/components/composer/planExtract';
-import { buildComposerUISrcDoc } from '@plugin/composer-ui';
+import { CodeBlock } from '../composer/components/CodeBlock';
+import { FileTree } from '../composer/components/FileTree';
+import { PlanView } from '../composer/components/PlanView';
+import { extractPlanFromMessage } from '../composer/planExtract';
+import { buildComposerUISrcDoc } from '../../composer-ui';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { Code2, Eye, FileCode2, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

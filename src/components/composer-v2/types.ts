@@ -1,4 +1,4 @@
-import type { ComposerPlan } from '@plugin/composer/types';
+import type { ComposerPlan } from '../../composer/types';
 
 export type { ComposerPlan };
 
