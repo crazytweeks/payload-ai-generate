@@ -1,7 +1,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
-import { AiComposerUiBlock } from '@plugin/blocks/ai-composer-ui-block/config';
-import { AiHtmlBlock } from '@plugin/blocks/ai-html-block/config';
+import { AiComposerUiBlock } from '../src/blocks/ai-composer-ui-block/config';
+import { AiHtmlBlock } from '../src/blocks/ai-html-block/config';
 import path from 'path';
 import { buildConfig } from 'payload';
 import { aiGenerate } from 'payload-ai-generate';
