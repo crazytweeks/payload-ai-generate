@@ -19,7 +19,7 @@
 #   PAYLOAD_AI_GENERATE_TEST_COLLECTIONS  true (enables dev reference collections)
 
 # ── deps ───────────────────────────────────────────────────────────────────────
-FROM oven/bun:alpine AS deps
+FROM oven/bun:1.4.2-alpine@sha256:d888c0ae6c86d7866ff10c5aafdd9077b36aee6455b33dd270fb93c0dd5cef6f AS deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
@@ -55,7 +55,7 @@ RUN --mount=type=cache,id=next-cache-ai-plugin-dev,target=/app/dev/.next/cache \
 RUN find dev/.next/standalone -name '.env*' -delete 2>/dev/null || true
 
 # ── runner ─────────────────────────────────────────────────────────────────────
-FROM node:24-alpine AS runner
+FROM node:26-alpine@sha256:2d984a15c9b54fd0aeb608b8e0d0d83529eb34d2966db27a1fb4f1edc3d298a3 AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
