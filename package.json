@@ -86,20 +86,13 @@
     "coolify-status": "bun ../../scripts/coolify/coolify.ts status-check payload-ai-generate"
   },
   "dependencies": {
-1:     "@ai-sdk/devtools": "^1.0.22",
+    "@ai-sdk/devtools": "^1.0.22",
     "@ai-sdk/google": "^4.0.77",
     "@ai-sdk/openai": "^4.0.72",
     "@ai-sdk/react": "^4.0.114",
     "@payloadcms/live-preview-react": "^3.90.1",
     "ai": "^7.0.111",
     "zod": "^4.6.5"
-2:     "@types/node": "^26.6.2",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "concurrently": "^10.0.4",
-    "lucide-react": "^1.47.0",
-    "next": "^16.3.6",
-    "payload": "^3.90.1",
   },
   "devDependencies": {
     "@payloadcms/db-mongodb": "^3.90.1",
@@ -109,14 +102,7 @@
     "@payloadcms/richtext-lexical": "^3.90.1",
     "@payloadcms/ui": "^3.90.1",
     "@tailwindcss/postcss": "^4.3.3",
-1:     "@ai-sdk/devtools": "^1.0.22",
-    "@ai-sdk/google": "^4.0.77",
-    "@ai-sdk/openai": "^4.0.72",
-    "@ai-sdk/react": "^4.0.114",
-    "@payloadcms/live-preview-react": "^3.90.1",
-    "ai": "^7.0.111",
-    "zod": "^4.6.5"
-2:     "@types/node": "^26.6.2",
+    "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "concurrently": "^10.0.4",
