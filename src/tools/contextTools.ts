@@ -25,7 +25,9 @@ type ResolvedToolingConfig = {
 };
 
 const toAbsolutePath = (value: string) =>
-  path.isAbsolute(value) ? path.resolve(value) : path.resolve(process.cwd(), value);
+  path.isAbsolute(value)
+    ? path.resolve(/*turbopackIgnore: true*/ value)
+    : path.resolve(/*turbopackIgnore: true*/ process.cwd(), value);
 
 const resolveToolingConfig = (options: AIPluginOptions): ResolvedToolingConfig => {
   const roots = (options.contextRoots ?? []).map(toAbsolutePath);
@@ -94,7 +96,7 @@ const assertToolAccess = async (
     throw new Error('Requested path is not allowlisted for AI context tools.');
   }
 
-  const stats = await fs.stat(resolvedPath);
+  const stats = await fs.stat(/*turbopackIgnore: true*/ resolvedPath);
 
   if (kind === 'file' && !stats.isFile()) {
     throw new Error('Requested path is not a file.');
@@ -150,7 +152,7 @@ export const createContextTools = (options: AIPluginOptions): ToolSet => {
           throw new Error(`Files with extension "${extension}" are not allowed.`);
         }
 
-        const handle = await fs.open(resolvedPath, 'r');
+        const handle = await fs.open(/*turbopackIgnore: true*/ resolvedPath, 'r');
 
         try {
           const byteLength = Math.min(stats.size, config.maxFileBytes);
@@ -185,7 +187,9 @@ export const createContextTools = (options: AIPluginOptions): ToolSet => {
         countToolCall();
 
         const { resolvedPath } = await assertToolAccess(inputPath, config, 'folder');
-        const entries = await fs.readdir(resolvedPath, { withFileTypes: true });
+        const entries = await fs.readdir(/*turbopackIgnore: true*/ resolvedPath, {
+          withFileTypes: true,
+        });
 
         const output = await Promise.all(
           entries
@@ -199,7 +203,9 @@ export const createContextTools = (options: AIPluginOptions): ToolSet => {
                 isPathAllowed(entryPath, config.allowlist) &&
                 !isDeniedPath(entryPath)
               ) {
-                const nestedEntries = await fs.readdir(entryPath, { withFileTypes: true });
+                const nestedEntries = await fs.readdir(/*turbopackIgnore: true*/ entryPath, {
+                  withFileTypes: true,
+                });
 
                 return {
                   children: nestedEntries

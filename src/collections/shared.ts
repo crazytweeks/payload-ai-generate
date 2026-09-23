@@ -295,14 +295,14 @@ export const readLatestDeclarationFile = async (
     // Attempt to read package.json and use its `types` / `typings` entry if present
     try {
       const pkgJsonPath = join(pkgDir, 'package.json');
-      const pkgJsonRaw = await readFile(pkgJsonPath, 'utf8');
+      const pkgJsonRaw = await readFile(/*turbopackIgnore: true*/ pkgJsonPath, 'utf8');
       const pkg = JSON.parse(pkgJsonRaw) as Record<string, unknown>;
 
       const typeField = (pkg.types || pkg.typings) as string | undefined;
       if (typeField) {
         const candidate = join(pkgDir, typeField);
         try {
-          return await readFile(candidate, 'utf8');
+          return await readFile(/*turbopackIgnore: true*/ candidate, 'utf8');
         } catch {
           // fall through to fallback search
         }
@@ -322,7 +322,7 @@ export const readLatestDeclarationFile = async (
 
     for (const p of candidates) {
       try {
-        return await readFile(p, 'utf8');
+        return await readFile(/*turbopackIgnore: true*/ p, 'utf8');
       } catch {
         // try next
       }
@@ -332,12 +332,12 @@ export const readLatestDeclarationFile = async (
     const searchDirs = [join(pkgDir, 'dist'), pkgDir];
     for (const d of searchDirs) {
       try {
-        const entries = await readdir(d);
+        const entries = await readdir(/*turbopackIgnore: true*/ d);
         for (const entry of entries) {
           if (entry.endsWith('.d.ts')) {
             const p = join(d, entry);
             try {
-              return await readFile(p, 'utf8');
+              return await readFile(/*turbopackIgnore: true*/ p, 'utf8');
             } catch {
               // ignore and continue
             }
@@ -369,7 +369,7 @@ const getPackageDeclarationSearchDirs = async (cachePrefix: string, packageName:
 
   try {
     const bunInstallCache = join(process.env.HOME ?? '/root', '.bun', 'install', 'cache');
-    const cacheEntries = await readdir(bunInstallCache);
+    const cacheEntries = await readdir(/*turbopackIgnore: true*/ bunInstallCache);
     for (const entry of cacheEntries) {
       if (entry.startsWith(cachePrefix)) {
         packageDirs.push(join(bunInstallCache, entry));
