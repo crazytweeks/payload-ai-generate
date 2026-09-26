@@ -27,7 +27,7 @@ export const AttachmentReferencesCard = ({ attachments }: { attachments: unknown
         })}
       </div>
     ) : (
-      <Banner type="info">No reference files selected.</Banner>
+      <Banner type="default">No reference files selected.</Banner>
     )}
   </div>
 );

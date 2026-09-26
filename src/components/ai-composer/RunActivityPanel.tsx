@@ -152,7 +152,7 @@ export const RunActivityPanel = ({
         {viewModel.activity.length > 0 ? (
           viewModel.activity.map((item) => <ActivityCard item={item} key={getActivityKey(item)} />)
         ) : (
-          <Banner type="info">
+          <Banner type="default">
             Start a generation to see live model activity, repair attempts, and tool usage.
           </Banner>
         )}

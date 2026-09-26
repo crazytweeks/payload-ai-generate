@@ -90,17 +90,17 @@
     "@ai-sdk/google": "^4.0.77",
     "@ai-sdk/openai": "^4.0.72",
     "@ai-sdk/react": "^4.0.114",
-    "@payloadcms/live-preview-react": "^3.90.1",
+    "@payloadcms/live-preview-react": "4.0.0-canary.37",
     "ai": "^7.0.111",
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@payloadcms/db-mongodb": "^3.90.1",
-    "@payloadcms/db-postgres": "^3.90.1",
-    "@payloadcms/db-sqlite": "^3.90.1",
-    "@payloadcms/next": "^3.90.1",
-    "@payloadcms/richtext-lexical": "^3.90.1",
-    "@payloadcms/ui": "^3.90.1",
+    "@payloadcms/db-mongodb": "4.0.0-canary.37",
+    "@payloadcms/db-postgres": "4.0.0-canary.37",
+    "@payloadcms/db-sqlite": "4.0.0-canary.37",
+    "@payloadcms/next": "4.0.0-canary.37",
+    "@payloadcms/richtext-lexical": "4.0.0-canary.37",
+    "@payloadcms/ui": "4.0.0-canary.37",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
@@ -108,7 +108,7 @@
     "concurrently": "^10.0.4",
     "lucide-react": "^1.47.0",
     "next": "^16.3.6",
-    "payload": "^3.90.1",
+    "payload": "4.0.0-canary.37",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "shiki": "^4.4.3",
@@ -117,7 +117,7 @@
     "vitest": "^5.0.1"
   },
   "peerDependencies": {
-    "payload": "^3.90.1"
+    "payload": ">=3.90.1"
   },
   "publishConfig": {
     "main": "./dist/index.js",

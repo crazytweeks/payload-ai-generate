@@ -72,7 +72,7 @@ export const ComposerView = ({
 
       <RunActivityPanel viewModel={viewModel} />
 
-      {viewModel.error ? <Banner type="error">{viewModel.error}</Banner> : null}
+      {viewModel.error ? <Banner type="danger">{viewModel.error}</Banner> : null}
     </div>
   </div>
 );
