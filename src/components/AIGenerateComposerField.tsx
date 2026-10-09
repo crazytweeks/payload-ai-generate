@@ -1,12 +1,13 @@
 'use client';
 
 import { useAllFormFields, useConfig, useField, useFormFields } from '@payloadcms/ui';
-import type { UIFieldClientComponent, UIFieldClientProps } from 'payload';
+import type { UIFieldClientProps } from 'payload';
 import { reduceFieldsToValues } from 'payload/shared';
 import type { AIConversationMessage, AIGenerationRunSummary } from '../ai-types';
 import { ComposerView } from './ai-composer/ComposerView';
 import type { ComposerFieldProps, RelationshipValue } from './ai-composer/types';
 import { useComposerController } from './ai-composer/useComposerController';
+import type { ComponentType } from 'react';
 
 export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
   const { field } = props;
@@ -106,4 +107,4 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
       viewModel={viewModel}
     />
   );
-}) satisfies UIFieldClientComponent;
+}) satisfies ComponentType<UIFieldClientProps>;
