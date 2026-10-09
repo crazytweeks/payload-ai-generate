@@ -1,11 +1,11 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { sharpTransformer } from '@payloadcms/transformer-sharp';
 import { AiComposerUiBlock } from '../src/blocks/ai-composer-ui-block/config';
 import { AiHtmlBlock } from '../src/blocks/ai-html-block/config';
 import path from 'path';
 import { buildConfig } from 'payload';
 import { aiGenerate } from 'payload-ai-generate';
-import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 import { testEmailAdapter } from './helpers/testEmailAdapter';
 
@@ -120,7 +120,7 @@ const buildConfigWithMemoryDB = buildConfig({
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
-  sharp,
+  upload: { transformers: [sharpTransformer()] },
   typescript: {
     outputFile: path.resolve(dirname, '../src/payload-types.ts'),
     declare: {

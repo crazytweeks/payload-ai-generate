@@ -91,6 +91,7 @@
     "@ai-sdk/openai": "^4.0.91",
     "@ai-sdk/react": "^4.0.140",
     "@payloadcms/live-preview-react": "4.0.0-canary.39",
+    "@payloadcms/transformer-sharp": "4.0.0-canary.39",
     "ai": "^7.0.117",
     "zod": "^4.6.5"
   },
