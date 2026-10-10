@@ -1,5 +1,6 @@
-import type { CollectionConfig, Config, Plugin } from 'payload';
+import type { Config, Plugin } from 'payload';
 import type { AIPluginOptions } from './ai-types';
+import { upsertCollection } from './config/upsertCollection';
 import { aiServiceCreate, installPayloadAI } from './aiService';
 import {
   aiModelsOptionsCollectionSlug,
@@ -26,21 +27,6 @@ import { openrouterSyncHandler } from './endpoints/openrouterSyncHandler';
 import { previewEndpointHandler } from './endpoints/previewHandler';
 import { uiGenerateEndpointHandler } from './endpoints/uiGenerateEndpointHandler';
 
-const upsertCollection = (
-  collections: CollectionConfig[] | undefined,
-  collection: CollectionConfig
-): CollectionConfig[] => {
-  const existingCollections = collections ?? [];
-  const existingIndex = existingCollections.findIndex(({ slug }) => slug === collection.slug);
-
-  if (existingIndex === -1) {
-    return [...existingCollections, collection];
-  }
-
-  const nextCollections = [...existingCollections];
-  nextCollections[existingIndex] = collection;
-  return nextCollections;
-};
 
 export type * from './ai-types';
 /**
