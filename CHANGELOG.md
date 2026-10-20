@@ -7,7 +7,9 @@
   4.0.150, `@ai-sdk/devtools` 1.0.40 to 1.0.49, `lucide-react` 1.60.0, `zod` 4.6.7.
 - Version metadata: 1.0.0-rc.2.
 
-Tests PENDING: no build, test or dev-server run has been executed for this round yet.
+- Root generation refreshed the model registry (`gemini-4-argon`).
+
+Verification: root generation and this package's build passed locally through the scratch-isolated runner on 2026-10-20. Consumer app builds and runtime tests remain pending.
 
 ---
 
