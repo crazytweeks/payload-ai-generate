@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## Unreleased
+
+- Dependency refresh (owner `bun update -i -r`): `next` 16.4.0 to 16.4.2, React 19.3.0 to 19.3.1,
+  `@ai-sdk/google` 4.0.93 to 4.0.101, `@ai-sdk/openai` 4.0.91 to 4.0.98, `@ai-sdk/react` 4.0.140 to
+  4.0.150, `@ai-sdk/devtools` 1.0.40 to 1.0.49, `lucide-react` 1.60.0, `zod` 4.6.7.
+- Version metadata: 1.0.0-rc.2.
+
+Tests PENDING: no build, test or dev-server run has been executed for this round yet.
+
+---
+
 ## 0.2.0-beta.1 — 2026-08-22
 
 - Bumped `next` to `^16.3.2` and `vitest` to `^4.1.11` (routine monorepo dependency sync).

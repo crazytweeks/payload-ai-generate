@@ -1,6 +1,6 @@
 {
   "name": "payload-ai-generate",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "AI generation plugin for Payload CMS",
   "homepage": "https://github.com/crazytweeks/payload-ai-generate",
   "repository": {
@@ -86,14 +86,14 @@
     "coolify-status": "bun ../../scripts/coolify/coolify.ts status-check payload-ai-generate"
   },
   "dependencies": {
-    "@ai-sdk/devtools": "^1.0.40",
-    "@ai-sdk/google": "^4.0.93",
-    "@ai-sdk/openai": "^4.0.91",
-    "@ai-sdk/react": "^4.0.140",
+    "@ai-sdk/devtools": "^1.0.49",
+    "@ai-sdk/google": "^4.0.101",
+    "@ai-sdk/openai": "^4.0.98",
+    "@ai-sdk/react": "^4.0.150",
     "@payloadcms/live-preview-react": "4.0.0-canary.39",
     "@payloadcms/transformer-sharp": "4.0.0-canary.39",
     "ai": "^7.0.117",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@payloadcms/db-mongodb": "4.0.0-canary.39",
@@ -103,19 +103,19 @@
     "@payloadcms/richtext-lexical": "4.0.0-canary.39",
     "@payloadcms/ui": "4.0.0-canary.39",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "concurrently": "^10.0.6",
-    "lucide-react": "^1.54.0",
-    "next": "^16.4.0",
+    "lucide-react": "^1.60.0",
+    "next": "^16.4.2",
     "payload": "4.0.0-canary.39",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "shiki": "^4.5.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "payload": ">=3.90.2"
