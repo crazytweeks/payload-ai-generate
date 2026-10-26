@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.0.0-rc.4] - 2026-10-26
+
+- Fix the standalone playground (`Dockerfile.dev`) build on Payload 4.0.0-beta.4. The package has no lockfile, and `^4.0.0-beta.4` also matches `4.0.0-internal.*` (`internal` sorts above `beta`), so a clean install resolved the stale `4.0.0-internal.fec2230` build next to `@payloadcms/transformer-sharp` beta.4 and Turbopack failed on exports missing from `payload/internal` and `@payloadcms/ui`. Added `overrides` pinning the Payload family to `4.0.0-beta.4`. The published peer range is unchanged.
+
 ## [1.0.0-rc.3] - 2026-10-26
 
 - Align Payload dependencies with 4.0.0-beta.4 and declare the beta peer range. Refresh the admin import map for the renamed activity widget/filter and update the AI SDK/Next dependencies.
