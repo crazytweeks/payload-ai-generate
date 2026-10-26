@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.0.0-rc.3] - 2026-10-26
+
+- Align Payload dependencies with 4.0.0-beta.4 and declare the beta peer range. Refresh the admin import map for the renamed activity widget/filter and update the AI SDK/Next dependencies.
+- Verification: package build and 13 unit tests pass; the shared-package typecheck passes. Consumer application verification is recorded by the monorepo release.
+
 ## Unreleased
 
 - Dependency refresh (owner `bun update -i -r`): `next` 16.4.0 to 16.4.2, React 19.3.0 to 19.3.1,
