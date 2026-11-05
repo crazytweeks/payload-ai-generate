@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [1.1.0-rc.1] - 2026-11-05
+
+### Changed
+
+- Payload and `@payloadcms/*` upgraded to 4.0.0-beta.7, with the Next 16.4.5 and AI SDK pin refresh; generated Payload types and admin artifacts refreshed where applicable.
+- The `payload` peer narrowed from `>=3.90.2 || ^4.0.0-beta.4` to exactly `4.0.0-beta.7`.
+
 ## [1.0.0-rc.4] - 2026-10-26
 
 - Fix the standalone playground (`Dockerfile.dev`) build on Payload 4.0.0-beta.4. The package has no lockfile, and `^4.0.0-beta.4` also matches `4.0.0-internal.*` (`internal` sorts above `beta`), so a clean install resolved the stale `4.0.0-internal.fec2230` build next to `@payloadcms/transformer-sharp` beta.4 and Turbopack failed on exports missing from `payload/internal` and `@payloadcms/ui`. Added `overrides` pinning the Payload family to `4.0.0-beta.4`. The published peer range is unchanged.
