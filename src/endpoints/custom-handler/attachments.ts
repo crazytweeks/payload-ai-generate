@@ -272,6 +272,19 @@ export const fetchAttachmentBytes = async (
       };
     }
   }
+
+  // Never fall back to an HTTP fetch for a host app's upload. `attachment.url`
+  // points at `/<collection>/file/...`, which requires the caller's session
+  // cookie (and, for a capability link, a token that may already have
+  // expired) — a cookie-less fetch here either 403s or pulls private bytes over
+  // the network for no reason. The storage read above is the only supported
+  // path for uploads; external paste-URL files still use `fetch`.
+  if (attachment.collectionSlug) {
+    throw new Error(
+      `Could not read attachment "${attachment.filename ?? attachment.id}" from ${attachment.collectionSlug} storage.`
+    );
+  }
+
   const response = await fetch(attachment.url);
 
   if (!response.ok) {

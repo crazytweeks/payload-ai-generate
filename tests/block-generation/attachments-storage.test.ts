@@ -73,6 +73,27 @@ describe('fetchAttachmentBytes', () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
+  /**
+   * `fetchAttachmentBytes` used to fall through to `fetch(attachment.url)`
+   * whenever storage returned no bytes — including for a host app upload. That
+   * URL needs the caller's session cookie (or an already-expired capability
+   * token), so the fallback only ever produced a 403 or a pointless network
+   * round-trip against private storage. Uploads must fail closed instead.
+   */
+  it('never falls back to an HTTP fetch for an upload', async () => {
+    const fetchMock = vi.fn(async () => new Response('leaked bytes'));
+    vi.stubGlobal('fetch', fetchMock);
+
+    try {
+      await expect(
+        fetchAttachmentBytes(uploadAttachment, contextWith([], null))
+      ).rejects.toThrow(/storage/i);
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('still fetches a non-upload attachment by URL', async () => {
     const external: ResolvedAttachment = {
       filename: 'pasted.png',
