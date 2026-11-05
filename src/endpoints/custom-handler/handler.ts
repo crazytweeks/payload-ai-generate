@@ -86,6 +86,7 @@ export const customEndpointHandler: PayloadHandler = async (req) => {
 
     const inputMessages = await buildInputMessages({
       attachments,
+      context: { payload: req.payload, req },
       prompt,
     });
 

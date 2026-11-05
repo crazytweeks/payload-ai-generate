@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Fixed
+
+- Reference attachments are read through the upload collection's storage handlers as the caller (`fetchAttachmentBytes(attachment, { payload, req })`) instead of fetching the host app's own `/api/media/file/...` URL over HTTP. That round-trip only worked while the collection was world-readable; with session-only reads it 403s and every reference silently vanished from the prompt. A private upload that cannot be read is now dropped rather than handed to the provider as a URL it cannot authenticate; non-upload (paste-URL) attachments still fetch by URL.
+
 ## [1.1.0-rc.1] - 2026-11-05
 
 ### Changed

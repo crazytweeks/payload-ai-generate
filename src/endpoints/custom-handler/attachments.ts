@@ -110,6 +110,7 @@ export const resolveAttachmentDoc = async ({
       id: ref.id,
       mimeType: typeof ref.mimeType === 'string' ? ref.mimeType : undefined,
       url: absoluteURL,
+      collectionSlug,
     };
   }
 
@@ -144,21 +145,133 @@ export const resolveAttachmentDoc = async ({
     id: doc.id,
     mimeType: typeof doc.mimeType === 'string' ? doc.mimeType : undefined,
     url: absoluteURL,
+    collectionSlug,
   };
 };
 
 /**
- * Downloads an attachment so it can be sent inline as bytes to the model.
+ * Reads an upload attachment's bytes server-side through the collection's own
+ * storage handlers, as the caller.
  *
- * @param attachment - Normalized attachment metadata with a fetchable URL.
+ * `fetch(attachment.url)` — what `fetchAttachmentBytes` used to do — only
+ * worked while the host app's upload collection was world-readable. Once media
+ * reads require a session, that cookie-less server-side fetch 403s and the
+ * composer silently lost every reference image/file. Storage handlers read the
+ * object directly (S3 in production) with no HTTP round-trip, so no credential
+ * travels and access control is unchanged: the document is loaded with the
+ * caller's `req` and no `overrideAccess`.
+ *
+ * `doc` MUST be passed to the handler. Payload v4 stores each object under
+ * `<_objectKey>/<filename>`; without the doc the handler re-queries as the
+ * request user (denied, wrong key) and the read fails — hence
+ * `showHiddenFields` on the lookup.
+ */
+const readAttachmentBytesThroughStorage = async ({
+  attachment,
+  payload,
+  req,
+}: {
+  attachment: ResolvedAttachment;
+  payload: Parameters<PayloadHandler>[0]['payload'];
+  req: Parameters<PayloadHandler>[0];
+}): Promise<{ bytes: Uint8Array; mediaType?: string } | null> => {
+  const collectionSlug = attachment.collectionSlug;
+
+  if (!collectionSlug || attachment.id === undefined || attachment.id === null) {
+    return null;
+  }
+
+  // Payload's collection map is keyed by the config's own slug union; an
+  // attachment names its collection as a plain string.
+  const collections = payload.collections as unknown as Record<
+    string,
+    { config: { upload?: unknown } } | undefined
+  >;
+
+  const handlers = (
+    collections[collectionSlug]?.config.upload as
+      | {
+          handlers?: Array<
+            (req: unknown, args: unknown) => Promise<Response | undefined> | Response | undefined
+          >;
+        }
+      | undefined
+  )?.handlers;
+
+  if (!handlers?.length) {
+    return null;
+  }
+
+  const doc = (await payload.findByID({
+    collection: collectionSlug as CollectionSlug,
+    id: attachment.id,
+    depth: 0,
+    disableErrors: true,
+    overrideAccess: false,
+    req,
+    showHiddenFields: true,
+  })) as { filename?: string | null; mimeType?: string | null; prefix?: string | null } | null;
+
+  if (!doc?.filename) {
+    return null;
+  }
+
+  for (const handler of handlers) {
+    const stored = await handler(req, {
+      doc,
+      params: {
+        collection: collectionSlug,
+        filename: doc.filename,
+        ...(doc.prefix ? { prefix: doc.prefix } : {}),
+      },
+    });
+
+    if (!(stored instanceof Response) || !stored.ok || !stored.body) {
+      continue;
+    }
+
+    return {
+      bytes: new Uint8Array(await stored.arrayBuffer()),
+      mediaType: doc.mimeType ?? stored.headers.get('content-type') ?? undefined,
+    };
+  }
+
+  return null;
+};
+
+/**
+ * Reads an attachment's bytes so it can be sent inline to the model.
+ *
+ * Storage handlers first (the attachment is a Payload upload the caller can
+ * read), then — and only for a URL that is not our own upload route — a plain
+ * fetch. The fetch fallback remains for external paste-URL files; it is no
+ * longer the path a host app's private media takes.
+ *
+ * @param attachment - Normalized attachment metadata.
+ * @param context - Payload + active request, used to read storage as the caller.
  * @returns Attachment bytes plus the detected media type.
  *
  * @example
  * ```ts
- * const { bytes, mediaType } = await fetchAttachmentBytes(attachment);
+ * const { bytes, mediaType } = await fetchAttachmentBytes(attachment, { payload, req });
  * ```
  */
-export const fetchAttachmentBytes = async (attachment: ResolvedAttachment) => {
+export const fetchAttachmentBytes = async (
+  attachment: ResolvedAttachment,
+  context?: {
+    payload: Parameters<PayloadHandler>[0]['payload'];
+    req: Parameters<PayloadHandler>[0];
+  }
+): Promise<{ bytes: Uint8Array; mediaType: string }> => {
+  if (context) {
+    const stored = await readAttachmentBytesThroughStorage({ attachment, ...context });
+    if (stored) {
+      return {
+        bytes: stored.bytes,
+        mediaType: stored.mediaType ?? attachment.mimeType ?? 'application/octet-stream',
+      };
+    }
+  }
   const response = await fetch(attachment.url);
 
   if (!response.ok) {
@@ -186,7 +299,11 @@ export const fetchAttachmentBytes = async (attachment: ResolvedAttachment) => {
  * ```
  */
 export const buildAttachmentParts = async (
-  attachments: ResolvedAttachment[]
+  attachments: ResolvedAttachment[],
+  context?: {
+    payload: Parameters<PayloadHandler>[0]['payload'];
+    req: Parameters<PayloadHandler>[0];
+  }
 ): Promise<Array<TextPart | ImagePart | FilePart>> => {
   const attachmentSummary = attachments
     .map((attachment, index) => {
@@ -206,7 +323,7 @@ export const buildAttachmentParts = async (
 
   for (const attachment of attachments) {
     try {
-      const { bytes, mediaType } = await fetchAttachmentBytes(attachment);
+      const { bytes, mediaType } = await fetchAttachmentBytes(attachment, context);
 
       if (mediaType.startsWith('image/')) {
         parts.push({
@@ -224,6 +341,13 @@ export const buildAttachmentParts = async (
         mediaType,
       });
     } catch {
+      // Only a non-upload URL can still be fetched by the model from the URL
+      // alone. For a Payload upload we return nothing rather than hand the
+      // provider a private `/api/media/file/...` URL it cannot authenticate.
+      if (attachment.collectionSlug) {
+        continue;
+      }
+
       if (attachment.mimeType?.startsWith('image/')) {
         parts.push({
           type: 'image',
@@ -267,9 +391,14 @@ export const buildAttachmentParts = async (
  */
 export const buildInputMessages = async ({
   attachments,
+  context,
   prompt,
 }: {
   attachments: ResolvedAttachment[];
+  context?: {
+    payload: Parameters<PayloadHandler>[0]['payload'];
+    req: Parameters<PayloadHandler>[0];
+  };
   prompt: string;
 }): Promise<ModelMessage[]> => {
   if (attachments.length === 0) {
@@ -289,7 +418,7 @@ export const buildInputMessages = async ({
           type: 'text',
           text: prompt,
         },
-        ...(await buildAttachmentParts(attachments)),
+        ...(await buildAttachmentParts(attachments, context)),
       ],
     } satisfies UserModelMessage,
   ];

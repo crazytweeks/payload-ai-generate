@@ -129,7 +129,10 @@ export type ResolvedAttachment = {
   filename?: string;
   id?: number | string;
   mimeType?: string;
+  /** Absolute URL for display/reference only — never used to fetch bytes. */
   url: string;
+  /** The upload collection this attachment came from, when it is one. */
+  collectionSlug?: string;
 };
 
 /**
