@@ -2,7 +2,7 @@
 
 import { useAllFormFields, useConfig, useField, useFormFields } from '@payloadcms/ui';
 import type { UIFieldClientProps } from 'payload';
-import { reduceFieldsToValues } from 'payload/shared';
+import { getDataFromFormState } from 'payload/shared';
 import type { AIConversationMessage, AIGenerationRunSummary } from '../ai-types';
 import { ComposerView } from './ai-composer/ComposerView';
 import type { ComposerFieldProps, RelationshipValue } from './ai-composer/types';
@@ -61,7 +61,7 @@ export const AIGenerateComposerField = ((props: UIFieldClientProps) => {
     ([fields]) => fields[presetFieldPath]?.value as RelationshipValue
   );
   const [formFields] = useAllFormFields();
-  const formValues = reduceFieldsToValues(formFields as any, true);
+  const formValues = getDataFromFormState(formFields as any, true);
   const referencesValue =
     referencesFieldPath && referencesFieldPath in formValues
       ? formValues[referencesFieldPath]
