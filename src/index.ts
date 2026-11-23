@@ -26,6 +26,7 @@ import { customEndpointHandler } from './endpoints/customEndpointHandler';
 import { openrouterSyncHandler } from './endpoints/openrouterSyncHandler';
 import { previewEndpointHandler } from './endpoints/previewHandler';
 import { uiGenerateEndpointHandler } from './endpoints/uiGenerateEndpointHandler';
+import { modelSyncSkipReason } from './modelSync';
 
 
 export type * from './ai-types';
@@ -166,36 +167,44 @@ export const aiGenerate =
        * against the database, multiplied by every worker, which dominated build
        * time. The runtime server performs the real sync when it actually boots.
        */
-      if (process.env.NEXT_PHASE === 'phase-production-build') {
+      const skipReason = modelSyncSkipReason(effectivePluginOptions);
+
+      if (skipReason === 'production-build') {
         payload.logger.info({ msg: 'Skipping AI model registry sync during production build' });
         return;
       }
 
-      try {
-        await syncAIModelsCollection(payload);
-      } catch (error) {
-        payload.logger.error({
-          msg: 'Failed to sync AI models collection during init',
-          err: error,
-        });
-      }
+      if (skipReason === 'plugin-option') {
+        // The host froze the registry, so both the static sync and the live
+        // OpenRouter fetch would only discard their results. Skip the fetch too.
+        payload.logger.info({ msg: 'Skipping AI model registry sync (skipModelSync enabled)' });
+      } else {
+        try {
+          await syncAIModelsCollection(payload);
+        } catch (error) {
+          payload.logger.error({
+            msg: 'Failed to sync AI models collection during init',
+            err: error,
+          });
+        }
 
-      // OpenRouter's catalogue is fetched over the network, so this is the one
-      // sync that can fail for reasons entirely outside the app. Non-fatal by
-      // design: a stale or absent model list must never stop the app booting.
-      // Re-runnable on demand via POST /api/ai-generate/openrouter/sync.
-      // Skipped when the registry was synced recently — see syncOpenRouterModels.
-      try {
-        const result = await syncOpenRouterModels(payload);
-        payload.logger.info({
-          msg: 'Synced OpenRouter models',
-          ...result,
-        });
-      } catch (error) {
-        payload.logger.warn({
-          msg: 'Failed to sync OpenRouter models during init (continuing without them)',
-          err: error,
-        });
+        // OpenRouter's catalogue is fetched over the network, so this is the one
+        // sync that can fail for reasons entirely outside the app. Non-fatal by
+        // design: a stale or absent model list must never stop the app booting.
+        // Re-runnable on demand via POST /api/ai-generate/openrouter/sync.
+        // Skipped when the registry was synced recently — see syncOpenRouterModels.
+        try {
+          const result = await syncOpenRouterModels(payload);
+          payload.logger.info({
+            msg: 'Synced OpenRouter models',
+            ...result,
+          });
+        } catch (error) {
+          payload.logger.warn({
+            msg: 'Failed to sync OpenRouter models during init (continuing without them)',
+            err: error,
+          });
+        }
       }
       if (pluginOptions.devTestCollections) {
         try {

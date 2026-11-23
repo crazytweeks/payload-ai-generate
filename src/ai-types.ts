@@ -171,6 +171,15 @@ export interface AIPluginOptions {
   openaiApiKey?: string;
   defaultProvider?: AIProviderName;
   disabled?: boolean;
+  /**
+   * Skip the model-registry syncs in `onInit`.
+   *
+   * Set this when the host app deliberately freezes the registry: the plugin
+   * then skips both the static google/openai sync and the live OpenRouter
+   * catalogue fetch. The fetch has a 15 s timeout, and when its results are
+   * going to be discarded anyway it is pure startup latency.
+   */
+  skipModelSync?: boolean;
   referenceMediaCollectionSlug?: CollectionSlug | string;
   referenceCollections?: AIReferenceCollectionsConfig;
   devTestCollections?: boolean;
