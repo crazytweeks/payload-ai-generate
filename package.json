@@ -90,18 +90,18 @@
     "@ai-sdk/google": "^4.0.124",
     "@ai-sdk/openai": "^4.0.122",
     "@ai-sdk/react": "^4.0.183",
-    "@payloadcms/live-preview-react": "4.0.0-beta.11",
-    "@payloadcms/transformer-sharp": "4.0.0-beta.11",
+    "@payloadcms/live-preview-react": "4.0.0-beta.12",
+    "@payloadcms/transformer-sharp": "4.0.0-beta.12",
     "ai": "^7.0.179",
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@payloadcms/db-mongodb": "4.0.0-beta.11",
-    "@payloadcms/db-postgres": "4.0.0-beta.11",
-    "@payloadcms/db-sqlite": "4.0.0-beta.11",
-    "@payloadcms/next": "4.0.0-beta.11",
-    "@payloadcms/richtext-lexical": "4.0.0-beta.11",
-    "@payloadcms/ui": "4.0.0-beta.11",
+    "@payloadcms/db-mongodb": "4.0.0-beta.12",
+    "@payloadcms/db-postgres": "4.0.0-beta.12",
+    "@payloadcms/db-sqlite": "4.0.0-beta.12",
+    "@payloadcms/next": "4.0.0-beta.12",
+    "@payloadcms/richtext-lexical": "4.0.0-beta.12",
+    "@payloadcms/ui": "4.0.0-beta.12",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
@@ -109,7 +109,7 @@
     "concurrently": "^10.0.7",
     "lucide-react": "^1.77.0",
     "next": "^16.4.6",
-    "payload": "4.0.0-beta.11",
+    "payload": "4.0.0-beta.12",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "shiki": "^4.6.0",
@@ -118,18 +118,18 @@
     "vitest": "^5.1.1"
   },
   "overrides": {
-    "payload": "4.0.0-beta.11",
-    "@payloadcms/db-mongodb": "4.0.0-beta.11",
-    "@payloadcms/db-postgres": "4.0.0-beta.11",
-    "@payloadcms/db-sqlite": "4.0.0-beta.11",
-    "@payloadcms/live-preview-react": "4.0.0-beta.11",
-    "@payloadcms/next": "4.0.0-beta.11",
-    "@payloadcms/richtext-lexical": "4.0.0-beta.11",
-    "@payloadcms/transformer-sharp": "4.0.0-beta.11",
-    "@payloadcms/ui": "4.0.0-beta.11"
+    "payload": "4.0.0-beta.12",
+    "@payloadcms/db-mongodb": "4.0.0-beta.12",
+    "@payloadcms/db-postgres": "4.0.0-beta.12",
+    "@payloadcms/db-sqlite": "4.0.0-beta.12",
+    "@payloadcms/live-preview-react": "4.0.0-beta.12",
+    "@payloadcms/next": "4.0.0-beta.12",
+    "@payloadcms/richtext-lexical": "4.0.0-beta.12",
+    "@payloadcms/transformer-sharp": "4.0.0-beta.12",
+    "@payloadcms/ui": "4.0.0-beta.12"
   },
   "peerDependencies": {
-    "payload": "4.0.0-beta.11"
+    "payload": "4.0.0-beta.12"
   },
   "publishConfig": {
     "main": "./dist/index.js",
